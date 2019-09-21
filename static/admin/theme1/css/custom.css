@@ -1,0 +1,58 @@
+@charset "utf-8";
+/* CSS Document */
+
+.mouse_hover .table-striped > tbody > tr:nth-of-type(2n+1):hover {
+background:#aeaeae !important;
+color:#fff !important;
+cursor:pointer;
+}
+.table-body tr:hover{
+background:#aeaeae !important;
+color:#fff !important;
+cursor:pointer;
+}
+.bg-th{
+	background:#9c9c9c;
+	}
+	
+.table > thead > tr > th {
+   
+    color: #FFF !important;
+}
+
+td.wrap {
+	width:250px;
+	word-wrap: break-word;
+}
+
+th.wrap {
+	width:250px;
+	word-wrap: break-word;
+}
+.left-space
+{
+	margin-left: 21px;
+	padding: 0px;
+	margin: 0px;
+}
+.table_action
+{
+	width: 202px;
+}
+.form-control1
+{
+	margin-top: 5px;
+}
+.wrapper
+{
+
+	margin-top: -21px;
+}
+.col_padd {
+    padding-left: 27px;
+}
+.col-centered {
+    display: block;
+    float: none;
+    margin: 0 auto;
+}
