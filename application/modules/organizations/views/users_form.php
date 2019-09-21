@@ -197,7 +197,7 @@
                                                       $data = array(
                                                         'name' => 'join_date',
                                                         'id' => 'join_date',
-                                                        'class' => 'form-control',
+                                                        'class' => 'form-control datetimepicker2',
                                                         'type' => 'date',
                                                         'tabindex' => '7',
                                                         'required' => 'required',
