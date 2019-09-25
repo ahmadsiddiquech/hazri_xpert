@@ -84,6 +84,8 @@ $route['teacher-class-student-list'] = "front/get_teacher_class_student_list";
 $route['teacher-leave-history'] = "front/get_teacher_leave_history";
 $route['teacher-leave-detail'] = "front/get_teacher_leave_detail";
 $route['leave-status-change'] = "front/change_leave_status";
+$route['get-timetable'] = "front/get_section_timetable";
+$route['exam-datesheet'] = "front/get_exam_datesheet";
 
 $route['send-notification'] = "front/send_notification";
 $route['update-fcm-token'] = "front/update_fcm_token";

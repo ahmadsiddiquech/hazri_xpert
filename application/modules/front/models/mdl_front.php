@@ -575,6 +575,39 @@ function _get_promotion_banner(){
         return $query;
     }
 
+    function _get_timetable_record($section_id,$class_id,$org_id){
+        $table = 'timetable_record';
+        $this->db->select('*');
+        $this->db->where('section_id', $section_id);
+        $this->db->where('class_id', $class_id);
+        $this->db->where('org_id', $org_id);
+        return $this->db->get($table);
+    }
+
+    function _get_timetable_data($id){
+        $table = 'timetable_data';
+        $this->db->select('*');
+        $this->db->where('timetable_id', $id);
+        $this->db->order_by('start_time','ASC');
+        return $this->db->get($table);
+    }
+
+    function _get_datesheet_record($class_id,$org_id){
+        $table = 'datesheet_record';
+        $this->db->select('*');
+        $this->db->where('class_id', $class_id);
+        $this->db->where('org_id', $org_id);
+        return $this->db->get($table);
+    }
+
+    function _get_datasheet_data($id){
+        $table = 'datesheet_data';
+        $this->db->select('*');
+        $this->db->where('datesheet_id', $id);
+        $this->db->order_by('exam_date','ASC');
+        return $this->db->get($table);
+    }
+
 
 
 // ========================================================= //

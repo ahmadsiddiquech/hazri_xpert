@@ -2093,6 +2093,116 @@ function get_student_test(){
     }
 }
 
+
+function get_section_timetable(){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $status = false;
+        $message = '';
+        $section_id = $this->input->post('sectionId');
+        $class_id = $this->input->post('classId');
+        $org_id = $this->input->post('orgId');
+
+        $data = $this->_get_timetable_record($section_id,$class_id,$org_id)->result_array();
+        if (isset($data) && !empty($data)) {
+            foreach ($data as $key => $value) {
+                $data2 = $this->_get_timetable_data($value['id'])->result_array();
+                if (isset($data2) && !empty($data2)) {
+                    foreach ($data2 as $key => $value1) {
+                        $finalData['className'] = $value['class_name'];
+                        $finalData['sectionName'] = $value['section_name'];
+                        $finalData['day'] = $value['day'];
+                        $finalData['subjectName'] = $value1['subject_name'];
+                        $finalData['startTime'] = $value1['start_time'];
+                        $finalData['endTime'] = $value1['end_time'];
+                        $finalData2[] = $finalData;
+                    }
+                }
+            }
+        }
+        if(isset($finalData2) && !empty($finalData2)){
+            $status = true;
+            $data = $finalData2;
+        }
+        else{
+            $data='';
+            $message = "Record Not Found";
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status,'message'=>$message, 'data'=>$data));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+function get_exam_datesheet(){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $status = false;
+        $message = '';
+        $class_id = $this->input->post('classId');
+        $org_id = $this->input->post('orgId');
+
+        $data = $this->_get_datesheet_record($class_id,$org_id)->result_array();
+        if (isset($data) && !empty($data)) {
+            foreach ($data as $key => $value) {
+                $data2 = $this->_get_datesheet_data($value['id'])->result_array();
+                if (isset($data2) && !empty($data2)) {
+                    foreach ($data2 as $key => $value1) {
+                        $finalData['programName'] = $value['program_name'];
+                        $finalData['className'] = $value['class_name'];
+                        $finalData['start_date'] = $value['start_date'];
+                        $finalData['end_date'] = $value['end_date'];
+                        $finalData['subjectName'] = $value1['subject_name'];
+                        $finalData['examDate'] = $value1['exam_date'];
+                        $finalData['startTime'] = $value1['start_time'];
+                        $finalData['endTime'] = $value1['end_time'];
+                        $finalData['examDay'] = $value1['day'];
+                        $finalData2[] = $finalData;
+                    }
+                }
+            }
+        }
+        if(isset($finalData2) && !empty($finalData2)){
+            $status = true;
+            $data = $finalData2;
+        }
+        else{
+            $data='';
+            $message = "Record Not Found";
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status,'message'=>$message, 'data'=>$data));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+
+function _get_datesheet_record($class_id,$org_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_datesheet_record($class_id,$org_id);  
+}
+
+function _get_datesheet_data($id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_datasheet_data($id);  
+}
+
+function _get_timetable_record($section_id,$class_id,$org_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_timetable_record($section_id,$class_id,$org_id);  
+}
+
+function _get_timetable_data($id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_timetable_data($id);  
+}
+
 function _get_institutes(){
     $this->load->model('mdl_front');
     $query = $this->mdl_front->_get_institutes();
