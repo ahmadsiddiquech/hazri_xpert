@@ -2,7 +2,7 @@
 <div class="content-wrapper">
     <h3>
     <?php 
-    $urlPath = $this->uri->segment(5);;
+    $urlPath = $this->uri->segment(5);
     echo ucwords(str_replace('%20',' ',$urlPath));
     ?>
     <a href="<?php echo ADMIN_BASE_URL . 'exam'; ?>"><button type="button" class="btn btn-primary pull-right"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;&nbsp;Back</button></a></h3>
