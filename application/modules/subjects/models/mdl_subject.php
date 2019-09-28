@@ -220,6 +220,17 @@ class Mdl_subject extends CI_Model {
 
     }
 
+    function _get_subject_section($section_id) {
+
+        $table = $this->get_table();
+
+        $this->db->select('*');
+
+        $this->db->where('section_id',$section_id);
+
+        return $this->db->get($table);
+
+    }
 
 
     function _get_subject_teacher($subject_id,$org_id){

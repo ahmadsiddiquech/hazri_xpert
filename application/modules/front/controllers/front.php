@@ -2103,33 +2103,44 @@ function get_section_timetable(){
         $class_id = $this->input->post('classId');
         $org_id = $this->input->post('orgId');
 
-        $data = $this->_get_timetable_record($section_id,$class_id,$org_id)->result_array();
-        if (isset($data) && !empty($data)) {
-            foreach ($data as $key => $value) {
-                $data2 = $this->_get_timetable_data($value['id'])->result_array();
-                if (isset($data2) && !empty($data2)) {
-                    foreach ($data2 as $key => $value1) {
-                        $finalData['className'] = $value['class_name'];
-                        $finalData['sectionName'] = $value['section_name'];
-                        $finalData['day'] = $value['day'];
-                        $finalData['subjectName'] = $value1['subject_name'];
-                        $finalData['startTime'] = $value1['start_time'];
-                        $finalData['endTime'] = $value1['end_time'];
-                        $finalData2[] = $finalData;
+        $org = $this->_get_org($org_id)->result_array();
+        // print_r($org);exit();
+
+        $data2 = $this->_get_timetable_record($section_id,$class_id,$org_id)->result_array();
+        if (isset($data2) && !empty($data2)) {
+            $single['schoolName'] = $org[0]['orgName'];
+            foreach ($data2 as $key => $value) {
+                $finalData['dayName'] = $value['day'];
+                $single['className'] = $value['class_name'];
+                $single['sectionName'] = $value['section_name'];
+                
+                $data3 = $this->_get_timetable_data($value['id'])->result_array();
+                if (isset($data3) && !empty($data3)) {
+                    foreach ($data3 as $key => $value1) {
+                        $finalData3['subjectName'] = $value1['subject_name'];
+                        $finalData3['startTime'] = $value1['start_time'];
+                        $finalData3['endTime'] = $value1['end_time'];
+                        $finalData2[] = $finalData3;
                     }
+                    $finalData['timeTable'] = $finalData2;
+                    unset($finalData2);
                 }
+                $final[] = $finalData;
             }
+
         }
-        if(isset($finalData2) && !empty($finalData2)){
+        if(isset($final) && !empty($final)){
             $status = true;
-            $data = $finalData2;
+            $data = $final;
+            $single_data = $single;
         }
         else{
             $data='';
             $message = "Record Not Found";
+            $single_data = '';
         }
         header('Content-Type: application/json');
-        echo json_encode(array('status'=>$status,'message'=>$message, 'data'=>$data));
+        echo json_encode(array('status'=>$status,'message'=>$message, 'data'=>$data, 'single_data'=>$single_data));
     }
     else{
         header('Content-Type: application/json');
@@ -2148,33 +2159,35 @@ function get_exam_datesheet(){
         $data = $this->_get_datesheet_record($class_id,$org_id)->result_array();
         if (isset($data) && !empty($data)) {
             foreach ($data as $key => $value) {
+                $finalData['programName'] = $value['program_name'];
+                $finalData['className'] = $value['class_name'];
+                $finalData['start_date'] = $value['start_date'];
+                $finalData['end_date'] = $value['end_date'];
                 $data2 = $this->_get_datesheet_data($value['id'])->result_array();
                 if (isset($data2) && !empty($data2)) {
                     foreach ($data2 as $key => $value1) {
-                        $finalData['programName'] = $value['program_name'];
-                        $finalData['className'] = $value['class_name'];
-                        $finalData['start_date'] = $value['start_date'];
-                        $finalData['end_date'] = $value['end_date'];
-                        $finalData['subjectName'] = $value1['subject_name'];
-                        $finalData['examDate'] = $value1['exam_date'];
-                        $finalData['startTime'] = $value1['start_time'];
-                        $finalData['endTime'] = $value1['end_time'];
-                        $finalData['examDay'] = $value1['day'];
-                        $finalData2[] = $finalData;
+                        $finalData2['subjectName'] = $value1['subject_name'];
+                        $finalData2['examDate'] = $value1['exam_date'];
+                        $finalData2['startTime'] = $value1['start_time'];
+                        $finalData2['endTime'] = $value1['end_time'];
+                        $finalData2['examDay'] = $value1['day'];
+                        $finalData3[] = $finalData2;
                     }
                 }
             }
         }
-        if(isset($finalData2) && !empty($finalData2)){
+        if(isset($finalData3) && !empty($finalData3)){
             $status = true;
-            $data = $finalData2;
+            $data = $finalData3;
+            $single_data = $finalData;
         }
         else{
+            $single_data = '';
             $data='';
             $message = "Record Not Found";
         }
         header('Content-Type: application/json');
-        echo json_encode(array('status'=>$status,'message'=>$message, 'data'=>$data));
+        echo json_encode(array('status'=>$status,'message'=>$message, 'data'=>$data, 'single_data'=>$single_data));
     }
     else{
         header('Content-Type: application/json');
