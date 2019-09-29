@@ -24,5 +24,3 @@
         <h4 ><b>Status:&nbsp;&nbsp;</b></h4><?php echo $user['status']; ?>
     </div>
 </div>
-<div class="row">
-</div>

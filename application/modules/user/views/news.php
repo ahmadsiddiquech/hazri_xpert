@@ -40,6 +40,12 @@
                                         $publis_title = 'Set Un-Publish';
                                         $icon = '<i class="fa fa-long-arrow-up"></i>';
                                         $iconbgclass = ' btn green c-btn';
+                                        if ($value['status']  != 1 ) {
+                                        $publish_class = ' table_action_unpublish';
+                                        $publis_title = 'Set Publish';
+                                        $icon = '<i class="fa fa-long-arrow-down"></i>';
+                                        $iconbgclass = ' btn default c-btn';
+                                        }
                                         
                                         echo anchor("javascript:;",$icon, array('class' => 'action_publish' . $publish_class . $iconbgclass,
                                         'title' => $publis_title,'rel' => $value['id'],'id' => $value['id'], 'status' => $value['status']));

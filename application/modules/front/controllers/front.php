@@ -4,7 +4,7 @@ protected $data = '';
 function __construct() {
 parent::__construct();
 $this->load->library("pagination");
- $this->load->helper("url");
+$this->load->helper("url");
 }
 ////////////////////////// FOR HOME PAGE /////////////////////
 function index() {
@@ -15,33 +15,33 @@ function index() {
     $this->template->front($data);
 }
 function send_notification($token, $title, $description){
-    // require_once STATIC_FRONT_NOTIFICATION.'google-api-php-client/vendor/autoload.php';
-    // foreach ($token as $key => $value) {
-    //     $this->send_notification_fn($value['fcm_token'], $title,$description);
-    // }
-    // $this->send_notification_fn('fVhlVO2mLxM:APA91bEX5ctt8hjUNYxmI9FrAfDGdXhOpK4rL_Uzt3UEIqSzv8VH_WDbJ5Bo24NT47Zjm97E_zkd_FI_c1ZgdUyjgkNa4-Tge4xta01fQnTeXmgqvday_vIdjph7s5ICxAUSIORTuWJm', 'title', 'description');
+    require_once STATIC_FRONT_NOTIFICATION.'google-api-php-client/vendor/autoload.php';
+    foreach ($token as $key => $value) {
+        $this->send_notification_fn($value['fcm_token'], $title,$description);
+    }
+    $this->send_notification_fn('fVhlVO2mLxM:APA91bEX5ctt8hjUNYxmI9FrAfDGdXhOpK4rL_Uzt3UEIqSzv8VH_WDbJ5Bo24NT47Zjm97E_zkd_FI_c1ZgdUyjgkNa4-Tge4xta01fQnTeXmgqvday_vIdjph7s5ICxAUSIORTuWJm', 'title', 'description');
 }
 function send_notification_fn($to, $title,$description) {
-    // date_default_timezone_set("Asia/Karachi");
-    // $file_name = STATIC_FRONT_NOTIFICATION.'xpertatendy-firebase-adminsdk-crvvw-6dcb55a422.json';
-    // putenv('GOOGLE_APPLICATION_CREDENTIALS='.$file_name);
-    // $client = new Google_Client();
-    // $client->useApplicationDefaultCredentials();
-    // $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-    // $httpClient = $client->authorize();
-    // $project = "xpertatendy";
-    // // Creates a notification for subscribers to the debug topic
-    // $message = [
-    //     "message" => [
-    //         "token" => $to,
-    //         "data" => [
-    //             'title' => $title,
-    //             'message' => $description,
-    //         ],
-    //     ]
-    // ];
-    // $response = $httpClient->post("https://fcm.googleapis.com/v1/projects/{$project}/messages:send", ['json' => $message]);
- //    "<br><br>";
+    date_default_timezone_set("Asia/Karachi");
+    $file_name = STATIC_FRONT_NOTIFICATION.'xpertatendy-firebase-adminsdk-crvvw-6dcb55a422.json';
+    putenv('GOOGLE_APPLICATION_CREDENTIALS='.$file_name);
+    $client = new Google_Client();
+    $client->useApplicationDefaultCredentials();
+    $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+    $httpClient = $client->authorize();
+    $project = "xpertatendy";
+    // Creates a notification for subscribers to the debug topic
+    $message = [
+        "message" => [
+            "token" => $to,
+            "data" => [
+                'title' => $title,
+                'message' => $description,
+            ],
+        ]
+    ];
+    $response = $httpClient->post("https://fcm.googleapis.com/v1/projects/{$project}/messages:send", ['json' => $message]);
+    "<br><br>";
  // print_r($response);
 }
 
@@ -2102,10 +2102,7 @@ function get_section_timetable(){
         $section_id = $this->input->post('sectionId');
         $class_id = $this->input->post('classId');
         $org_id = $this->input->post('orgId');
-
         $org = $this->_get_org($org_id)->result_array();
-        // print_r($org);exit();
-
         $data2 = $this->_get_timetable_record($section_id,$class_id,$org_id)->result_array();
         if (isset($data2) && !empty($data2)) {
             $single['schoolName'] = $org[0]['orgName'];
@@ -2155,22 +2152,26 @@ function get_exam_datesheet(){
         $message = '';
         $class_id = $this->input->post('classId');
         $org_id = $this->input->post('orgId');
+        $org = $this->_get_org($org_id)->result_array();
 
         $data = $this->_get_datesheet_record($class_id,$org_id)->result_array();
+
         if (isset($data) && !empty($data)) {
             foreach ($data as $key => $value) {
+
+                $finalData['schoolName'] = $org[0]['orgName'];
                 $finalData['programName'] = $value['program_name'];
                 $finalData['className'] = $value['class_name'];
-                $finalData['start_date'] = $value['start_date'];
-                $finalData['end_date'] = $value['end_date'];
+                $finalData['start_date'] = $value['s_date'];
+                $finalData['end_date'] = $value['e_date'];
                 $data2 = $this->_get_datesheet_data($value['id'])->result_array();
                 if (isset($data2) && !empty($data2)) {
                     foreach ($data2 as $key => $value1) {
                         $finalData2['subjectName'] = $value1['subject_name'];
-                        $finalData2['examDate'] = $value1['exam_date'];
+                        $finalData2['examDate'] = $value1['date'];
                         $finalData2['startTime'] = $value1['start_time'];
                         $finalData2['endTime'] = $value1['end_time'];
-                        $finalData2['examDay'] = $value1['day'];
+                        $finalData2['examDay'] = date('l',strtotime($value1['exam_date']));
                         $finalData3[] = $finalData2;
                     }
                 }
@@ -2700,7 +2701,6 @@ function parent_notification_list(){
                     $data4['orgId'] = $value5['org_id'];
                     $data2[] = $data4;
                 }
-                // $where5['std_id'] = $value4['std_id'];
                 $notif_list3 = $this->_notif_get_list_exam_parent_update($where4,$where2)->result_array();
                 foreach ($notif_list3 as $key => $value7) {
                     $data5['notifId'] = $value7['notif_id'];

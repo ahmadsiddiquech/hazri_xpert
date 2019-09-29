@@ -78,7 +78,6 @@ Modules::run('site_security/is_login');
             $class_id = $stdData[0];
         }
         $arr_section = Modules::run('sections/_get_by_arr_id_class',$class_id)->result_array();
-        // print_r($arr_section);exit();
         $html='';
         $html.='<option value="">Select</option>';
         foreach ($arr_section as $key => $value) {
@@ -144,35 +143,34 @@ Modules::run('site_security/is_login');
             $user_data = $this->session->userdata('user_data');
             if ($update_id != 0) {
                 $id = $this->_update($update_id,$user_data['user_id'], $data);
-                $data2['notif_title'] = $data['program_name'];
-                $data2['notif_description'] = 'Admin updated datesheet for class '.$data['class_name'];
-                $data2['notif_type'] = 'datesheet';
-                $data2['type_id'] = $update_id;
-                $data2['class_id'] = $data['class_id'];
-                $data2['program_id'] = $data['program_id'];
-                date_default_timezone_set("Asia/Karachi");
-                $data2['notif_date'] = date('Y-m-d H:i:s');
-                $data2['org_id'] = $data['org_id'];
-                $this->_notif_insert_data_teacher($data2);
-                $this->_notif_insert_data_parent($data2);
+                // $data2['notif_title'] = 'Datesheet Updated';
+                // $data2['notif_description'] = 'Admin updated datesheet';
+                // $data2['notif_type'] = 'datesheet';
+                // $data2['type_id'] = $update_id;
+                // $data2['class_id'] = $data['class_id'];
+                // $data2['program_id'] = $data['program_id'];
+                // date_default_timezone_set("Asia/Karachi");
+                // $data2['notif_date'] = date('Y-m-d H:i:s');
+                // $data2['org_id'] = $data['org_id'];
+                // $this->_notif_insert_data_teacher($data2);
+                // $this->_notif_insert_data_parent($data2);
 
-                $where['class_id'] = $data2['class_id'];
-                $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                if (isset($teacher_id) && !empty($teacher_id)) {
-                    foreach ($teacher_id as $key => $value) {
-                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }  
-                }
-
-                $where1['class_id'] = $data2['class_id'];
-                $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                if (isset($parent_id) && !empty($parent_id)) {
-                    foreach ($parent_id as $key => $value) {
-                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                       Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }   
-                }
+                // $where['class_id'] = $data2['class_id'];
+                // $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
+                // if (isset($teacher_id) && !empty($teacher_id)) {
+                //     foreach ($teacher_id as $key => $value) {
+                //         $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                //         Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
+                //     }  
+                // }
+                // $where1['class_id'] = $data2['class_id'];
+                // $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
+                // if (isset($parent_id) && !empty($parent_id)) {
+                //     foreach ($parent_id as $key => $value) {
+                //         $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
+                //        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
+                //     }   
+                // }
             }
             else {
                 $datesheet_id = $this->_insert_datesheet($data);
@@ -181,8 +179,7 @@ Modules::run('site_security/is_login');
                 $start_time = $this->input->post('start_time');
                 $end_time = $this->input->post('end_time');
                 $this->adding_datesheet_subject($subject_name, $exam_date, $start_time, $end_time, $datesheet_id,$user_data['user_id']);
-
-                $data2['notif_title'] = $data['program_name'];
+                $data2['notif_title'] = 'Datesheet of '.$data['program_name'];
                 $data2['notif_description'] = 'Datesheet added for class '.$data['class_name'];
                 $data2['notif_type'] = 'datesheet';
                 $data2['type_id'] = $datesheet_id;
@@ -230,17 +227,13 @@ Modules::run('site_security/is_login');
             $data['start_time']=$start_time[$counter];
             $data['end_time']=$end_time[$counter];
             $data['datesheet_id']=$datesheet_id;
-
             if(!empty($value)){
                 $this->_insert_datesheet_subject($data);
             }
             $counter++; 
         }
-
     }
 
-
-   
     function subject_edit() {
         $datesheet_id = $this->uri->segment(4);
         $subject_id = $this->uri->segment(5);
@@ -258,13 +251,12 @@ Modules::run('site_security/is_login');
         $user_data = $this->session->userdata('user_data');
         $org_id = $user_data['user_id'];
         $data['exam_date'] = $this->input->post('exam_date');
-        $data['end_time'] = $this->input->post('start_time');
-        $data['start_time'] = $this->input->post('end_time');
-        // print_r($data);exit();
+        $data['start_time'] = $this->input->post('start_time');
+        $data['end_time'] = $this->input->post('end_time');
         $check = $this->update_subject($subject_id,$datesheet_id,$data);
 
         $notif_data = $this->_get_data_from_db($datesheet_id);
-        $data2['notif_title'] = $notif_data['program_name'];
+        $data2['notif_title'] = 'Datesheet of '.$notif_data['program_name'];
         $data2['notif_description'] = 'Admin Edited The Subjects of this datesheet for class '.$notif_date['class_name'];
         $data2['notif_type'] = 'datesheet';
         $data2['type_id'] = $notif_data['id'];
@@ -294,7 +286,7 @@ Modules::run('site_security/is_login');
             }   
         }
 
-        if($check == true){
+        if($check == 1){
             $this->session->set_flashdata('message', 'datesheet'.' '.DATA_SAVED);
             $this->session->set_flashdata('status', 'success');
             redirect(ADMIN_BASE_URL . 'datesheet/subjects/'. $datesheet_id);
@@ -337,19 +329,6 @@ Modules::run('site_security/is_login');
         }
         print_r($html);
     }
-
-    function check_subject () {
-        $subject_id = $this->input->post('subject_id');
-        $this->load->model('mdl_datesheet');
-        $check = $this->mdl_datesheet->check_subject($subject_id);
-        if($check->num_rows()!=0){
-            echo "true";
-        }
-        else{
-            echo "false";
-        }
-    }
-
     
     function delete() {
         $delete_id = $this->input->post('id');
@@ -360,9 +339,7 @@ Modules::run('site_security/is_login');
 
     function set_publish() {
         $update_id = $this->uri->segment(4);
-        //$lang_id = $this->uri->segment(5);
         $where['id'] = $update_id;
-        //$where['lang_id'] = $lang_id;
         $this->_set_publish($where);
         $this->session->set_flashdata('message', 'Post published successfully.');
         redirect(ADMIN_BASE_URL . 'datesheet/manage/' . '');
@@ -370,9 +347,7 @@ Modules::run('site_security/is_login');
 
     function set_unpublish() {
         $update_id = $this->uri->segment(4);
-        //$lang_id = $this->uri->segment(5);
         $where['id'] = $update_id;
-        //$where['lang_id'] = $lang_id;
         $this->_set_unpublish($where);
         $this->session->set_flashdata('message', 'Post un-published successfully.');
         redirect(ADMIN_BASE_URL . 'datesheet/manage/' . '');

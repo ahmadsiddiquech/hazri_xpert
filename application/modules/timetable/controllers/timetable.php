@@ -42,45 +42,7 @@ Modules::run('site_security/is_login');
         $this->template->admin($data);
     }
 
-    function marks() {
-        $exam_id = $this->uri->segment(4);
-        $subject_id = $this->uri->segment(5);
-        $total = $this->_get_exam_subject_total($exam_id,$subject_id)->result_array();
-        if (isset($total) && !empty($total)) {
-            foreach ($total as $key => $value) {
-                $total_marks = $value['total_marks'];
-            }
-        }
-        $user_data = $this->session->userdata('user_data');
-        $org_id = $user_data['user_id'];
-        $student_list = $this->_get_subject_student_list($subject_id,$org_id)->result_array();
-        foreach ($student_list as $key => $value) {
-            $finalData['std_id'] = $value['std_id'];
-            $finalData['roll_no'] = $value['roll_no'];
-            $finalData['name'] = $value['name'];
-            $finalData['exam_id'] = $exam_id;
-            $finalData['subject_id'] = $subject_id;
-            $finalData['total_marks'] = $total_marks;
-
-        $obtained_marks = $this->get_obtained_marks($value['std_id'],$subject_id,$exam_id,$org_id)->result_array();
-        
-            if (isset($obtained_marks) && !empty($obtained_marks)) {
-                foreach ($obtained_marks as $key => $value1) {
-                    $finalData['obtained_marks'] = $value1['obtained_marks'];
-                    $finalData2[] = $finalData;
-                }
-            }
-            else{
-                $finalData['obtained_marks'] = '';
-                $finalData2[] = $finalData;
-            }
-        }
-        // print_r($obtained_marks);exit();
-        $data['student_list'] = $finalData2;
-        $data['view_file'] = 'marks';
-        $this->load->module('template');
-        $this->template->admin($data);
-    }
+    
 
     function subjects() {
         $timetable_id = $this->uri->segment(4);
@@ -192,36 +154,6 @@ Modules::run('site_security/is_login');
             $user_data = $this->session->userdata('user_data');
             if ($update_id != 0) {
                 $id = $this->_update($update_id,$user_data['user_id'], $data);
-                $data2['notif_title'] = $data['class_name'];
-                $data2['notif_description'] = 'Admin updated this timetable for section '.$data['section_name'];
-                $data2['notif_type'] = 'timetable';
-                $data2['type_id'] = $update_id;
-                $data2['section_id'] = $data['section_id'];
-                $data2['class_id'] = $data['class_id'];
-                $data2['program_id'] = $data['program_id'];
-                date_default_timezone_set("Asia/Karachi");
-                $data2['notif_date'] = date('Y-m-d H:i:s');
-                $data2['org_id'] = $data['org_id'];
-                $this->_notif_insert_data_teacher($data2);
-                $this->_notif_insert_data_parent($data2);
-
-                $where['section_id'] = $data2['section_id'];
-                $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                if (isset($teacher_id) && !empty($teacher_id)) {
-                    foreach ($teacher_id as $key => $value) {
-                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }  
-                }
-
-                $where1['section_id'] = $data2['section_id'];
-                $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                if (isset($parent_id) && !empty($parent_id)) {
-                    foreach ($parent_id as $key => $value) {
-                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                       Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }   
-                }
             }
             else {
                 $timetable_id = $this->_insert_timetable($data);
@@ -234,35 +166,38 @@ Modules::run('site_security/is_login');
 
                 $this->adding_timetable_subject($subject_name, $start_time, $end_time,$timetable_id,$user_data['user_id'] ,$break,$break_start_time,$break_end_time);
 
-                $data2['notif_title'] = $data['class_name'];
-                $data2['notif_description'] = 'Timetable added for section '.$data['section_name'];
-                $data2['notif_type'] = 'timetable';
-                $data2['type_id'] = $timetable_id;
-                $data2['section_id'] = $data['section_id'];
-                $data2['class_id'] = $data['class_id'];
-                $data2['program_id'] = $data['program_id'];
-                date_default_timezone_set("Asia/Karachi");
-                $data2['notif_date'] = date('Y-m-d H:i:s');
-                $data2['org_id'] = $data['org_id'];
-                $this->_notif_insert_data_teacher($data2);
-                $this->_notif_insert_data_parent($data2);
+                $no_of_days = $this->_no_of_days($data['class_id'],$data['section_id'])->num_rows();
+                if ($no_of_days == 6) {
+                    $data2['notif_title'] = 'Timetable of '.$data['class_name'];
+                    $data2['notif_description'] = 'Timetable added for section '.$data['section_name'];
+                    $data2['notif_type'] = 'timetable';
+                    $data2['type_id'] = $timetable_id;
+                    $data2['section_id'] = $data['section_id'];
+                    $data2['class_id'] = $data['class_id'];
+                    $data2['program_id'] = $data['program_id'];
+                    date_default_timezone_set("Asia/Karachi");
+                    $data2['notif_date'] = date('Y-m-d H:i:s');
+                    $data2['org_id'] = $data['org_id'];
+                    $this->_notif_insert_data_teacher($data2);
+                    $this->_notif_insert_data_parent($data2);
 
-                $where['section_id'] = $data2['section_id'];
-                $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                if (isset($teacher_id) && !empty($teacher_id)) {
-                    foreach ($teacher_id as $key => $value) {
-                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }  
-                }
+                    $where['section_id'] = $data2['section_id'];
+                    $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
+                    if (isset($teacher_id) && !empty($teacher_id)) {
+                        foreach ($teacher_id as $key => $value) {
+                            $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                            Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
+                        }  
+                    }
 
-                $where1['section_id'] = $data2['section_id'];
-                $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                if (isset($parent_id) && !empty($parent_id)) {
-                    foreach ($parent_id as $key => $value) {
-                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                       Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }   
+                    $where1['section_id'] = $data2['section_id'];
+                    $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
+                    if (isset($parent_id) && !empty($parent_id)) {
+                        foreach ($parent_id as $key => $value) {
+                            $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
+                           Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
+                        }   
+                    }
                 }
             }
             $this->session->set_flashdata('message', 'timetable'.' '.DATA_SAVED);
@@ -283,7 +218,7 @@ Modules::run('site_security/is_login');
             $data['end_time']=$end_time[$counter];
             $data['timetable_id']=$timetable_id;
             if(!empty($value)){
-                // print_r($data);exit();
+
                 $this->_insert_timetable_subject($data);
             }
             $counter++; 
@@ -298,85 +233,13 @@ Modules::run('site_security/is_login');
         }
     }
 
-    function adding_exam_subject_marks($roll_no, $std_id, $name, $obtained_marks,$exam_id,$subject_id, $org_id){
-         $counter=0;
-            foreach ($roll_no as $key => $value) {
-            $data = array();
-            unset($data); 
-            $data = array();
-            $data['std_roll_no']=$roll_no[$counter];
-            $data['std_id']=$std_id[$counter];
-            $data['std_name']=$name[$counter];
-            $data['obtained_marks']=$obtained_marks[$counter];
-            $data['org_id']=$org_id;
-            $data['exam_id']=$exam_id;
-            $data['exam_subject_id']=$subject_id;
+    
 
-            if(!empty($value)){
-                // $data['day']=$value;
-                $this->_insert_exam_subject_marks($data);
-            }
-            $counter++; 
-        }
-    }
-
-    function submit_marks() {
-        // print_r($this->input->post('roll_no'));exit();
-        $exam_id = $this->uri->segment(4);
-        $subject_id = $this->uri->segment(5);
-        // print_r($exam_id);exit();
-        $user_data = $this->session->userdata('user_data');
-        $roll_no = $this->input->post('roll_no');
-        $std_id = $this->input->post('std_id');
-        $name = $this->input->post('std_name');
-        $obtained_marks = $this->input->post('obtained_marks');
-        $this->adding_exam_subject_marks($roll_no, $std_id, $name, $obtained_marks,$exam_id,$subject_id,$user_data['user_id']);
-
-        $notif_data = $this->_get_data_from_db($exam_id);
-        $data2['notif_title'] = $notif_data['class_name'];
-        $data2['notif_description'] = 'Timetable has been updated for section '.$notif_data['section_name'];
-        $data2['notif_type'] = 'timetable';
-        $data2['notif_sub_type'] = 'update';
-        $data2['type_id'] = $notif_data['timetable_id'];
-        $data2['section_id'] = $notif_data['section_id'];
-        $data2['class_id'] = $notif_data['class_id'];
-        $data2['program_id'] = $notif_data['program_id'];
-        date_default_timezone_set("Asia/Karachi");
-        $data2['notif_date'] = date('Y-m-d H:i:s');
-        $data2['org_id'] = $notif_data['org_id'];
-        $this->_notif_insert_data_teacher($data2);
-        $this->_notif_insert_data_parent($data2);
-
-        $where['section_id'] = $data2['section_id'];
-        $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-        if (isset($teacher_id) && !empty($teacher_id)) {
-            foreach ($teacher_id as $key => $value) {
-                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }  
-        }
-
-        $where1['section_id'] = $data2['section_id'];
-        $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-        if (isset($parent_id) && !empty($parent_id)) {
-            foreach ($parent_id as $key => $value) {
-                $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-               Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }   
-        }
-        
-        
-        $this->session->set_flashdata('message', 'timetable'.' '.DATA_SAVED);
-        $this->session->set_flashdata('status', 'success');
-        
-        redirect(ADMIN_BASE_URL . 'timetable/subjects/'.$timetable_id);
-    }
+    
 
     function subject_edit() {
-        // print_r($this->input->post('roll_no'));exit();
         $timetable_id = $this->uri->segment(4);
         $subject_id = $this->uri->segment(5);
-        // print_r($exam_id);exit();
         $user_data = $this->session->userdata('user_data');
         $org_id = $user_data['user_id'];
         $data['news'] = $this->get_subject_data($timetable_id,$subject_id);
@@ -392,43 +255,9 @@ Modules::run('site_security/is_login');
         $org_id = $user_data['user_id'];
         $data['start_time'] = $this->input->post('start_time');
         $data['end_time'] = $this->input->post('end_time');
-        // print_r($data);exit();
         $check = $this->update_subject($subject_id,$timetable_id,$data);
-
-        $notif_data = $this->_get_data_from_db($timetable_id);
-        // print_r($notif_data);exit();
-        $data2['notif_title'] = $notif_data['class_name'];
-        $data2['notif_description'] = 'Admin Edited The Subjects of Timetable for section '.$notif_data['section_name'];
-        $data2['notif_type'] = 'timetable';
-        $data2['type_id'] = $timetable_id;
-        $data2['section_id'] = $notif_data['section_id'];
-        $data2['class_id'] = $notif_data['class_id'];
-        $data2['program_id'] = $notif_data['program_id'];
-        date_default_timezone_set("Asia/Karachi");
-        $data2['notif_date'] = date('Y-m-d H:i:s');
-        $data2['org_id'] = $notif_data['org_id'];
-        $this->_notif_insert_data_teacher($data2);
-        $this->_notif_insert_data_parent($data2);
-
-        $where['section_id'] = $data2['section_id'];
-        $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-        if (isset($teacher_id) && !empty($teacher_id)) {
-            foreach ($teacher_id as $key => $value) {
-                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }  
-        }
-
-        $where1['section_id'] = $data2['section_id'];
-        $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-        if (isset($parent_id) && !empty($parent_id)) {
-            foreach ($parent_id as $key => $value) {
-                $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-               Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }   
-        }
-
-        if($check == true){
+        
+        if($check == 1){
             $this->session->set_flashdata('message', 'timetable'.' '.DATA_SAVED);
             $this->session->set_flashdata('status', 'success');
             redirect(ADMIN_BASE_URL . 'timetable/subjects/'. $timetable_id);
@@ -494,60 +323,6 @@ Modules::run('site_security/is_login');
         }
         else{
             echo "0";
-        }
-    }
-
-    function update_marks () {
-        $std_id = $this->input->post('std_id');
-        $std_name = $this->input->post('std_name');
-        $roll_no = $this->input->post('roll_no');
-        $exam_id = $this->input->post('exam_id');
-        $sbj_id = $this->input->post('sbj_id');
-        // print_r($sbj_id);exit();
-        $obtained_marks = $this->input->post('obt_mark');
-        $this->load->model('mdl_exam');
-        $check = $this->mdl_exam->update_marks($sbj_id,$std_id,$roll_no,$exam_id,$obtained_marks);
-
-        $notif_data = $this->_get_data_from_db($exam_id);
-        $data2['notif_title'] = $notif_data['exam_title'];
-        $data2['notif_description'] = 'Marks of '.$std_name.' for this exam are '.$obtained_marks.' (updated)';
-        $data2['notif_type'] = 'exam';
-        $data2['type_id'] = $notif_data['exam_id'];
-        $data2['class_id'] = $notif_data['class_id'];
-        $data2['program_id'] = $notif_data['program_id'];
-        date_default_timezone_set("Asia/Karachi");
-        $data2['notif_date'] = date('Y-m-d H:i:s');
-        $data2['org_id'] = $notif_data['org_id'];
-        $this->_notif_insert_data_teacher($data2);
-        $data2['std_id'] = $std_id;
-        $data2['std_name'] = $std_name;
-        $data2['std_roll_no'] = $roll_no;
-        $data2['notif_sub_type'] = 'update';
-        $this->_notif_insert_data_parent($data2);
-
-        $where['class_id'] = $data2['class_id'];
-        $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-        if (isset($teacher_id) && !empty($teacher_id)) {
-            foreach ($teacher_id as $key => $value) {
-                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }  
-        }
-
-        $where1['id'] = $data2['std_id'];
-        $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-        if (isset($parent_id) && !empty($parent_id)) {
-            foreach ($parent_id as $key => $value) {
-                $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-               Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }   
-        }
-
-        if($check == true){
-            echo "true";
-        }
-        else{
-            echo "false";
         }
     }
 
@@ -632,10 +407,6 @@ Modules::run('site_security/is_login');
         $this->load->model('mdl_timetable');
         $this->mdl_timetable->_insert_timetable_subject($data_timetable);
     }
-    function _insert_exam_subject_marks($data_marks) {
-        $this->load->model('mdl_timetable');
-        return $this->mdl_timetable->_insert_exam_subject_marks($data_marks);
-    }
 
     function _insert_timetable($data_timetable){
         $this->load->model('mdl_timetable');
@@ -681,34 +452,14 @@ Modules::run('site_security/is_login');
         return $this->mdl_timetable->_get_timetable_subject($timetable_id);
     }
 
-    function _get_exam_subject_total($exam_id,$subject_id){
-        $this->load->model('mdl_timetable');
-        return $this->mdl_timetable->_get_exam_subject_total($exam_id,$subject_id);
-    }
-
-    function _get_class_student_list($update_id,$org_id){
-        $this->load->model('mdl_timetable');
-        return $this->mdl_timetable->_get_class_student_list($update_id,$org_id);
-    }
-
-    function _get_subject_student_list($subject_id,$org_id){
-        $this->load->model('mdl_timetable');
-        return $this->mdl_timetable->_get_subject_student_list($subject_id,$org_id);
-    }
-
-    function get_obtained_marks($std_id,$subject_id,$exam_id,$org_id){
-        $this->load->model('mdl_timetable');
-        return $this->mdl_timetable->get_obtained_marks($std_id,$subject_id,$exam_id,$org_id);
-    }
-
-    function _get_class_student_marks($std_id,$exam_id){
-        $this->load->model('mdl_timetable');
-        return $this->mdl_timetable->_get_class_student_marks($std_id,$exam_id);
-    }
-
     function _get_subject_data($timetable_id,$subject_id){
         $this->load->model('mdl_timetable');
         return $this->mdl_timetable->_get_subject_data($timetable_id,$subject_id);
+    }
+
+    function _no_of_days($class_id,$section_id){
+        $this->load->model('mdl_timetable');
+        return $this->mdl_timetable->_no_of_days($class_id,$section_id);
     }
 
     function _notif_insert_data_teacher($data2){

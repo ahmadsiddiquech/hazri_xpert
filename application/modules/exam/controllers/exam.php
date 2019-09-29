@@ -163,38 +163,28 @@ Modules::run('site_security/is_login');
         $class_id = $this->input->post('class_id');
         if(isset($class_id) && !empty($class_id)){
             $stdData = explode(",",$class_id);
-            // print_r($stdData);exit();
             $data['class_id'] = $stdData[0];
             $data['class_name'] = $stdData[1];
         }
         $program_id = $this->input->post('program_id');
         if(isset($program_id) && !empty($program_id)){
             $stdData = explode(",",$program_id);
-            // print_r($stdData);exit();
             $data['program_id'] = $stdData[0];
             $data['program_name'] = $stdData[1];
         }
-        // print_r($data);exit();
         $data['exam_title'] = $this->input->post('exam_title');
         $data['exam_description'] = $this->input->post('exam_description');
         $data['start_date'] = $this->input->post('start_date');
         $data['end_date'] = $this->input->post('end_date');
-        // $data['exam_time'] = $this->input->post('exam_time');
-        // $data['total_marks'] = $this->input->post('total_marks');
-        // $data['subject_name'] = 'java';
-        // $data['subject_id'] = '14';
 
         $user_data = $this->session->userdata('user_data');
         $data['org_id'] = $user_data['user_id'];
-        // print_r($data);exit();
         return $data;
 
     }
 
     function get_subject_data($exam_id,$subject_id,$org_id) {
-        //$where['post.lang_id'] = $lang_id;
         $query = $this->_get_subject_data($exam_id,$subject_id,$org_id);
-        // print_r($query);exit();
         foreach ($query->result() as
                 $row) {
             $data['subject_id'] = $row->subject_id;
@@ -330,7 +320,6 @@ Modules::run('site_security/is_login');
             $data['exam_subject_id']=$subject_id;
 
             if(!empty($value)){
-                // $data['day']=$value;
                 $this->_insert_exam_subject_marks($data);
             }
             $counter++; 
@@ -338,10 +327,8 @@ Modules::run('site_security/is_login');
     }
 
     function submit_marks() {
-        // print_r($this->input->post('roll_no'));exit();
         $exam_id = $this->uri->segment(4);
         $subject_id = $this->uri->segment(5);
-        // print_r($exam_id);exit();
         $user_data = $this->session->userdata('user_data');
         $roll_no = $this->input->post('roll_no');
         $std_id = $this->input->post('std_id');
@@ -388,10 +375,8 @@ Modules::run('site_security/is_login');
     }
 
     function subject_edit() {
-        // print_r($this->input->post('roll_no'));exit();
         $exam_id = $this->uri->segment(4);
         $subject_id = $this->uri->segment(5);
-        // print_r($exam_id);exit();
         $user_data = $this->session->userdata('user_data');
         $org_id = $user_data['user_id'];
         $data['news'] = $this->get_subject_data($exam_id,$subject_id,$org_id);
@@ -408,7 +393,6 @@ Modules::run('site_security/is_login');
         $data['exam_date'] = $this->input->post('exam_date');
         $data['exam_time'] = $this->input->post('exam_time');
         $data['total_marks'] = $this->input->post('total_marks');
-        // print_r($data);exit();
         $check = $this->update_subject($subject_id,$exam_id,$data);
 
         $notif_data = $this->_get_data_from_db($exam_id);
@@ -461,7 +445,6 @@ Modules::run('site_security/is_login');
             $class_id = $stdData[0];
         }
         $arr_subject = Modules::run('subjects/_get_subject_class',$class_id)->result_array();
-        // print_r($arr_subject);exit();
         $html='';
         $html.='<h3>Subjects</h3>';
         foreach ($arr_subject as $key => $value) {
@@ -504,7 +487,6 @@ Modules::run('site_security/is_login');
         $roll_no = $this->input->post('roll_no');
         $exam_id = $this->input->post('exam_id');
         $sbj_id = $this->input->post('sbj_id');
-        // print_r($sbj_id);exit();
         $obtained_marks = $this->input->post('obt_mark');
         $this->load->model('mdl_exam');
         $check = $this->mdl_exam->update_marks($sbj_id,$std_id,$roll_no,$exam_id,$obtained_marks);

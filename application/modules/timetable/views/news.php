@@ -174,12 +174,5 @@ $(document).ready(function(){
 
 });
 
-$(document).ready(function() {
-        $("#news_file").change(function() {
-            var img = $(this).val();
-            var replaced_val = img.replace("C:\\fakepath\\", '');
-            $('#hdn_image').val(replaced_val);
-        });
-    });
 </script>
 

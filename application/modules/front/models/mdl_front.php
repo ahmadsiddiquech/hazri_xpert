@@ -594,7 +594,7 @@ function _get_promotion_banner(){
 
     function _get_datesheet_record($class_id,$org_id){
         $table = 'datesheet_record';
-        $this->db->select('*');
+        $this->db->select('DATE_FORMAT(start_date, "%d-%m-%Y") as s_date,DATE_FORMAT(end_date, "%d-%m-%Y") as e_date, datesheet_record.*', FALSE);
         $this->db->where('class_id', $class_id);
         $this->db->where('org_id', $org_id);
         return $this->db->get($table);
@@ -602,7 +602,7 @@ function _get_promotion_banner(){
 
     function _get_datasheet_data($id){
         $table = 'datesheet_data';
-        $this->db->select('*');
+        $this->db->select('DATE_FORMAT(exam_date, "%d-%m-%Y") as date, datesheet_data.*', FALSE);
         $this->db->where('datesheet_id', $id);
         $this->db->order_by('exam_date','ASC');
         return $this->db->get($table);
@@ -697,7 +697,8 @@ function _notif_get_teacher_student_id($teacher_id,$org_id,$limit,$page_no){
 function _notif_get_list_leave_teacher($where1,$where2){
     $table = 'teacher_notification';
     $this->db->select('*');
-    $this->db->where('notif_type','leave');
+    $where_c = '(notif_type = "timetable" OR notif_type = "leave")';
+    $this->db->where($where_c);
     $this->db->where($where1);
     $this->db->where($where2);
     $query=$this->db->get($table);
@@ -714,21 +715,12 @@ function _notif_get_list_test_teacher($where1,$where2){
     return $query;
 }
 
-// function _notif_get_list_test_update_teacher($where1,$where2){
-//     $table = 'teacher_notification';
-//     $this->db->select('*');
-//     $this->db->where('notif_type','test');
-//     $this->db->where('notif_sub_type','update');
-//     $this->db->where($where1);
-//     $this->db->where($where2);
-//     $query=$this->db->get($table);
-//     return $query;
-// }
 
 function _notif_get_list_exam_teacher($where1,$where2){
     $table = 'teacher_notification';
     $this->db->select('*');
-    $this->db->where('notif_type','exam');
+    $where_c = '(notif_type = "exam" OR notif_type = "datesheet")';
+    $this->db->where($where_c);
     $this->db->where($where1);
     $this->db->where($where2);
     $query=$this->db->get($table);
@@ -748,7 +740,8 @@ function _notif_get_list_parent($where1,$where2){
 function _notif_get_list_exam_parent($where1,$where2){
     $table = 'parent_notification';
     $this->db->select('*');
-    $this->db->where('notif_type','exam');
+    $where_c = '(notif_type = "exam" OR notif_type = "datesheet")';
+    $this->db->where($where_c);
     $this->db->where('notif_sub_type','null');
     $this->db->where($where1);
     $this->db->where($where2);

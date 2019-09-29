@@ -52,32 +52,16 @@ class Mdl_timetable extends CI_Model {
         $table = 'timetable_data';
         $this->db->insert($table, $data2);
     }
-
-    function _insert_exam_subject_marks($data) {
-        $table = 'exam_marks';
-        $this->db->insert($table, $data);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
-    }
-
     function _get_timetable_subject($timetable_id) {
         $table = 'timetable_data';
         $this->db->where('timetable_id',$timetable_id);
         return $this->db->get($table);
     }
 
-    function _get_exam_subject_total($exam_id,$subject_id) {
-        $table = 'exam_subject';
-        $this->db->where('exam_id',$exam_id);
-        $this->db->where('subject_id',$subject_id);
-        return $this->db->get($table);
-    }
-
     function _insert_timetable($data_timetable) {
         $table = 'timetable_record';
         $this->db->insert($table, $data_timetable);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _update($arr_col, $org_id, $data) {
@@ -102,59 +86,6 @@ class Mdl_timetable extends CI_Model {
         $this->db->select('*');
         $this->db->where('section_id',$section_id);
         return $this->db->get($table);
-    }
-
-    function _get_class_student_list($update_id,$org_id){
-        $this->db->select('exam.id exam_id, exam.exam_title,exam.class_name,exam.total_marks, student.id std_id, student.name,student.roll_no');
-        $this->db->from('exam');
-        $this->db->join("student", "student.section_id = exam.section_id", "full");
-        $this->db->where('exam.id', $update_id);
-        $this->db->where('exam.org_id', $org_id);
-        $query=$this->db->get();
-        return $query;
-    }
-
-    function _get_subject_student_list($subject_id,$org_id){
-        $this->db->select('student.id std_id,student.name,student.roll_no');
-        $this->db->from('subject');
-        $this->db->join("student", "student.class_id = subject.class_id", "full");
-        $this->db->where('subject.id', $subject_id);
-        $this->db->where('subject.org_id', $org_id);
-        $query=$this->db->get();
-        return $query;
-    }
-
-    function _get_class_student_marks($std_id,$exam_id){
-        $table = 'exam_marks';
-        $this->db->select('obtained_marks');
-        $this->db->where('std_id', $std_id);
-        $this->db->where('exam_id', $exam_id);
-        $query=$this->db->get($table);
-        return $query;
-    }
-
-    function get_obtained_marks($std_id,$subject_id,$exam_id,$org_id){
-        $table = 'exam_marks';
-        $this->db->select('obtained_marks');
-        $this->db->where('exam_subject_id', $subject_id);
-        $this->db->where('exam_id', $exam_id);
-        $this->db->where('std_id', $std_id);
-        $query=$this->db->get($table);
-        return $query;
-    }
-
-    function update_marks($sbj_id,$std_id,$roll_no,$exam_id,$obtained_marks){
-        $table = "exam_marks";
-        // $where['obtained_marks']= $obtained_marks;
-        // print_r($exam_id);exit();
-        $this->db->where('std_id', $std_id);
-        $this->db->where('std_roll_no', $roll_no);
-        $this->db->where('exam_id', $exam_id);
-        $this->db->where('exam_subject_id', $sbj_id);
-        $this->db->set('obtained_marks',$obtained_marks);
-        $this->db->update($table);
-        $affected_rows = $this->db->affected_rows();
-        return $affected_rows;
     }
 
     function update_subject($sbj_id,$timetable_id,$data){
@@ -204,6 +135,13 @@ class Mdl_timetable extends CI_Model {
         return $query->row();
     }
 
+    function _no_of_days($class_id,$section_id){
+        $table = 'timetable_record';
+        $this->db->where('class_id',$class_id);
+        $this->db->where('section_id',$section_id);
+        return $this->db->get($table);
+    }
+
     function _notif_insert_data_teacher($data){
         $table = 'teacher_notification';
         $this->db->insert($table,$data);   
@@ -220,8 +158,7 @@ class Mdl_timetable extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$teacher_id);
         $this->db->where('designation','Teacher');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function _get_parent_token($parent_id,$org_id){
