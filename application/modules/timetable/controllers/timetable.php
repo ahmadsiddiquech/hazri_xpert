@@ -24,7 +24,6 @@ Modules::run('site_security/is_login');
 
     function create() {
         $update_id = $this->uri->segment(4);
-        // print_r($update_id);exit();
         $user_data = $this->session->userdata('user_data');
         $org_id = $user_data['user_id'];
         if (is_numeric($update_id) && $update_id != 0) {
@@ -50,8 +49,6 @@ Modules::run('site_security/is_login');
         $org_id = $user_data['user_id'];
         
         $finalData2 = $this->_get_timetable_subject($timetable_id)->result_array();
-        // print_r($finalData2);exit();
-
         $data['update_id'] = $timetable_id;
         $data['subject_list'] = $finalData2;
         $data['view_file'] = 'subjects';
@@ -205,6 +202,7 @@ Modules::run('site_security/is_login');
             
             redirect(ADMIN_BASE_URL . 'timetable');
     }
+    
     function adding_timetable_subject($subject_name ,$start_time,$end_time,$timetable_id,$org_id,$break,$break_start_time,$break_end_time) {
         $counter=0;
         foreach ($subject_name as $key => $value) {
@@ -232,10 +230,6 @@ Modules::run('site_security/is_login');
             $this->_insert_timetable_subject($data);
         }
     }
-
-    
-
-    
 
     function subject_edit() {
         $timetable_id = $this->uri->segment(4);

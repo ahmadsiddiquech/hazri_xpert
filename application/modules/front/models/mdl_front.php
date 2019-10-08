@@ -312,17 +312,78 @@ function _submit_test_marks($data){
     }
 
     function _insert_apply_leave($data){
-    $table = "leave";
-    $this->db->insert($table, $data);
-    $insert_id = $this->db->insert_id();
-    return $insert_id;
+        $table = "leave";
+        $this->db->insert($table, $data);
+        return $this->db->insert_id();
+    }
+
+    function _insert_feedback($data){
+        $table = "feedback";
+        $this->db->insert($table, $data);
+        return $this->db->insert_id();
+    }
+
+    function _insert_feedback_reply($data){
+        $table = "feedback_reply";
+        $this->db->insert($table, $data);
+        return $this->db->insert_id();
+    }
+
+    function _get_parent_by_std_id($std_id){
+        $this->db->select('users_add.id parent_id,users_add.name parent_name');
+        $this->db->from('student');
+        $this->db->join("users_add", "student.parent_id = users_add.id", "full");
+        $this->db->where('student.id',$std_id);
+        $query=$this->db->get();
+        return $query;
+    }
+
+    function _get_feedback_list($user_id,$user_type,$org_id ,$page_no, $limit){
+        $table = "feedback";
+        if ($user_type == 'Parent') {
+            $this->db->where('parent_id',$user_id);
+        }
+        elseif ($user_type == 'Teacher') {
+            $this->db->where('teacher_id',$user_id);
+        }
+        $this->db->where('org_id',$org_id);
+        $this->db->order_by('id','DESC');
+        if(!empty($limit) && !empty($page_no)){
+            $this->db->limit($limit, $limit*($page_no-1));
+        }
+        $query['all_data']=$this->db->get($table)->result_array();
+
+
+        $table = 'feedback';
+        if ($user_type == 'Parent') {
+            $this->db->where('parent_id',$user_id);
+        }
+        elseif ($user_type == 'Teacher') {
+            $this->db->where('teacher_id',$user_id);
+        }
+        $query['count_data'] = $this->db->get($table)->num_rows();
+        return $query;
+    }
+
+    function _get_feedback_detail($f_id,$page_no, $limit){
+        $table = 'feedback_reply';
+        $this->db->where('f_id',$f_id);
+        $this->db->order_by('id','DESC');
+        if(!empty($limit) && !empty($page_no)){
+            $this->db->limit($limit, $limit*($page_no-1));
+        }
+        $query['all_data'] = $this->db->get($table)->result_array();
+
+        $table = 'feedback_reply';
+        $this->db->where('f_id',$f_id);
+        $query['count_data'] = $this->db->get($table)->num_rows();
+        return $query;
     }
 
     function _insert_submit_test($data){
-    $table = "test";
-    $this->db->insert($table, $data);
-    $insert_id = $this->db->insert_id();
-    return $insert_id;
+        $table = "test";
+        $this->db->insert($table, $data);
+        return $this->db->insert_id();
     }
 
     function _edit_test_marks($test_id, $std_id, $data){
@@ -330,8 +391,7 @@ function _submit_test_marks($data){
         $this->db->where('test_id', $test_id);
         $this->db->where('std_id', $std_id);
         $this->db->update($table, $data);
-        $affected_rows = $this->db->affected_rows();
-        return $affected_rows;
+        return $this->db->affected_rows();
     }
 
     function _edit_test_detail($test_id, $org_id, $data){
@@ -375,10 +435,10 @@ function _submit_test_marks($data){
     }
 
     function _get_teacher_class_list($where,$org_id){
-        // print_r($where);exit();
-        $this->db->select('classes.id classId, classes.name className,program.id programId,program.name programName');
+        $this->db->select('classes.id classId, classes.name className,program.id programId,program.name programName,sections.id sectionId,sections.section sectionName');
         $this->db->from('subject');
         $this->db->join("classes", "subject.class_id = classes.id and subject.program_id = classes.program_id", "full");
+        $this->db->join("sections", "sections.id = subject.section_id", "full");
         $this->db->join("exam", "subject.class_id = exam.class_id", "full");
         $this->db->join("program", "program.id= subject.program_id", "full");
         $this->db->where($where);

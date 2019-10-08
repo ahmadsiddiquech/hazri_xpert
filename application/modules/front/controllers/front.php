@@ -15,33 +15,32 @@ function index() {
     $this->template->front($data);
 }
 function send_notification($token, $title, $description){
-    require_once STATIC_FRONT_NOTIFICATION.'google-api-php-client/vendor/autoload.php';
-    foreach ($token as $key => $value) {
-        $this->send_notification_fn($value['fcm_token'], $title,$description);
-    }
-    $this->send_notification_fn('fVhlVO2mLxM:APA91bEX5ctt8hjUNYxmI9FrAfDGdXhOpK4rL_Uzt3UEIqSzv8VH_WDbJ5Bo24NT47Zjm97E_zkd_FI_c1ZgdUyjgkNa4-Tge4xta01fQnTeXmgqvday_vIdjph7s5ICxAUSIORTuWJm', 'title', 'description');
+    // require_once STATIC_FRONT_NOTIFICATION.'google-api-php-client/vendor/autoload.php';
+    // foreach ($token as $key => $value) {
+    //     $this->send_notification_fn($value['fcm_token'], $title,$description);
+    // }
 }
 function send_notification_fn($to, $title,$description) {
-    date_default_timezone_set("Asia/Karachi");
-    $file_name = STATIC_FRONT_NOTIFICATION.'xpertatendy-firebase-adminsdk-crvvw-6dcb55a422.json';
-    putenv('GOOGLE_APPLICATION_CREDENTIALS='.$file_name);
-    $client = new Google_Client();
-    $client->useApplicationDefaultCredentials();
-    $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-    $httpClient = $client->authorize();
-    $project = "xpertatendy";
-    // Creates a notification for subscribers to the debug topic
-    $message = [
-        "message" => [
-            "token" => $to,
-            "data" => [
-                'title' => $title,
-                'message' => $description,
-            ],
-        ]
-    ];
-    $response = $httpClient->post("https://fcm.googleapis.com/v1/projects/{$project}/messages:send", ['json' => $message]);
-    "<br><br>";
+    // date_default_timezone_set("Asia/Karachi");
+    // $file_name = STATIC_FRONT_NOTIFICATION.'xpertatendy-firebase-adminsdk-crvvw-6dcb55a422.json';
+    // putenv('GOOGLE_APPLICATION_CREDENTIALS='.$file_name);
+    // $client = new Google_Client();
+    // $client->useApplicationDefaultCredentials();
+    // $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+    // $httpClient = $client->authorize();
+    // $project = "xpertatendy";
+    // // Creates a notification for subscribers to the debug topic
+    // $message = [
+    //     "message" => [
+    //         "token" => $to,
+    //         "data" => [
+    //             'title' => $title,
+    //             'message' => $description,
+    //         ],
+    //     ]
+    // ];
+    // $response = $httpClient->post("https://fcm.googleapis.com/v1/projects/{$project}/messages:send", ['json' => $message]);
+    // "<br><br>";
  // print_r($response);
 }
 
@@ -2196,6 +2195,202 @@ function get_exam_datesheet(){
     }
 }
 
+function insert_feedback(){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $data['user_type'] = $this->input->post('userType');
+        $selectedStd = $this->input->post('selectedStd');
+        $stdData = explode(",",$selectedStd);
+        $data['std_id'] = $stdData[0];
+        $data['std_roll_no'] = $stdData[1];
+        $data['std_name'] = $stdData[2];
+
+        if ($data['user_type'] == "Parent") {
+            $data['parent_id'] = $this->input->post('userId');
+            $data['parent_name'] = $this->input->post('userName');
+            $selectedTeacher = $this->input->post('selectedTeacher');
+            if(isset($selectedTeacher) && !empty($selectedTeacher)){
+                $teacherData = explode(",",$selectedTeacher);
+                $data['teacher_id'] = $teacherData[0];
+                $data['teacher_name'] = $teacherData[1];
+            }
+        }
+        elseif ($data['user_type'] == "Teacher") {
+            $data['teacher_id'] = $this->input->post('userId');
+            $data['teacher_name'] = $this->input->post('userName');
+            $parent = $this->_get_parent_by_std_id($data['std_id'])->result_array();
+            if (isset($parent) && !empty($parent)) {
+                $data['parent_id'] = $parent[0]['parent_id'];
+                $data['parent_name'] = $parent[0]['parent_name'];
+            }
+        }
+        $data['section_id'] = $this->input->post('sectionId');
+        $data['message'] = $this->input->post('feedback');
+        $data['org_id'] = $this->input->post('orgId');
+        date_default_timezone_set("Asia/Karachi");
+        $data['date_time'] = date("d-m-Y H:i:s");
+        $return_id = $this->_insert_feedback($data);
+
+        // $data2['notif_title'] = "Feedback";
+        // $data2['notif_description'] = "You have feedback for ".$data['std_name
+        // '];
+        // $data2['notif_type'] = 'feedback';
+        // $data2['type_id'] = $return_id;
+        // $data2['section_id'] = $data['section_id'];
+        // date_default_timezone_set("Asia/Karachi");
+        // $data2['notif_date'] = date('Y-m-d H:i:s');
+        // $data2['org_id']= $data['org_id'];
+        // $this->_notif_insert_data_teacher($data2);
+        // $where['section_id'] = $data2['section_id'];
+        // $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
+        // if (isset($teacher_id) && !empty($teacher_id)) {
+        //     foreach ($teacher_id as $key => $value) {
+        //         $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+        //         $this->send_notification($token,$data2['notif_title'],$data2['notif_description']);
+        //     }  
+        // }
+        if($return_id != null){
+            header('Content-Type: application/json');
+            echo json_encode(array("status" => true, "message"=> "Feedback submitted successfully"));   
+        }
+        else{
+            header('Content-Type: application/json');
+            echo json_encode(array("status" => false, "message"=> "Unsuccessfull"));
+        }
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+function insert_feedback_reply(){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $data['f_id'] = $this->input->post('fId');
+        $data['user_type'] = $this->input->post('userType');
+        $data['reply'] = $this->input->post('replyFeedback');
+        if ($data['user_type'] == "Parent") {
+            $data['parent_id'] = $this->input->post('userId');
+        }
+        if ($data['user_type'] == "Teacher") {
+            $data['teacher_id'] = $this->input->post('userId');
+        }
+        date_default_timezone_set("Asia/Karachi");
+        $data['date_time'] = date("d-m-Y H:i:s");
+        $return_id = $this->_insert_feedback_reply($data);
+        // $data2['notif_title'] = "Feedback";
+        // $data2['notif_description'] = "You have feedback for ".$data['std_name
+        // '];
+        // $data2['notif_type'] = 'feedback';
+        // $data2['type_id'] = $return_id;
+        // $data2['section_id'] = $data['section_id'];
+        // date_default_timezone_set("Asia/Karachi");
+        // $data2['notif_date'] = date('Y-m-d H:i:s');
+        // $data2['org_id']= $data['org_id'];
+        // $this->_notif_insert_data_teacher($data2);
+        // $where['section_id'] = $data2['section_id'];
+        // $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
+        // if (isset($teacher_id) && !empty($teacher_id)) {
+        //     foreach ($teacher_id as $key => $value) {
+        //         $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+        //         $this->send_notification($token,$data2['notif_title'],$data2['notif_description']);
+        //     }  
+        // }
+        if($return_id != null){
+            header('Content-Type: application/json');
+            echo json_encode(array("status" => true, "message"=> "Feedback Reply submitted successfully"));   
+        }
+        else{
+            header('Content-Type: application/json');
+            echo json_encode(array("status" => false, "message"=> "Unsuccessfull"));
+        }
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+function get_feedback_list() {
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $status = false;
+        $message = '';
+        $org_id = $this->input->post('orgId');
+        $user_id = $this->input->post('userId');
+        $user_type = $this->input->post('userType');
+        $page_no = $this->input->post('page_no');
+        $limit = 5;
+        $feedback_list = $this->_get_feedback_list($user_id,$user_type,$org_id,$page_no, $limit);
+        // print_r($feedback_list);exit();
+        foreach ($feedback_list['all_data'] as $key => $value) {
+            $finalData['feedbackId'] = $value['id'];
+            $finalData['stdId'] = $value['std_id'];
+            $finalData['stdName'] = $value['std_name'];
+            if ($user_type == "Teacher") {
+                $finalData['userId'] = $value['parent_id'];
+                $finalData['userName'] = $value['parent_name'];
+            }
+            elseif ($user_type == "Parent") {
+                $finalData['userId'] = $value['teacher_id'];
+                $finalData['userName'] = $value['teacher_name'];
+            }
+            $finalData['feedback'] = $value['message'];
+            $finalData['dateTime'] = $value['date_time'];
+            $finalData2[] = $finalData;
+        }
+        
+        if(isset($finalData2) && !empty($finalData2)){
+            $status = true;
+            $data = $finalData2;
+        }
+        else{
+            $message = 'Record not found';
+            $data = '';
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status, 'data'=>$data, 'message'=>$message,'total_pages'=>ceil($feedback_list['count_data']/$limit)));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+function get_feedback_detail() {
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $status = false;
+        $message = '';
+        $org_id = $this->input->post('orgId');
+        $f_id = $this->input->post('fId');
+        $page_no = $this->input->post('page_no');
+        $limit = 20;
+        $feedback_detail = $this->_get_feedback_detail($f_id,$page_no, $limit);
+        foreach ($feedback_detail['all_data'] as $key => $value) {
+            $data['userType'] = $value['user_type'];
+            $data['reply'] = $value['reply'];
+            $data['dateTime'] = $value['date_time'];
+            $finalData[] = $data;
+        }
+        
+        if(isset($finalData) && !empty($finalData)){
+            $status = true;
+            $data = $finalData;
+        }
+        else{
+            $message = 'Record not found';
+            $data = '';
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status, 'data'=>$data, 'message'=>$message,'total_pages'=>ceil($feedback_detail['count_data']/$limit)));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
 
 function _get_datesheet_record($class_id,$org_id){
     $this->load->model('mdl_front');
@@ -2508,6 +2703,34 @@ function _login_validation($user_id,$username,$imei,$org_id){
     $this->load->model('mdl_front');
     return $this->mdl_front->_login_validation($user_id,$username,$imei,$org_id);
 }
+
+function _insert_feedback($data){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_insert_feedback($data);
+}
+
+function _insert_feedback_reply($data){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_insert_feedback_reply($data);
+}
+
+function _get_parent_by_std_id($std_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_parent_by_std_id($std_id);
+}
+
+function _get_feedback_list($user_id,$user_type,$org_id,$page_no, $limit){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_feedback_list($user_id,$user_type,$org_id,$page_no, $limit);
+}
+
+function _get_feedback_detail($f_id,$page_no, $limit){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_feedback_detail($f_id,$page_no, $limit);
+}
+
+
+
 
 
 // ========================================================= //
@@ -2910,10 +3133,6 @@ function _notif_get_subject_id($teacher_id,$org_id,$limit,$page_no){
     return $this->mdl_front->_notif_get_subject_id($teacher_id,$org_id,$limit,$page_no);
 }
 
-// function _notif_get_teacher_student_id($teacher_id,$org_id,$limit,$page_no){
-//     $this->load->model('mdl_front');
-//     return $this->mdl_front->_notif_get_teacher_student_id($teacher_id,$org_id,$limit,$page_no);
-// }
 
 function _notif_get_parent($parent_id,$org_id,$limit,$page_no){
     $this->load->model('mdl_front');
@@ -2929,11 +3148,6 @@ function _notif_get_list_test_teacher($where1,$where2){
     $this->load->model('mdl_front');
     return $this->mdl_front->_notif_get_list_test_teacher($where1,$where2);
 }
-
-// function _notif_get_list_test_update_teacher($where1,$where2){
-//     $this->load->model('mdl_front');
-//     return $this->mdl_front->_notif_get_list_test_update_teacher($where1,$where2);
-// }
 
 function _notif_get_list_exam_teacher($where1,$where2){
     $this->load->model('mdl_front');

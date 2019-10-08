@@ -175,7 +175,11 @@ Modules::run('site_security/is_login');
                 $data['org_id'] = $value['org_id'];
                 $session = $this->_get_session($data['id'],$data['phone'],$data['org_id'])->result_array();
                 if (isset($session) && !empty($session)) {
+                	
                     $data['login_status'] = $session[0]['login_status'];
+                }
+                else{
+                	$data['login_status'] = 0;
                 }
                 $data1[] = $data;
             }
@@ -187,15 +191,13 @@ Modules::run('site_security/is_login');
         $user_id = $this->input->post('user_id');
         $org_id = $this->input->post('org_id');
         $username = $this->input->post('username');
-        $login_status = $this->input->post('login_status');
         $this->load->model('mdl_user');
-        $check = $this->mdl_user->_logout_user($user_id,$org_id,$username,$login_status);
-
-        if($check == 1){
-            echo "true";
+        $check = $this->mdl_user->_logout_user($user_id,$org_id,$username);
+        if($check >= 1){
+            echo "1";
         }
         else{
-            echo "false";
+            echo "0";
         }
     }
 

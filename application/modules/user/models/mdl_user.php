@@ -29,9 +29,6 @@ class Mdl_user extends CI_Model {
 
     function _get($order_by) {
         $submit_id = $this->uri->segment(4);
-        // if(isset($_GET['id'])){
-        //     $submit_id = $_GET['id'];
-        // }
         $user_data = $this->session->userdata('user_data');
         $role_id = $user_data['role_id'];
         $org_id = $user_data['user_id'];
@@ -39,15 +36,13 @@ class Mdl_user extends CI_Model {
         $this->db->select('*');
         if($role_id!= 1)
         {
-        $this->db->where('org_id',$org_id);
-        }
-        elseif (isset($submit_id) && !empty($submit_id) && $role_id=1) {
-            $this->db->where('org_id',$submit_id);
+            $this->db->where('org_id',$org_id);
         }
         $this->db->order_by($order_by);
         $query = $this->db->get($table);
         return $query;
     }
+
     function _insert($data) {
         $table = $this->get_table();
         $this->db->insert($table, $data);
@@ -65,7 +60,8 @@ class Mdl_user extends CI_Model {
         }
         $this->db->update($table, $data);
     }
-       function _update_id($id, $data) {
+
+    function _update_id($id, $data) {
         $table = $this->get_table();
         $this->db->where('id',$id);
         $this->db->update($table, $data);
@@ -137,19 +133,28 @@ class Mdl_user extends CI_Model {
         $table = 'users_sessions';
         $this->db->select('login_status');
         $this->db->where('user_id',$id);
+        $this->db->where('login_status', 1);
         $this->db->where('username',$username);
         $this->db->where('org_id',$org_id);
         return $this->db->get($table);
     }
 
-    function _logout_user($user_id,$org_id,$username,$login_status){
-        $table = 'users_sessions';
+    function _logout_user($user_id,$org_id,$username){
+        $table = "users_sessions";
+        $this->db->where('username', $username);
         $this->db->where('user_id', $user_id);
         $this->db->where('org_id', $org_id);
-        $this->db->where('username', $username);
-        $this->db->set('login_status' , $login_status);
+        $this->db->where('login_status', 1);
+        $this->db->set('login_status' , 0);
         $this->db->update($table);
         $affected_rows = $this->db->affected_rows();
+
+        $table2 = "users_add";
+        $this->db->where('id', $user_id);
+        $this->db->where('org_id', $org_id);
+        $this->db->set('fcm_token' , '');
+        $this->db->update($table2);
         return $affected_rows;
+
     }
 }

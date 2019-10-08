@@ -20,9 +20,9 @@
                         <tbody>
                                 <?php
                                 $i = 0;
+                                // print_r($news);exit();
                                 if (isset($news)) {
                                     foreach ($news as $key => $value){
-                                        // print_r($value['id']);exit();
                                         $i++;
                                         $set_publish_url = ADMIN_BASE_URL . 'user/set_publish/' . $value['id'];
                                         $set_unpublish_url = ADMIN_BASE_URL . 'user/set_unpublish/' . $value['id'] ;
@@ -53,12 +53,11 @@
                                         echo anchor($edit_url, '<i class="fa fa-edit"></i>', array('class' => 'action_edit btn blue c-btn','title' => 'Edit user'));
 
                                         echo anchor('"javascript:;"', '<i class="fa fa-times"></i>', array('class' => 'delete_record btn red c-btn', 'rel' => $value['id'], 'title' => 'Delete user'));
-                                        if(isset($value['login_status']) && !empty($value['login_status']) && $value['login_status'] == 1) { ?>
+                                        if(isset($value['login_status']) && !empty($value['login_status']) && $value['login_status'] != 0) { ?>
 
-                                        <div class="btn btn-primary log_out round" id="logout_button_<?php echo $value['id']; ?>" user_id="<?php echo $value['id']; ?>" org_id="<?php echo $value['org_id']; ?>"
-                                                 username="<?php echo $value['phone']; ?>" login_status="0">Logout<div> 
-
-                                    <?php } ?>
+                                            <div class="btn btn-primary log_out round" id="logout_button_<?php echo $value['id']; ?>" user_id="<?php echo $value['id']; ?>" org_id="<?php echo $value['org_id']; ?>"
+                                                 username="<?php echo $value['phone']; ?>">Logout<div> 
+                                        <?php } ?>
                                         </td>
                                     </tr>
                                     <?php } ?>    
@@ -177,17 +176,15 @@ event.preventDefault();
 var user_id = $(this).attr('user_id');
 var org_id = $(this).attr('org_id');
 var username = $(this).attr('username');
-var login_status = $(this).attr('login_status');
-// alert(status);
 
 $.ajax({
         type: 'POST',
         url: "<?php echo ADMIN_BASE_URL?>user/logout_user",
         data: {'user_id': user_id,'org_id': org_id,'username' : username
-        ,'login_status' : login_status},
+        },
         async: false,
         success: function(result) {
-            if (result == "true") {
+            if (result == "1") {
                 $('#logout_button_'+user_id).hide();
                 toastr.success('successful');
             }
@@ -198,12 +195,5 @@ $.ajax({
     });
 });
 
-$(document).ready(function() {
-        $("#news_file").change(function() {
-            var img = $(this).val();
-            var replaced_val = img.replace("C:\\fakepath\\", '');
-            $('#hdn_image').val(replaced_val);
-        });
-    });
 </script>
 

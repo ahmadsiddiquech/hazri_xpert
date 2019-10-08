@@ -31,37 +31,37 @@ define('DIR_WRITE_MODE', 0777);
 ////////////////// ADMIN ///////////////
 if($_SERVER['HTTP_HOST'] == 'ds-pc' || $_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == '192.168.100.13'){
 	// ************** FOR LOCAL SERVER
-	define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/');
-	define('HTTPS_BASE_URL', 'https://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/');
-	define('BASE_URL_NEWS_LISTING', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/front/');
-	define('FOOTER_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/template/');
-	define('IMAGE_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/uploads/');
-	define('CAPTCHA_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/captcha/');
-	define('ADMIN_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/admin/');
-	define('STATIC_ADMIN_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/static/admin/theme1/css/');
-	define('STATIC_ADMIN_JS', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/static/admin/theme1/js/');
-	define('STATIC_ADMIN_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/static/admin/theme1/images/');
+	define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/');
+	define('HTTPS_BASE_URL', 'https://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/');
+	define('BASE_URL_NEWS_LISTING', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/front/');
+	define('FOOTER_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/template/');
+	define('IMAGE_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/uploads/');
+	define('CAPTCHA_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/captcha/');
+	define('ADMIN_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/admin/');
+	define('STATIC_ADMIN_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/admin/theme1/css/');
+	define('STATIC_ADMIN_JS', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/admin/theme1/js/');
+	define('STATIC_ADMIN_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/admin/theme1/images/');
 	///////////////////FRONT///////////////////////////////
-	define('STATIC_FRONT_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/static/front/xpert_atendy/css/');
-	define('STATIC_FRONT_JS', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/static/front/xpert_atendy/js/');
-	define('STATIC_FRONT_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/xpert_atendy/static/front/xpert_atendy/images/');
+	define('STATIC_FRONT_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/front/hazri_xpert/css/');
+	define('STATIC_FRONT_JS', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/front/hazri_xpert/js/');
+	define('STATIC_FRONT_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/front/hazri_xpert/images/');
 }
 else{
 	// ************** FOR LIVE SERVER
-	define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/');
-	define('HTTPS_BASE_URL', 'https://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/');
-	define('BASE_URL_NEWS_LISTING', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/front/');
-	define('FOOTER_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/template/');
-	define('CAPTCHA_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/captcha/');
-	define('IMAGE_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/uploads/');
-	define('ADMIN_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/admin/');
-	define('STATIC_ADMIN_CSS', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/static/admin/theme1/css/');
-	define('STATIC_ADMIN_JS', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/static/admin/theme1/js/');
-	define('STATIC_ADMIN_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/static/admin/theme1/images/');
-	define('STATIC_FRONT_CSS', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/static/front/xpert_atendy/css/');
-	define('STATIC_FRONT_JS', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/static/front/xpert_atendy/js/');
-	define('STATIC_FRONT_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'//xpert_atendy/static/front/xpert_atendy/images/');
-	define('STATIC_FRONT_NOTIFICATION', './xpert_atendy/static/front/xpert_atendy/notification/');
+	define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/');
+	define('HTTPS_BASE_URL', 'https://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/');
+	define('BASE_URL_NEWS_LISTING', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/front/');
+	define('FOOTER_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/template/');
+	define('CAPTCHA_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/captcha/');
+	define('IMAGE_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/uploads/');
+	define('ADMIN_BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/admin/');
+	define('STATIC_ADMIN_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/admin/theme1/css/');
+	define('STATIC_ADMIN_JS', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/admin/theme1/js/');
+	define('STATIC_ADMIN_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/admin/theme1/images/');
+	define('STATIC_FRONT_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/front/hazri_xpert/css/');
+	define('STATIC_FRONT_JS', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/front/hazri_xpert/js/');
+	define('STATIC_FRONT_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/hazri_xpert/static/front/hazri_xpert/images/');
+	define('STATIC_FRONT_NOTIFICATION', './hazri_xpert/static/front/hazri_xpert/notification/');
 
 	// define('BASE_URL', 'http://'.$_SERVER['HTTP_HOST'].'/');
 	// define('HTTPS_BASE_URL', 'https://'.$_SERVER['HTTP_HOST'].'/');
@@ -73,9 +73,9 @@ else{
 	// define('STATIC_ADMIN_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/static/admin/theme1/css/');
 	// define('STATIC_ADMIN_JS', 'http://'.$_SERVER['HTTP_HOST'].'/static/admin/theme1/js/');
 	// define('STATIC_ADMIN_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/static/admin/theme1/images/');
-	// define('STATIC_FRONT_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/static/front/xpert_atendy/css/');
-	// define('STATIC_FRONT_JS', 'http://'.$_SERVER['HTTP_HOST'].'/static/front/xpert_atendy/js/');
-	// define('STATIC_FRONT_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/static/front/xpert_atendy/images/');
+	// define('STATIC_FRONT_CSS', 'http://'.$_SERVER['HTTP_HOST'].'/static/front/hazri_xpert/css/');
+	// define('STATIC_FRONT_JS', 'http://'.$_SERVER['HTTP_HOST'].'/static/front/hazri_xpert/js/');
+	// define('STATIC_FRONT_IMAGE', 'http://'.$_SERVER['HTTP_HOST'].'/static/front/hazri_xpert/images/');
 }
 
 define('ACTUAL_CATAGORIES_IMAGE_PATH', 'uploads/catagories/actual_images/');
@@ -85,7 +85,7 @@ define('SMALL_CATAGORIES_IMAGE_PATH', 'uploads/catagories/small_images/');
 
 define('ACTUAL_ADDPOST_IMAGE_PATH', 'uploads/add_post/actual_images/');
 define('LARGE_ADDPOST_IMAGE_PATH', 'uploads/add_post/large_images/');
-define('MEDIUM_ADDPOST_IMAGE_PATH', 'http://localhost/xpert_atendy/uploads/add_post/medium_images/');
+define('MEDIUM_ADDPOST_IMAGE_PATH', 'http://localhost/hazri_xpert/uploads/add_post/medium_images/');
 define('SMALL_ADDPOST_IMAGE_PATH', 'uploads/add_post/small_images/');
 
 define('ACTUAL_ITEMS_IMAGE_PATH', 'uploads/items/actual_images/');

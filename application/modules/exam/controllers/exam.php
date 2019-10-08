@@ -291,9 +291,10 @@ Modules::run('site_security/is_login');
             $data['org_id']=$org_id;
 
             $arr_teacher = Modules::run('subjects/_get_subject_teacher',$data['subject_id'],$org_id)->result_array();
+            // print_r($arr_teacher);exit();
             if (isset($arr_teacher) && !empty($arr_teacher)) {
                 $data['teacher_id'] = $arr_teacher[0]['teacher_id'];
-                $data['teacher_name'] =  $arr_teacher[1]['teacher_name'];
+                $data['teacher_name'] =  $arr_teacher[0]['teacher_name'];
             }
 
             if(!empty($value)){

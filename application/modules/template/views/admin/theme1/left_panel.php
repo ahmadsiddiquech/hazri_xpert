@@ -105,14 +105,14 @@
           <li class="<?php if($curr_url == 'datesheet'){echo 'active';} ?>">
                 <a href="<?php $controller='datesheet'; 
                    echo ADMIN_BASE_URL . $controller ?>">
-                   <em class="fa fa-clock-o"></em>
+                   <em class="fa fa-calendar"></em>
                    <span>Datesheet</span>
                 </a>
           </li>
           <li class="<?php if($curr_url == 'timetable'){echo 'active';} ?>">
                 <a href="<?php $controller='timetable'; 
                    echo ADMIN_BASE_URL . $controller ?>">
-                   <em class="fa fa-calendar"></em>
+                   <em class="fa fa-clock-o"></em>
                    <span>Timetable</span>
                 </a>
           </li>
@@ -128,6 +128,13 @@
                    echo ADMIN_BASE_URL . $controller ?>">
                    <em class="fa fa-clock-o"></em>
                    <span>Leave</span>
+                </a>
+          </li>
+          <li class="<?php if($curr_url == 'feedback'){echo 'active';}    ?>">
+                <a href="<?php $controller='feedback'; 
+                   echo ADMIN_BASE_URL . $controller ?>">
+                   <em class="fa fa-comments-o"></em>
+                   <span>Feedback</span>
                 </a>
           </li>
           <li class="<?php if($curr_url == 'announcement'){echo 'active';}    ?>">

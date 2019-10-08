@@ -1,4 +1,3 @@
-
 <?php
 
 if (!defined('BASEPATH'))
@@ -52,6 +51,7 @@ class Mdl_timetable extends CI_Model {
         $table = 'timetable_data';
         $this->db->insert($table, $data2);
     }
+    
     function _get_timetable_subject($timetable_id) {
         $table = 'timetable_data';
         $this->db->where('timetable_id',$timetable_id);
@@ -74,6 +74,7 @@ class Mdl_timetable extends CI_Model {
         }
         $this->db->update($table, $data);
     }
+
        function _update_id($id, $data) {
         $table = $this->get_table();
         $this->db->where('id',$id);

@@ -23,7 +23,6 @@ Modules::run('site_security/is_login');
     }
 
     function manage() {
-        $data2='';
         $org_id = $this->uri->segment(4);
         $query = $this->_get('users_sessions.id desc',$org_id)->result_array();
         if (isset($query) && !empty($query)) {
