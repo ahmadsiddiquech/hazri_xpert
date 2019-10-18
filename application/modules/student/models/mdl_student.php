@@ -19,7 +19,7 @@ class Mdl_student extends CI_Model {
         $user_data = $this->session->userdata('user_data');
         $org_id = $user_data['user_id'];
         $role_id = $user_data['role_id'];
-        $this->db->select('classes.id class_id,classes.name class_name,sections.id section_id,sections.section section_name,student.id,student.name,student.status,student.parent_name,student.org_id,student.p_c_no,student.gender,student.image,student.dob,student.roll_no,student.address,student.addmission_date,program.name program_name,program.id program_id');
+        $this->db->select('classes.id class_id,classes.name class_name,sections.id section_id,sections.section section_name,student.id,student.name,student.status,student.parent_name,student.org_id,student.p_c_no,student.gender,student.image,student.dob,student.roll_no,student.address,student.addmission_date,program.name program_name,program.id program_id,student.*');
         $this->db->join("classes", "classes.id = student.class_id", "full");
         $this->db->join("sections", "sections.id = student.section_id", "full");
         $this->db->join("program", "program.id = student.program_id", "full");
@@ -37,15 +37,12 @@ class Mdl_student extends CI_Model {
         $this->db->select('student.id,subject.id subject_id,subject.name subject_name');
         $this->db->from('student');
         $this->db->join("subject", "subject.id = student.subject_id", "full");
-        // print_r($update_id);exit();
         $this->db->where('student.id',$update_id);
         
         if($role_id!=1){
             $this->db->where('student.org_id',$org_id);
         }
-        $query =  $this->db->get();
-        // print_r($query->result_array());exit();
-        return $query;
+        return $this->db->get();
     }
 
     function _get_parent_by_arr_id($update_id){
@@ -55,15 +52,11 @@ class Mdl_student extends CI_Model {
         $this->db->select('student.id,users_add.id parent_id');
         $this->db->from('student');
         $this->db->join("users_add", "users_add.id = student.parent_id", "full");
-        // print_r($update_id);exit();
         $this->db->where('student.id',$update_id);
-        
         if($role_id!=1){
             $this->db->where('student.org_id',$org_id);
         }
-        $query =  $this->db->get();
-        // print_r($query->result_array());exit();
-        return $query;
+        return $this->db->get();
     }
 
     function check_roll_no($roll_no,$section_id){
@@ -95,8 +88,7 @@ class Mdl_student extends CI_Model {
         $this->db->where('student.org_id',$org_id);
         }
         $this->db->order_by($order_by);
-        $query = $this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function _get_subject_teacher_detail($where){
@@ -112,15 +104,13 @@ class Mdl_student extends CI_Model {
         $this->db->where('student.org_id',$org_id);
         }
         $this->db->where($where);
-        $query = $this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function _insert($data) {
         $table = $this->get_table();
         $this->db->insert($table, $data);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _update($arr_col, $org_id, $data) {
@@ -174,23 +164,20 @@ class Mdl_student extends CI_Model {
     function _get_class($program_id){
         $table = "classes";
         $this->db->where('program_id',$program_id);
-        $query = $this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
     function _get_section($class_id,$program_id){
         $table = "sections";
         $this->db->where('class_id',$class_id);
         $this->db->where('program_id',$program_id);
-        $query = $this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
     function _get_roll($section_id,$class_id,$program_id){
         $table = "sections";
         $this->db->where('id',$section_id);
         $this->db->where('class_id',$class_id);
         $this->db->where('program_id',$program_id);
-        $query = $this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
     function _get_subject($section_id,$class_id,$program_id){
         $table = "subject";
@@ -198,7 +185,6 @@ class Mdl_student extends CI_Model {
         $this->db->where('class_id',$class_id);
         $this->db->where('program_id',$program_id);
         $this->db->where('s_type','Optional');
-        $query = $this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 }

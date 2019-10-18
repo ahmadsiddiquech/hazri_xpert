@@ -86,11 +86,17 @@ $route['teacher-leave-detail'] = "front/get_teacher_leave_detail";
 $route['leave-status-change'] = "front/change_leave_status";
 $route['get-timetable'] = "front/get_section_timetable";
 $route['exam-datesheet'] = "front/get_exam_datesheet";
+$route['all-classes'] = "front/get_all_classes";
+$route['all-sections'] = "front/get_all_sections";
 
 $route['insert-feedback'] = "front/insert_feedback";
 $route['feedback-list'] = "front/get_feedback_list";
 $route['insert-feedback-reply'] = "front/insert_feedback_reply";
 $route['feedback-detail'] = "front/get_feedback_detail";
+
+$route['fee-voucher-list'] = "front/get_fee_voucher_list";
+$route['get-fee-voucher'] = "front/get_std_fee_voucher";
+$route['pay-fee-voucher'] = "front/pay_std_fee_voucher";
 
 $route['send-notification'] = "front/send_notification";
 $route['update-fcm-token'] = "front/update_fcm_token";

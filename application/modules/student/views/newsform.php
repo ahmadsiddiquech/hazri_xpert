@@ -44,19 +44,18 @@
                        <div class="col-sm-5">
                         <div class="form-group">
                           <?php
-                                                        $data = array(
-                                                        'name' => 'name',
-                                                        'id' => 'name',
-                                                        'class' => 'form-control',
-                                                        'type' => 'text',
-                                                        'required' => 'required',
-                                                        'tabindex' => '1',
-                                                        'value' => $news['name'],
-                                                        'data-parsley-maxlength'=>TEXT_BOX_RANGE
-                                                        );
-                                                        $attribute = array('class' => 'control-label col-md-4');
-                                                        ?>
-                                                        
+                              $data = array(
+                              'name' => 'name',
+                              'id' => 'name',
+                              'class' => 'form-control',
+                              'type' => 'text',
+                              'required' => 'required',
+                              'tabindex' => '1',
+                              'value' => $news['name'],
+                              'data-parsley-maxlength'=>TEXT_BOX_RANGE
+                              );
+                              $attribute = array('class' => 'control-label col-md-4');
+                              ?>
                           <?php echo form_label('Name<span style="color:red">*</span>', 'name', $attribute); ?>
                           <div class="col-md-8"> <?php echo form_input($data); ?>  <span id="message"></span></div>
                         </div>
@@ -64,18 +63,18 @@
                      <div class="col-sm-5">
                         <div class="form-group">
                           <?php
-                                                        $data = array(
-                                                        'name' => 'parent_name',
-                                                        'id' => 'parent_name',
-                                                        'class' => 'form-control',
-                                                        'type' => 'text',
-                                                        'tabindex' => '2',
-                                                        'required' => 'required',
-                                                        'value' => $news['parent_name'],
-                                                        'data-parsley-maxlength'=>TEXT_BOX_RANGE
-                                                        );
-                                                        $attribute = array('class' => 'control-label col-md-4');
-                                                        ?>
+                            $data = array(
+                            'name' => 'parent_name',
+                            'id' => 'parent_name',
+                            'class' => 'form-control',
+                            'type' => 'text',
+                            'tabindex' => '2',
+                            'required' => 'required',
+                            'value' => $news['parent_name'],
+                            'data-parsley-maxlength'=>TEXT_BOX_RANGE
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                            ?>
                           <?php echo form_label('Parent Name<span style="color:red">*</span>  ', 'parent_name', $attribute); ?>
                           <div class="col-md-8"> <?php echo form_input($data); ?> </div>
                         </div>
@@ -83,28 +82,30 @@
                       </div>
                     <div class="row">
                       <div class="col-sm-5">
-                                    <div class="form-group">
-                                    <?php
+                        <div class="form-group">
+                          <?php
 
-                                    $options = array('' => 'Select')+$parent_title ;
-                                    $attribute = array('class' => 'control-label col-md-4');
-                                    echo form_label('Select Parent', 'parent_id', $attribute);?>
-                                    <div class="col-md-8"><?php echo form_dropdown('parent_id', $options, $news['parent_id'],  'class="form-control select2me" id="parent_id" tabindex ="3"'); ?></div>                            </div>
+                          $options = array('' => 'Select')+$parent_title ;
+                          $attribute = array('class' => 'control-label col-md-4');
+                          echo form_label('Select Parent', 'parent_id', $attribute);?>
+                          <div class="col-md-8"><?php echo form_dropdown('parent_id', $options, $news['parent_id'],  'class="form-control select2me" id="parent_id" tabindex ="3"'); ?>
+                          </div>
+                        </div>
                     </div>
                      <div class="col-sm-5">
                         <div class="form-group">
                           <?php
-                                                        $data = array(
-                                                        'name' => 'p_c_no',
-                                                        'id' => 'p_c_no',
-                                                        'class' => 'form-control',
-                                                        'type' => 'number',
-                                                        'tabindex' => '4',
-                                                        'required' => 'required',
-                                                        'value' => $news['p_c_no'],
-                                                        );
-                                                        $attribute = array('class' => 'control-label col-md-4');
-                                                        ?>
+                            $data = array(
+                            'name' => 'p_c_no',
+                            'id' => 'p_c_no',
+                            'class' => 'form-control',
+                            'type' => 'number',
+                            'tabindex' => '4',
+                            'required' => 'required',
+                            'value' => $news['p_c_no'],
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                          ?>
                           <?php echo form_label('Parent Phone<span style="color:red">*</span> ', 'p_c_no', $attribute); ?>
                           <div class="col-md-8"> <?php echo form_input($data); ?> </div>
                         </div>
@@ -114,17 +115,17 @@
                     <div class="col-sm-5">
                         <div class="form-group">
                           <?php
-                                                        $data = array(
-                                                        'name' => 'address',
-                                                        'id' => 'address',
-                                                        'class' => 'form-control',
-                                                        'type' => 'text',
-                                                        'tabindex' => '5',
-                                                        'value' => $news['address'],
-                                                        'data-parsley-maxlength'=>TEXT_BOX_RANGE
-                                                        );
-                                                        $attribute = array('class' => 'control-label col-md-4');
-                                                        ?>
+                            $data = array(
+                            'name' => 'address',
+                            'id' => 'address',
+                            'class' => 'form-control',
+                            'type' => 'text',
+                            'tabindex' => '5',
+                            'value' => $news['address'],
+                            'data-parsley-maxlength'=>TEXT_BOX_RANGE
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                            ?>
                           <?php echo form_label('Address', 'address', $attribute); ?>
                           <div class="col-md-8"> <?php echo form_input($data); ?> </div>
                         </div>
@@ -132,17 +133,17 @@
                       <div class="col-sm-5">
                         <div class="form-group">
                           <?php
-                                                        $data = array(
-                                                        'name' => 'gender',
-                                                        'id' => 'gender',
-                                                        'class' => 'form-control',
-                                                        'type' => 'text',
-                                                        'required' => 'required',
-                                                        'value' => $news['gender'],
-                                                        'tabindex' => '6',
-                                                        );
-                                                        $attribute = array('class' => 'control-label col-md-4');
-                                                        ?>
+                            $data = array(
+                            'name' => 'gender',
+                            'id' => 'gender',
+                            'class' => 'form-control',
+                            'type' => 'text',
+                            'required' => 'required',
+                            'value' => $news['gender'],
+                            'tabindex' => '6',
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                            ?>
                           <?php echo form_label('Gender<span style="color:red">*</span>', 'gender', $attribute); ?>
                           <div class="col-md-8"> 
                             <select name="gender" class="form-control">
@@ -157,19 +158,19 @@
                     <div class="col-sm-5">
                         <div class="form-group">
                           <?php
-                                                        $data = array(
-                                                        'name' => 'dob',
-                                                        'id' => 'dob',
-                                                        'class' => 'form-control datetimepicker2',
-                                                        'type' => 'text',
-                                                        'tabindex' => '7',
-                                                        'max' => '2016-12-31',
-                                                        'required' => 'required',
-                                                        'data-parsley-maxlength'=>TEXT_BOX_RANGE,
-                                                        'value' => $news['dob'],
-                                                        );
-                                                        $attribute = array('class' => 'control-label col-md-4');
-                                                        ?>
+                            $data = array(
+                            'name' => 'dob',
+                            'id' => 'dob',
+                            'class' => 'form-control datetimepicker2',
+                            'type' => 'text',
+                            'tabindex' => '7',
+                            'max' => '2016-12-31',
+                            'required' => 'required',
+                            'data-parsley-maxlength'=>TEXT_BOX_RANGE,
+                            'value' => $news['dob'],
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                            ?>
                           <?php echo form_label('Date of Birth<span style="color:red">*</span>', 'dob', $attribute); ?>
 
                           <div class="col-md-8"> <?php echo form_input($data); ?> </div>
@@ -180,19 +181,19 @@
                        <div class="col-sm-5">
                         <div class="form-group">
                           <?php
-                                                        $data = array(
-                                                        'name' => 'addmission_date',
-                                                        'id' => 'addmission_date',
-                                                        'class' => 'form-control datetimepicker2',
-                                                        'type' => 'text',
-                                                        'tabindex' => '8',
-                                                        'required' => 'required',
-                                                        'min' => '2010-12-30',
-                                                        'value' => $news['addmission_date'],
-                                                        'data-parsley-maxlength'=>TEXT_BOX_RANGE
-                                                        );
-                                                        $attribute = array('class' => 'control-label col-md-4');
-                                                        ?>
+                            $data = array(
+                            'name' => 'addmission_date',
+                            'id' => 'addmission_date',
+                            'class' => 'form-control datetimepicker2',
+                            'type' => 'text',
+                            'tabindex' => '8',
+                            'required' => 'required',
+                            'min' => '2010-12-30',
+                            'value' => $news['addmission_date'],
+                            'data-parsley-maxlength'=>TEXT_BOX_RANGE
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                            ?>
                           <?php echo form_label('Addmission Date<span style="color:red">*</span>', 'addmission_date', $attribute); ?>
                           <div class="col-md-8"> <?php echo form_input($data); ?> </div>
                         </div>
@@ -200,98 +201,184 @@
                       </div>
                      <div class="row">
                       <div class="col-sm-5">
-                                    <div class="form-group">
-                                    <?php
+                      <div class="form-group">
+                        <?php
 
-                                    $options = array('' => 'Select')+$program_title ;
-                                    $attribute = array('class' => 'control-label col-md-4');
-                                    echo form_label('Program <span style="color:red">*</span>', 'program_id', $attribute);?>
-                                    <div class="col-md-8"><?php echo form_dropdown('program_id', $options, $news['program_id'],  'required="required" class="form-control select2me required" id="program_id" tabindex ="9"'); ?></div>                            </div>
+                        $options = array('' => 'Select')+$program_title ;
+                        $attribute = array('class' => 'control-label col-md-4');
+                        echo form_label('Program <span style="color:red">*</span>', 'program_id', $attribute);?>
+                        <div class="col-md-8"><?php echo form_dropdown('program_id', $options, $news['program_id'],  'required="required" class="form-control select2me required" id="program_id" tabindex ="9"'); ?>
+                        </div>
+                      </div>
                     </div>
                       <div class="col-sm-5">
-                                    <div class="form-group">
-                                    <?php
-
-                                    // $options = array('' => 'Select')+$roll_title ;
-                                    $attribute = array('class' => 'control-label col-md-4');
-                                    echo form_label('Class <span style="color:red">*</span>', 'class_id', $attribute);?>
-                                    <div class="col-md-8">
-                                      <select class="form-control" id="class_id" required="required" name="class_id" >
-                                        <option value="">Select</option>
-                                        <?php if(isset($class_data) && !empty($class_data)){
-                                          foreach ($class_data as $key => $class_value): ?>
-                                          <option <?php if($class_value['id'] == $news['class_id']) echo "selected"; ?> value="<?=$class_value['id'];?>">
-                                          <?php if(isset($class_value['name']) && !empty($class_value['name'])){
-                                        echo $class_value['name'];}?>
-                                          </option>
-                                        <?php endforeach; } ?>
-                                      </select>
-                                      </div>
-                                    </div>
+                        <div class="form-group">
+                        <?php
+                        $attribute = array('class' => 'control-label col-md-4');
+                        echo form_label('Class <span style="color:red">*</span>', 'class_id', $attribute);?>
+                        <div class="col-md-8">
+                          <select class="form-control" id="class_id" required="required" name="class_id" >
+                            <option value="">Select</option>
+                            <?php if(isset($class_data) && !empty($class_data)){
+                              foreach ($class_data as $key => $class_value): ?>
+                              <option <?php if($class_value['id'] == $news['class_id']) echo "selected"; ?> value="<?=$class_value['id'];?>">
+                              <?php if(isset($class_value['name']) && !empty($class_value['name'])){
+                            echo $class_value['name'];}?>
+                              </option>
+                            <?php endforeach; } ?>
+                          </select>
+                          </div>
+                        </div>
                     </div>
                     </div>
                     <div class="row">
                       <div class="col-sm-5">
-                                    <div class="form-group">
-                                    <?php
-
-                                    // $options = array('' => 'Select')+$roll_title ;
-                                    $attribute = array('class' => 'control-label col-md-4');
-                                    echo form_label('Section <span style="color:red">*</span>', 'section_id', $attribute);?>
-                                    <div class="col-md-8">
-                                      <select class="form-control" id="section_id" required="required" name="section_id" >
-                                        <option value="">Select</option>
-                                        <?php if(isset($setion_data) && !empty($setion_data)){
-                                          foreach ($setion_data as $key => $section_value): ?>
-                                          <option <?php if($section_value['id'] == $news['section_id']) echo "selected"; ?> value="<?=$section_value['id'];?>">
-                                          <?php if(isset($section_value['section']) && !empty($section_value['section'])){
-                                        echo $section_value['section'];}?>
-                                          </option>
-                                        <?php endforeach; } ?>
-                                      </select>
-                                      </div>
-                                    </div>
+                      <div class="form-group">
+                      <?php
+                      $attribute = array('class' => 'control-label col-md-4');
+                      echo form_label('Section <span style="color:red">*</span>', 'section_id', $attribute);?>
+                      <div class="col-md-8">
+                        <select class="form-control" id="section_id" required="required" name="section_id" >
+                          <option value="">Select</option>
+                          <?php if(isset($setion_data) && !empty($setion_data)){
+                            foreach ($setion_data as $key => $section_value): ?>
+                            <option <?php if($section_value['id'] == $news['section_id']) echo "selected"; ?> value="<?=$section_value['id'];?>">
+                            <?php if(isset($section_value['section']) && !empty($section_value['section'])){
+                          echo $section_value['section'];}?>
+                            </option>
+                          <?php endforeach; } ?>
+                        </select>
+                        </div>
+                      </div>
                     </div>
                     <div class="col-sm-5">
-                                    <div class="form-group">
-                                    <div class="control-label col-md-4">
-                                      <label>Roll No. <span style="color:red">*</span></label>
-                                    </div>
-                                    <div class="col-md-8">
-                                      <select class="check_roll_no form-control roll_no_list" id="roll_no" required="required" name="roll_no" >
-                                        <option value="">Select</option>
-                                        <?php 
-                                          for ($i=$roll_from; $i <=$roll_to; $i++) { ?>
-                                          <option <?php if($news['roll_no'] == $i) echo "selected" ?> value="<?=$i;?>"><?=$i;?></option>
-                                        <?php } ?>
-                                      </select>
-                                      </div>
-                                    </div>
+                    <div class="form-group">
+                    <div class="control-label col-md-4">
+                      <label>Roll No. <span style="color:red">*</span></label>
+                    </div>
+                    <div class="col-md-8">
+                      <select class="check_roll_no form-control roll_no_list" id="roll_no" required="required" name="roll_no" >
+                        <option value="">Select</option>
+                        <?php 
+                          for ($i=$roll_from; $i <=$roll_to; $i++) { ?>
+                          <option <?php if($news['roll_no'] == $i) echo "selected" ?> value="<?=$i;?>"><?=$i;?></option>
+                        <?php } ?>
+                      </select>
+                      </div>
+                    </div>
                     </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-5">
-                                    <div class="form-group">
-                                    <?php
-
-                                    // $options = array('' => 'Select')+$roll_title ;
-                                    $attribute = array('class' => 'control-label col-md-4');
-                                    echo form_label('Optional Subject', 'subject_id', $attribute);?>
-                                    <div class="col-md-8">
-                                      <select class="subject_id form-control" id="subject_id" name="subject_id" >
-                                        <option value="">Select</option>
-                                        <?php if(isset($subject_data) && !empty($subject_data)){
-                                          foreach ($subject_data as $key => $subject_value): ?>
-                                          <option <?php if($subject_value['id'] == $news['subject_id']) echo "selected"; ?> value="<?=$subject_value['id'];?>">
-                                          <?php if(isset($subject_value['name']) && !empty($subject_value['name'])){
-                                        echo $subject_value['name'];}?>
-                                          </option>
-                                        <?php endforeach; } ?>
-                                      </select>
-                                      </div>
-                                    </div>
+                        <div class="form-group">
+                        <?php
+                        $attribute = array('class' => 'control-label col-md-4');
+                        echo form_label('Optional Subject', 'subject_id', $attribute);?>
+                        <div class="col-md-8">
+                          <select class="subject_id form-control" id="subject_id" name="subject_id" >
+                            <option value="">Select</option>
+                            <?php if(isset($subject_data) && !empty($subject_data)){
+                              foreach ($subject_data as $key => $subject_value): ?>
+                              <option <?php if($subject_value['id'] == $news['subject_id']) echo "selected"; ?> value="<?=$subject_value['id'];?>">
+                              <?php if(isset($subject_value['name']) && !empty($subject_value['name'])){
+                            echo $subject_value['name'];}?>
+                              </option>
+                            <?php endforeach; } ?>
+                          </select>
+                          </div>
+                        </div>
                     </div>
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                          <?php
+                            $data = array(
+                            'name' => 'tution_fee',
+                            'id' => 'tution_fee',
+                            'class' => 'form-control',
+                            'type' => 'number',
+                            'tabindex' => '14',
+                            'required' => 'required',
+                            'value' => $news['tution_fee'],
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                          ?>
+                          <?php echo form_label('Tution Fee<span style="color:red">*</span> ', 'tution_fee', $attribute); ?>
+                          <div class="col-md-8"> <?php echo form_input($data); ?> </div>
+                        </div>
+                      </div>
                   </div>
+                  <div class="row">
+                      <div class="col-sm-5">
+                        <div class="form-group">
+                          <?php
+                            $data = array(
+                            'name' => 'transport_fee',
+                            'id' => 'transport_fee',
+                            'class' => 'form-control',
+                            'type' => 'number',
+                            'tabindex' => '15',
+                            'value' => $news['transport_fee'],
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                          ?>
+                          <?php echo form_label('Transport Fee', 'transport_fee', $attribute); ?>
+                          <div class="col-md-8"> <?php echo form_input($data); ?> </div>
+                        </div>
+                      </div>
+                     <div class="col-sm-5">
+                        <div class="form-group">
+                          <?php
+                            $data = array(
+                            'name' => 'lunch_fee',
+                            'id' => 'lunch_fee',
+                            'class' => 'form-control',
+                            'type' => 'number',
+                            'tabindex' => '16',
+                            'value' => $news['lunch_fee'],
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                          ?>
+                          <?php echo form_label('Lunch Fee', 'lunch_fee', $attribute); ?>
+                          <div class="col-md-8"> <?php echo form_input($data); ?> </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-5">
+                        <div class="form-group">
+                          <?php
+                            $data = array(
+                            'name' => 'stationary_fee',
+                            'id' => 'stationary_fee',
+                            'class' => 'form-control',
+                            'type' => 'number',
+                            'tabindex' => '17',
+                            'value' => $news['stationary_fee'],
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                          ?>
+                          <?php echo form_label('Stationary Fee', 'stationary_fee', $attribute); ?>
+                          <div class="col-md-8"> <?php echo form_input($data); ?> </div>
+                        </div>
+                      </div>
+                     <div class="col-sm-5">
+                        <div class="form-group">
+                          <?php
+                            $data = array(
+                            'name' => 'other_fee',
+                            'id' => 'other_fee',
+                            'class' => 'form-control',
+                            'type' => 'number',
+                            'tabindex' => '18',
+                            'value' => $news['other_fee'],
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                          ?>
+                          <?php echo form_label('Other Fee', 'other_fee', $attribute); ?>
+                          <div class="col-md-8"> <?php echo form_input($data); ?> </div>
+                        </div>
+                      </div>
+                    </div>
                     <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group last">

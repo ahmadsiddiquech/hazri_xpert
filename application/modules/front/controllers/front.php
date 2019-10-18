@@ -83,6 +83,7 @@ function get_institutes (){
         echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
     }
 }
+
 function get_user_login(){
     $api = $this->input->post('api');
     if($api == 'true'){
@@ -1480,11 +1481,19 @@ function get_teacher_exam_class_list(){
         $teacher_id = $this->input->post('userId');
         $where['subject.teacher_id'] = $teacher_id;
 
-        $class_list = $this->_get_teacher_class_list($where,$org_id)->result_array();
-
-        if(isset($class_list) && !empty($class_list)){
+        $class_lists = $this->_get_teacher_class_list($where,$org_id)->result_array();
+        $class_list = array_map("unserialize", array_unique(array_map("serialize", $class_lists)));
+        foreach ($class_list as $key => $value) {
+            $finalData['sectionId'] = $value['sectionId'];
+            $finalData['sectionName'] = $value['sectionName'];
+            $finalData['classId'] = $value['classId'];
+            $finalData['className'] = $value['className'];
+            $finalData['programName'] = $value['programName'];
+            $finalData2[] = $finalData;
+        }
+        if(isset($finalData2) && !empty($finalData2)){
             $status = true;
-            $data = $class_list;
+            $data = $finalData2;
         }
         else{
             $data='';
@@ -2167,10 +2176,16 @@ function get_exam_datesheet(){
                 if (isset($data2) && !empty($data2)) {
                     foreach ($data2 as $key => $value1) {
                         $finalData2['subjectName'] = $value1['subject_name'];
-                        $finalData2['examDate'] = $value1['date'];
                         $finalData2['startTime'] = $value1['start_time'];
                         $finalData2['endTime'] = $value1['end_time'];
-                        $finalData2['examDay'] = date('l',strtotime($value1['exam_date']));
+                        if(isset($value1['date']) && !empty($value1['date'])) {
+                            $finalData2['examDay'] = date('l',strtotime($value1['date']));
+                            $finalData2['examDate'] = $value1['date'];
+                        }
+                        else{
+                            $finalData2['examDay'] ='-';
+                            $finalData2['examDate'] = '-';
+                        }
                         $finalData3[] = $finalData2;
                     }
                 }
@@ -2392,6 +2407,56 @@ function get_feedback_detail() {
     }
 }
 
+
+function get_all_classes (){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $message = '';
+        $org_id = $this->input->post('orgId');
+        $status = false;
+        $classes = $this->_get_all_classes($org_id)->result_array();
+        if(isset($classes) && !empty($classes)){
+            $status = true;
+            $data = $classes;
+        }
+        else{
+            $message = 'Record not found';
+            $data = '';
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status, 'data'=>$data,'message'=>$message));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+function get_all_sections (){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $message = '';
+        $org_id = $this->input->post('orgId');
+        $class_id = $this->input->post('classId');
+        $status = false;
+        $sections = $this->_get_all_sections($class_id,$org_id)->result_array();
+        if(isset($sections) && !empty($sections)){
+            $status = true;
+            $data = $sections;
+        }
+        else{
+            $message = 'Record not found';
+            $data = '';
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status, 'data'=>$data,'message'=>$message));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
 function _get_datesheet_record($class_id,$org_id){
     $this->load->model('mdl_front');
     return $this->mdl_front->_get_datesheet_record($class_id,$org_id);  
@@ -2414,9 +2479,19 @@ function _get_timetable_data($id){
 
 function _get_institutes(){
     $this->load->model('mdl_front');
-    $query = $this->mdl_front->_get_institutes();
-    return $query;
+    return $this->mdl_front->_get_institutes();
 }
+
+function _get_all_classes($org_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_all_classes($org_id);
+}
+
+function _get_all_sections($class_id,$org_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_all_sections($class_id,$org_id);
+}
+
 function _get_user_login($inst_id, $username, $password){
     $this->load->model('mdl_front');
     $query = $this->mdl_front->_get_user_login($inst_id, $username, $password);
@@ -3252,5 +3327,168 @@ function _notif_get_student_id($parent_id,$org_id,$limit,$page_no){
     $this->load->model('mdl_front');
     return $this->mdl_front->_notif_get_student_id($parent_id,$org_id,$limit,$page_no);
 }
+
+//=====================================================================================
+//==============================FEE VOUCHER FUNCTIONS==================================
+//=====================================================================================
+
+function get_fee_voucher_list(){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $status = false;
+        $message = '';
+        $class_id = $this->input->post('classId');
+        $section_id = $this->input->post('sectionId');
+        $std_id = $this->input->post('stdId');
+        $year = $this->input->post('year');
+        $org_id = $this->input->post('orgId');
+
+        if (empty($year)) {
+            date_default_timezone_set("Asia/Karachi");
+            $year = date('Y');
+        }
+
+        $voucher = $this->_get_fee_voucher_list($class_id,$section_id,$std_id,$year,$org_id)->result_array();
+        if (isset($voucher) && !empty($voucher)) {
+            foreach ($voucher as $key => $value) {
+                $finalData['voucherId'] = $value['id'];
+                $finalData['issueDate'] = $value['issue_date'];
+                $finalData['dueDate'] = $value['due_date'];
+                $finalData['stdVoucherId'] = $value['voucher_id'];
+                $finalData['total'] = $value['total'];
+                $finalData['status'] = $value['status'];
+                $finalData2[] = $finalData;
+                $yearArray = explode("/",$finalData['issueDate']);
+                $Year[] = $yearArray[0];
+            }
+        }
+        $yearList = array_map("unserialize", array_unique(array_map("serialize", $Year)));
+        if(isset($finalData2) && !empty($finalData2)){
+            $status = true;
+            $data = $finalData2;
+        }
+        else{
+            $message = 'Record not found';
+            $data = '';
+            $yearList = '';
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status, 'data'=>$data,'years'=>$yearList,'message'=>$message));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+function get_std_fee_voucher(){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $status = false;
+        $message = '';
+        $class_id = $this->input->post('classId');
+        $section_id = $this->input->post('sectionId');
+        $std_id = $this->input->post('stdId');
+        $org_id = $this->input->post('orgId');
+        $voucher = $this->_get_std_fee_voucher($class_id,$section_id,$std_id,$org_id)->result_array();
+        if (isset($voucher) && !empty($voucher)) {
+            foreach ($voucher as $key => $value) {
+                $finalData['voucherId'] = $value['id'];
+                $finalData['programId'] = $value['program_id'];
+                $finalData['programName'] = $value['program_name'];
+                $finalData['classId'] = $value['class_id'];
+                $finalData['className'] = $value['class_name'];
+                $finalData['sectionId'] = $value['section_id'];
+                $finalData['sectionName'] = $value['section_name'];
+                $finalData['issueDate'] = $value['issue_date'];
+                $finalData['dueDate'] = $value['due_date'];
+                $finalData['stdVoucherId'] = $value['voucher_id'];
+                $finalData['stdName'] = $value['std_name'];
+                $finalData['stdRollNo'] = $value['std_roll_no'];
+                $finalData['parentName'] = $value['parent_name'];
+                $finalData['tutionFee'] = $value['tution_fee'];
+                $finalData['transportFee'] = $value['transport_fee'];
+                $finalData['lunchFee'] = $value['lunch_fee'];
+                $finalData['stationaryFee'] = $value['stationary_fee'];
+                $finalData['otherFee'] = $value['other_fee'];
+                $finalData['total'] = $value['total'];
+                $finalData['paid'] = $value['paid'];
+                $finalData['remaining'] = $value['remaining'];
+                $finalData['status'] = $value['status'];
+                if ($finalData['status'] == 1) {
+                    $finalData['payDate'] = $value['pay_date'];
+                }
+                else{
+                    $finalData['payDate'] = '';
+                }
+            }
+        }
+        if(isset($finalData) && !empty($finalData)){
+            $status = true;
+            $data[] = $finalData;
+        }
+        else{
+            $message = 'Record not found';
+            $data = '';
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status, 'data'=>$data,'message'=>$message));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+function pay_std_fee_voucher(){
+    $api = $this->input->post('api');
+    if($api == 'true'){
+        $status = false;
+        $message = '';
+        // $class_id = $this->input->post('classId');
+        // $section_id = $this->input->post('sectionId');
+        // $std_id = $this->input->post('stdId');
+        // $org_id = $this->input->post('orgId');
+        $std_voucher_id = $this->input->post('stdVoucherId');
+        $amount = $this->input->post('amount');
+        date_default_timezone_set("Asia/Karachi");
+        $date = date('Y-m-d H:i:s');
+        $id = $this->_pay_std_fee_voucher($amount,$date,$std_voucher_id);
+
+        if($id == 1){
+            $status = true;
+            $message = 'Fee Paid Successfully';
+        }
+        else{
+            $message = 'Unsuccessfull';
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array('status'=>$status,'message'=>$message));
+    }
+    else{
+        header('Content-Type: application/json');
+        echo json_encode(array("status" => false, "message"=> "Unable to Connect"));
+    }
+}
+
+//=====================================================================================
+//========================FEE VOUCHER HELPER FUNCTIONS=================================
+//=====================================================================================
+
+function _get_fee_voucher_list($class_id,$section_id,$std_id,$year,$org_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_fee_voucher_list($class_id,$section_id,$std_id,$year,$org_id);
+}
+
+function _get_std_fee_voucher($class_id,$section_id,$std_id,$org_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_std_fee_voucher($class_id,$section_id,$std_id,$org_id);
+}
+
+function _pay_std_fee_voucher($amount,$date,$std_voucher_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_pay_std_fee_voucher($amount,$date,$std_voucher_id);
+}
+
 
 }

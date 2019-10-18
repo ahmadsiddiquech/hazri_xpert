@@ -13,10 +13,25 @@ class Mdl_front extends CI_Model {
         $table = 'users';
         $this->db->select('id instId, org_name instName');
         $this->db->where('status', '1');
-     $this->db->where('role_id','2');
-        $query=$this->db->get($table);
-        return $query;
+        $this->db->where('role_id','2');
+        return $this->db->get($table);
     }
+
+    function _get_all_classes($org_id){
+        $table = 'classes';
+        $this->db->select('id classId,name className');
+        $this->db->where('org_id',$org_id);
+        return $this->db->get($table);
+    }
+
+    function _get_all_sections($class_id,$org_id){
+        $table = 'sections';
+        $this->db->select('id sectionId,section sectionName');
+        $this->db->where('org_id',$org_id);
+        $this->db->where('class_id',$class_id);
+        return $this->db->get($table);
+    }
+
     function _get_user_login($inst_id, $username, $password){
         $table = 'users_add';
         $this->db->select('id userId, name userName, designation, org_id orgId,phone');
@@ -68,7 +83,6 @@ class Mdl_front extends CI_Model {
     function _get_teacher_subject_list($teacher_id, $org_id, $page_no, $limit){
         $table = 'subject';
         $this->db->select('id subId, name subName,s_type subjectType, section_id, program_id, class_id, time');
-        // $this->db->where('org_id',$inst_id);
         $this->db->where('org_id', $org_id);
         $this->db->where('status', '1');
         $this->db->limit($limit, $limit*($page_no-1));
@@ -119,9 +133,9 @@ class Mdl_front extends CI_Model {
             $this->db->where('subject_id', $subject_id);
         }
         $query=$this->db->get($table);
-
         return $query;
     }
+
     function _get_teacher_classes($class_id,$org_id){
         $table = 'classes';
         $this->db->select('name className,id');
@@ -218,24 +232,25 @@ class Mdl_front extends CI_Model {
     }
 
     function _insert_attend_data($data){
-    $table = "attend_record";
-    $this->db->insert($table, $data);
-    $insert_id = $this->db->insert_id();
-    return $insert_id;
-}
-    function _insert_student_attend_data($data){
-    $table = "take_attendance";
-    $this->db->insert($table, $data);
-    $affected_rows = $this->db->affected_rows();
-    return $affected_rows;
-}
+        $table = "attend_record";
+        $this->db->insert($table, $data);
+        $insert_id = $this->db->insert_id();
+        return $insert_id;
+    }
 
-function _submit_test_marks($data){
-    $table = "test_marks";
-    $this->db->insert($table, $data);
-    $affected_rows = $this->db->affected_rows();
-    return $affected_rows;
-}
+    function _insert_student_attend_data($data){
+        $table = "take_attendance";
+        $this->db->insert($table, $data);
+        $affected_rows = $this->db->affected_rows();
+        return $affected_rows;
+    }
+
+    function _submit_test_marks($data){
+        $table = "test_marks";
+        $this->db->insert($table, $data);
+        $affected_rows = $this->db->affected_rows();
+        return $affected_rows;
+    }
 
     function _get_subject_detail($subject_id,$org_id){
         $table = "subject";
@@ -334,8 +349,7 @@ function _submit_test_marks($data){
         $this->db->from('student');
         $this->db->join("users_add", "student.parent_id = users_add.id", "full");
         $this->db->where('student.id',$std_id);
-        $query=$this->db->get();
-        return $query;
+        return $this->db->get();
     }
 
     function _get_feedback_list($user_id,$user_type,$org_id ,$page_no, $limit){
@@ -404,7 +418,6 @@ function _submit_test_marks($data){
     }
     function _check_test_submission($test_id,$org_id){
         $table = "test_marks";
-        // $this->db->select('*');
         $this->db->where('test_id', $test_id);
         $this->db->where('org_id', $org_id);
         $affected_rows = $this->db->get($table)->num_rows();
@@ -414,7 +427,6 @@ function _submit_test_marks($data){
 
     function _get_test_list($where,$org_id){
         $table = "test";
-        // print_r($where['id']);exit();
         $this->db->select('id testId,test_title testTitle,test_description testDescription,program_id programId,class_id classId,class_name className,section_id sectionId,section_name sectionName,subject_id subjectId,subject_name subjectName,test_date testDate,test_time testTime,teacher_id teacherId,teacher_name teacherName, total_marks totalMarks');
         $this->db->where($where);
         $this->db->where('org_id', $org_id);
@@ -425,7 +437,6 @@ function _submit_test_marks($data){
 
     function _get_exam_list($where,$org_id){
         $table = "exam";
-        // print_r($where['id']);exit();
         $this->db->select('id examId,exam_title examTitle,exam_description examDescription,class_id classId,class_name className,program_id programId,program_name programName,start_date startDate,end_date endDate');
         $this->db->where($where);
         $this->db->where('org_id', $org_id);
@@ -578,8 +589,6 @@ function _get_promotion_banner(){
     }
 
     function _student_subject_teacher($std_id,$org_id){
-        // $table = "student";
-        // $this->db->select('subject_id');
         $this->db->select('student.subject_id subject_id,subject.time time, subject.name subject_name,subject.teacher_id, users_add.id teacher_id, users_add.name teacher_name');
         $this->db->from('student');
         $this->db->join("subject", "student.subject_id = subject.id", "full");
@@ -980,4 +989,48 @@ function _get_teacher_for_push_noti($where,$org_id){
     $query=$this->db->get($table);
     return $query;
 }
+
+//=====================================================================================
+//==============================FEE VOUCHER FUNCTIONS==================================
+//=====================================================================================
+
+    function _get_fee_voucher_list($class_id,$section_id,$std_id,$year,$org_id){
+        $this->db->select('*');
+        $this->db->from('voucher_record');
+        $this->db->join("voucher_data", "voucher_record.id = voucher_data.voucher_id", "full");
+        $this->db->where('voucher_data.std_id',$std_id);
+        $this->db->where('voucher_record.section_id',$section_id);
+        $this->db->where('voucher_record.class_id',$class_id);
+        $this->db->where('voucher_record.org_id',$org_id);
+
+        $firstDate = $year.'/01/01';
+        $secondDate = $year.'/12/31';
+        $this->db->where('issue_date >=', $firstDate);
+        $this->db->where('issue_date <=', $secondDate);
+
+        return $this->db->get();
+    }
+
+    function _get_std_fee_voucher($class_id,$section_id,$std_id,$org_id){
+        $this->db->select('*');
+        $this->db->from('voucher_record');
+        $this->db->join("voucher_data", "voucher_record.id = voucher_data.voucher_id", "full");
+        $this->db->where('voucher_data.std_id',$std_id);
+        $this->db->where('voucher_record.section_id',$section_id);
+        $this->db->where('voucher_record.class_id',$class_id);
+        $this->db->where('voucher_record.org_id',$org_id);
+        return $this->db->get();
+    }
+
+    function _pay_std_fee_voucher($amount,$date,$std_voucher_id,$org_id){
+        $table = "voucher_data";
+        $this->db->where('id', $std_voucher_id);
+        $this->db->set('paid' , $amount);
+        $this->db->set('pay_date' , $date);
+        $this->db->set('status' , '1');
+        $this->db->update($table);
+        return $this->db->affected_rows();
+    }
+
+
 }

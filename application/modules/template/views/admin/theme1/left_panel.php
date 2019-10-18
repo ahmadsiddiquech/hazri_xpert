@@ -3,6 +3,12 @@
 	$active="active";
   $role_id = $this->session->userdata('user_data')['role_id'];
 ?>
+<style type="text/css">
+  .fa-caret-down {
+  float: right;
+  padding-top: 4px;
+}
+</style>
 <!-- sidebar-->
 <aside class="aside" >
  <!-- START Sidebar (left)-->
@@ -72,7 +78,6 @@
                    <span>Sections</span>
                 </a>
           </li>
-
           <li class="<?php if($curr_url == 'subjects'){echo 'active';}    ?>">
                 <a href="<?php $controller='subjects'; 
                    echo ADMIN_BASE_URL . $controller ?>">
@@ -80,7 +85,6 @@
                    <span>Subjects</span>
                 </a>
           </li>
-
           <li class="<?php if($curr_url == 'student'){echo 'active';}    ?>">
                 <a href="<?php $controller='student'; 
                    echo ADMIN_BASE_URL . $controller ?>">
@@ -115,6 +119,27 @@
                    <em class="fa fa-clock-o"></em>
                    <span>Timetable</span>
                 </a>
+          </li>
+          <li>
+            <a href="#fee" data-toggle="collapse">
+                <em class="fa fa-money"></em>
+                <span>Fee</span>
+                <i class="fa fa-caret-down"></i>
+            </a>
+            <ul id="fee" class="nav sidebar-subnav collapse" style="padding-left: 30px">
+                <li class="<?php if($curr_url == 'voucher'){echo 'active';}    ?>">
+                  <a href="<?php $controller='voucher';echo ADMIN_BASE_URL . $controller ?>">
+                    <em class="fa fa-print"></em>
+                    <span>Print Voucher</span>
+                  </a>
+                </li>
+                <li class="<?php if($curr_url == 'history'){echo 'active';}    ?>">
+                  <a href="<?php $controller='history'; echo ADMIN_BASE_URL . $controller ?>">
+                    <em class="fa fa-history"></em>
+                    <span>History</span>
+                 </a>
+                </li>
+            </ul>
           </li>
           <li class="<?php if($curr_url == 'attendance'){echo 'active';} ?>">
                 <a href="<?php $controller='attendance'; 

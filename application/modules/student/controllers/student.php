@@ -40,16 +40,6 @@ Modules::run('site_security/is_login');
         $data['update_id'] = $update_id;
         $arr_parent = Modules::run('user/_get_by_arr_id_parent')->result_array();
         $arr_program = Modules::run('program/_get_by_arr_id_programs',$org_id)->result_array();
-
-        // if (is_numeric($update_id) && $update_id != 0) {
-        //    $arr_class = Modules::run('classes/_get_by_arr_id_subject',$program_id,$org_id)->result_array();
-        //    foreach($arr_class as $row){
-        //         $class[$row['id']] = $row['name'];   
-        //     }
-        //     $class = array();
-        //     $data['class_title'] = $class;
-        // }
-        // print_r($arr_roles);exit();
         $program = array();
         $parent = array();
 
@@ -90,7 +80,6 @@ Modules::run('site_security/is_login');
     function get_subject(){
         $section_id = $this->input->post('id');
         $arr_subject = Modules::run('subjects/_get_by_arr_id_subject',$section_id)->result_array();
-        // print_r($arr_subject);exit();
         $html='';
         $html.='<option value="">Select</option>';
         foreach ($arr_subject as $key => $value) {
@@ -158,6 +147,11 @@ Modules::run('site_security/is_login');
             $data['section_name'] = $row->section_name;
             $data['section_id'] = $row->section_id;
             $data['roll_no'] = $row->roll_no;
+            $data['tution_fee'] = $row->tution_fee;
+            $data['transport_fee'] = $row->transport_fee;
+            $data['lunch_fee'] = $row->lunch_fee;
+            $data['stationary_fee'] = $row->stationary_fee;
+            $data['other_fee'] = $row->other_fee;
             $data['image'] = $row->image;
             $data['status'] = $row->status;
             $data['org_id'] = $row->org_id;
@@ -180,10 +174,13 @@ Modules::run('site_security/is_login');
         $data['section_id'] = $this->input->post('section_id');
         $data['subject_id'] = $this->input->post('subject_id');
         $data['roll_no'] = $this->input->post('roll_no');
-        // $data['image'] = $this->input->post('image');
+        $data['transport_fee'] = $this->input->post('transport_fee');
+        $data['tution_fee'] = $this->input->post('tution_fee');
+        $data['stationary_fee'] = $this->input->post('stationary_fee');
+        $data['lunch_fee'] = $this->input->post('lunch_fee');
+        $data['other_fee'] = $this->input->post('other_fee');
         $user_data = $this->session->userdata('user_data');
         $data['org_id'] = $user_data['user_id'];
-        //print_r($data);exit();
         return $data;
 
     }
@@ -235,9 +232,7 @@ Modules::run('site_security/is_login');
 
     function set_publish() {
         $update_id = $this->uri->segment(4);
-        //$lang_id = $this->uri->segment(5);
         $where['id'] = $update_id;
-        //$where['lang_id'] = $lang_id;
         $this->_set_publish($where);
         $this->session->set_flashdata('message', 'Post published successfully.');
         redirect(ADMIN_BASE_URL . 'student/manage/' . '');
@@ -245,9 +240,7 @@ Modules::run('site_security/is_login');
 
     function set_unpublish() {
         $update_id = $this->uri->segment(4);
-        //$lang_id = $this->uri->segment(5);
         $where['id'] = $update_id;
-        //$where['lang_id'] = $lang_id;
         $this->_set_unpublish($where);
         $this->session->set_flashdata('message', 'Post un-published successfully.');
         redirect(ADMIN_BASE_URL . 'student/manage/' . '');
@@ -256,7 +249,6 @@ Modules::run('site_security/is_login');
 
     function upload_image($nId, $org_id) {
         $upload_image_file = $this->input->post('hdn_image');
-        // print_r($upload_image_file);exit();
         if(isset($upload_image_file) && !empty($upload_image_file)){
             $upload_image_file = str_replace(' ', '_', $upload_image_file);
             $file_name = 'student_' . $nId.'_'.$org_id . '_' . $upload_image_file;
@@ -335,14 +327,12 @@ Modules::run('site_security/is_login');
 
     function get_subect_teacher_name($update_id){
         $where['student.id'] = $update_id;
-        $query = $this->_get_subject_teacher_detail($where)->result_array();
-        return $query;
+        return $this->_get_subject_teacher_detail($where)->result_array();
     }
 
     /////////////// for detail ////////////
     function detail() {
         $update_id = $this->input->post('id');
-       // $lang_id = $this->input->post('lang_id');
         $data['user'] = $this->_get_data_from_db($update_id);
         $data['subject'] = $this->get_subect_teacher_name($update_id);
         $this->load->view('detail', $data);
@@ -366,9 +356,7 @@ Modules::run('site_security/is_login');
 
     function _get($order_by) {
         $this->load->model('mdl_student');
-        $query = $this->mdl_student->_get($order_by);
-        // print_r($query->result_array());exit();
-        return $query;
+        return $this->mdl_student->_get($order_by);
     }
 
     function _get_by_arr_id($arr_col) {
