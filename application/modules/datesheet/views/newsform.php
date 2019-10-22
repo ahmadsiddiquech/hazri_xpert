@@ -47,7 +47,7 @@
                         <span style="color:red">*</span>
                       </div>
                       <div class="col-md-8">
-                        <select name="program_id" id="program_id" class="form-control"<?php if ($update_id != 0){ echo 'disabled'; } ?> >
+                        <select name="program_id" id="program_id" class="form-control" >
                         <option value="">Select</option>
                         <?php if(isset($programs) && !empty($programs))
                         foreach ($programs as $key => $value):?>
@@ -63,7 +63,7 @@
                     $attribute = array('class' => 'control-label col-md-4');
                     echo form_label('Class <span style="color:red">*</span>', 'class_id', $attribute);?>
                     <div class="col-md-8">
-                      <select class="form-control" id="class_id" required="required" name="class_id" <?php if ($update_id != 0){ echo 'disabled'; } ?> >
+                      <select class="form-control" id="class_id" required="required" name="class_id">
                         <option value="">Select</option>
                         <?php if(isset($news['class_name']) && !empty($news['class_name'])) { ?>
                         <option selected value="<?php echo $news['class_id'].','.$news['class_name']; ?>"><?php echo $news['class_name'];?></option>
@@ -172,7 +172,14 @@
             data: {'id': class_id },
             async: false,
             success: function(result) {
-            $("#inputbox").html(result);
+            if(result == 0){
+              toastr.error('Datesheet exists for this class');
+              document.getElementById("button1").disabled = true;
+            }
+            else{
+              document.getElementById("button1").disabled = false;
+              $("#inputbox").html(result);
+            }
           }
         });
   });

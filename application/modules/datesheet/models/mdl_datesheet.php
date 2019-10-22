@@ -1,6 +1,4 @@
-
 <?php
-
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
@@ -51,8 +49,7 @@ class Mdl_datesheet extends CI_Model {
     function _insert_datesheet_subject($data2) {
         $table = 'datesheet_data';
         $this->db->insert($table, $data2);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _get_datesheet_subject($datesheet_id) {
@@ -64,8 +61,7 @@ class Mdl_datesheet extends CI_Model {
     function _insert_datesheet($data_datesheet) {
         $table = 'datesheet_record';
         $this->db->insert($table, $data_datesheet);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _update($arr_col, $org_id, $data) {
@@ -78,7 +74,8 @@ class Mdl_datesheet extends CI_Model {
         }
         $this->db->update($table, $data);
     }
-       function _update_id($id, $data) {
+
+    function _update_id($id, $data) {
         $table = $this->get_table();
         $this->db->where('id',$id);
         $this->db->update($table, $data);
@@ -99,10 +96,8 @@ class Mdl_datesheet extends CI_Model {
         $this->db->where('id', $sbj_id);
         $this->db->set($data);
         $this->db->update($table);
-        $affected_rows = $this->db->affected_rows();
-        return $affected_rows;
+        return $this->db->affected_rows();
     }
-
 
     function _delete($arr_col, $org_id) {       
         $table = $this->get_table();
@@ -114,6 +109,7 @@ class Mdl_datesheet extends CI_Model {
         }
         $this->db->delete($table);
     }
+
     function _set_publish($where) {
         $table = $this->get_table();
         $set_publish['status'] = 1;
@@ -127,6 +123,7 @@ class Mdl_datesheet extends CI_Model {
         $this->db->where($where);
         $this->db->update($table, $set_un_publish);
     }
+
     function _getItemById($id) {
         $table = $this->get_table();
         $this->db->where("( id = '" . $id . "'  )");
@@ -134,14 +131,10 @@ class Mdl_datesheet extends CI_Model {
         return $query->row();
     }
 
-    function _notif_insert_data_teacher($data){
-        $table = 'teacher_notification';
-        $this->db->insert($table,$data);   
-    }
-
-    function _notif_insert_data_parent($data){
-        $table = 'parent_notification';
-        $this->db->insert($table,$data);   
+    function _notif_insert_data($data){
+        $table = 'notification';
+        $this->db->insert($table,$data);
+        return $this->db->insert_id();
     }
 
     function _get_teacher_token($teacher_id,$org_id){
@@ -150,8 +143,7 @@ class Mdl_datesheet extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$teacher_id);
         $this->db->where('designation','Teacher');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function _get_parent_token($parent_id,$org_id){
@@ -160,24 +152,27 @@ class Mdl_datesheet extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$parent_id);
         $this->db->where('designation','Parent');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
-    function _get_parent_for_push_noti($where,$org_id){
+    function _get_parent_id_for_notification($where,$org_id){
         $table = 'student';
-        $this->db->select('parent_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
-    function _get_teacher_for_push_noti($where,$org_id){
+
+    function _get_teacher_id_for_notification($where,$org_id){
         $table = 'subject';
-        $this->db->select('teacher_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
+    }
+
+    function _check_datesheet_exist($class_id){
+        $table = 'datesheet_record';
+        $this->db->where('class_id',$class_id);
+        return $this->db->get($table)->num_rows();
     }
 }
+?>

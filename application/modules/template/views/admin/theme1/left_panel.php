@@ -3,12 +3,6 @@
 	$active="active";
   $role_id = $this->session->userdata('user_data')['role_id'];
 ?>
-<style type="text/css">
-  .fa-caret-down {
-  float: right;
-  padding-top: 4px;
-}
-</style>
 <!-- sidebar-->
 <aside class="aside" >
  <!-- START Sidebar (left)-->
@@ -78,6 +72,7 @@
                    <span>Sections</span>
                 </a>
           </li>
+
           <li class="<?php if($curr_url == 'subjects'){echo 'active';}    ?>">
                 <a href="<?php $controller='subjects'; 
                    echo ADMIN_BASE_URL . $controller ?>">
@@ -85,6 +80,7 @@
                    <span>Subjects</span>
                 </a>
           </li>
+
           <li class="<?php if($curr_url == 'student'){echo 'active';}    ?>">
                 <a href="<?php $controller='student'; 
                    echo ADMIN_BASE_URL . $controller ?>">

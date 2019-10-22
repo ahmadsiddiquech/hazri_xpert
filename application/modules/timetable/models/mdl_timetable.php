@@ -23,8 +23,7 @@ class Mdl_timetable extends CI_Model {
         if($role_id!=1){
             $this->db->where('org_id',$org_id);
         }
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function _get($order_by) {
@@ -40,13 +39,14 @@ class Mdl_timetable extends CI_Model {
         return $this->db->get($table);
     }
 
-     function _get_subject_data($timetable_id,$subject_id) {
+    function _get_subject_data($timetable_id,$subject_id) {
         $table = "timetable_data";
         $this->db->select('*');
         $this->db->where('timetable_id',$timetable_id);
         $this->db->where('subject_id',$subject_id);
         return $this->db->get($table);
     }
+
     function _insert_timetable_subject($data2) {
         $table = 'timetable_data';
         $this->db->insert($table, $data2);
@@ -75,7 +75,7 @@ class Mdl_timetable extends CI_Model {
         $this->db->update($table, $data);
     }
 
-       function _update_id($id, $data) {
+    function _update_id($id, $data) {
         $table = $this->get_table();
         $this->db->where('id',$id);
         $this->db->update($table, $data);
@@ -95,8 +95,7 @@ class Mdl_timetable extends CI_Model {
         $this->db->where('subject_id', $sbj_id);
         $this->db->set($data);
         $this->db->update($table);
-        $affected_rows = $this->db->affected_rows();
-        return $affected_rows;
+        return $this->db->affected_rows();
     }
 
     function check_day($day,$section_id){
@@ -116,6 +115,7 @@ class Mdl_timetable extends CI_Model {
         }
         $this->db->delete($table);
     }
+
     function _set_publish($where) {
         $table = $this->get_table();
         $set_publish['status'] = 1;
@@ -129,6 +129,7 @@ class Mdl_timetable extends CI_Model {
         $this->db->where($where);
         $this->db->update($table, $set_un_publish);
     }
+
     function _getItemById($id) {
         $table = $this->get_table();
         $this->db->where("( id = '" . $id . "'  )");
@@ -143,14 +144,10 @@ class Mdl_timetable extends CI_Model {
         return $this->db->get($table);
     }
 
-    function _notif_insert_data_teacher($data){
-        $table = 'teacher_notification';
-        $this->db->insert($table,$data);   
-    }
-
-    function _notif_insert_data_parent($data){
-        $table = 'parent_notification';
-        $this->db->insert($table,$data);   
+    function _notif_insert_data($data){
+        $table = 'notification';
+        $this->db->insert($table,$data);
+        return $this->db->insert_id();  
     }
 
     function _get_teacher_token($teacher_id,$org_id){
@@ -168,24 +165,21 @@ class Mdl_timetable extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$parent_id);
         $this->db->where('designation','Parent');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
-    function _get_parent_for_push_noti($where,$org_id){
+    function _get_parent_id_for_notification($where,$org_id){
         $table = 'student';
-        $this->db->select('parent_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
-    function _get_teacher_for_push_noti($where,$org_id){
+
+    function _get_teacher_id_for_notification($where,$org_id){
         $table = 'subject';
-        $this->db->select('teacher_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 }
+?>

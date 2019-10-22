@@ -103,8 +103,6 @@
                       <div class="col-sm-5">
                                     <div class="form-group">
                                     <?php
-
-                                    // $options = array('' => 'Select')+$roll_title ;
                                     $attribute = array('class' => 'control-label col-md-4');
                                     echo form_label('Class <span style="color:red">*</span>', 'class_id', $attribute);?>
                                     <div class="col-md-8">
@@ -235,7 +233,14 @@
             data: {'id': class_id },
             async: false,
             success: function(result) {
-            $("#inputbox").html(result);
+            if(result == 0){
+              toastr.error('Datesheet exists for this class');
+              document.getElementById("button1").disabled = true;
+            }
+            else{
+              document.getElementById("button1").disabled = false;
+              $("#inputbox").html(result);
+            }
           }
         });
   });

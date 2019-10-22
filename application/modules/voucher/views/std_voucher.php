@@ -82,8 +82,11 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
+
+    /*//////////////////////// code for detail //////////////////////////*/
+
             $(document).on("click", ".view_details", function(event){
-            // event.preventDefault();
+            event.preventDefault();
             var id = $(this).attr('rel');
             //alert(id); return false;
               $.ajax({
@@ -140,4 +143,12 @@ $(document).ready(function(){
 
 });
 
+$(document).ready(function() {
+        $("#news_file").change(function() {
+            var img = $(this).val();
+            var replaced_val = img.replace("C:\\fakepath\\", '');
+            $('#hdn_image').val(replaced_val);
+        });
+    });
 </script>
+

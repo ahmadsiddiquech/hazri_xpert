@@ -1,6 +1,7 @@
 <?php
+if ( ! defined('BASEPATH')) 
+    exit('No direct script access allowed');
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class datesheet extends MX_Controller
 {
 
@@ -143,34 +144,56 @@ Modules::run('site_security/is_login');
             $user_data = $this->session->userdata('user_data');
             if ($update_id != 0) {
                 $id = $this->_update($update_id,$user_data['user_id'], $data);
-                // $data2['notif_title'] = 'Datesheet Updated';
-                // $data2['notif_description'] = 'Admin updated datesheet';
-                // $data2['notif_type'] = 'datesheet';
-                // $data2['type_id'] = $update_id;
-                // $data2['class_id'] = $data['class_id'];
-                // $data2['program_id'] = $data['program_id'];
-                // date_default_timezone_set("Asia/Karachi");
-                // $data2['notif_date'] = date('Y-m-d H:i:s');
-                // $data2['org_id'] = $data['org_id'];
-                // $this->_notif_insert_data_teacher($data2);
-                // $this->_notif_insert_data_parent($data2);
+                $whereClass['class_id'] = $data['class_id'];
+                $parents = $this->_get_parent_id_for_notification($whereClass,$data['org_id'])->result_array();
+                if (isset($parents) && !empty($parents)) {
+                    foreach ($parents as $key => $value) {
+                        $data2['notif_for'] = 'Parent';
+                        $data2['user_id'] = $value['parent_id'];
+                        $data2['std_id'] = $value['id'];
+                        $data2['std_name'] = $value['name'];
+                        $data2['std_roll_no'] = $value['roll_no'];
+                        $data2['notif_title'] = 'Datesheet Class '.$data['class_name'];
+                        $data2['notif_description'] = 'Admin Updated This Datesheet';
+                        $data2['notif_type'] = 'datesheet';
+                        $data2['notif_sub_type'] = 'datesheet_update';
+                        $data2['type_id'] = $update_id;
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
+                }
 
-                // $where['class_id'] = $data2['class_id'];
-                // $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                // if (isset($teacher_id) && !empty($teacher_id)) {
-                //     foreach ($teacher_id as $key => $value) {
-                //         $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                //         Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                //     }  
-                // }
-                // $where1['class_id'] = $data2['class_id'];
-                // $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                // if (isset($parent_id) && !empty($parent_id)) {
-                //     foreach ($parent_id as $key => $value) {
-                //         $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                //        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                //     }   
-                // }
+                $teachers = $this->_get_teacher_id_for_notification($whereClass,$data['org_id'])->result_array();
+                if (isset($teachers) && !empty($teachers)) {
+                    foreach ($teachers as $key => $value) {
+                        $data2['notif_for'] = 'Teacher';
+                        $data2['user_id'] = $value['teacher_id'];
+                        $data2['subject_name'] = $value['name'];
+                        $data2['subject_id'] = $value['id'];
+                        $data2['std_id'] = '';
+                        $data2['std_name'] = '';
+                        $data2['std_roll_no'] = '';
+                        $data2['notif_title'] = 'Datesheet Class '.$data['class_name'];
+                        $data2['notif_description'] = 'Admin Updated This Datesheet';
+                        $data2['notif_type'] = 'datesheet';
+                        $data2['notif_sub_type'] = 'datesheet_update';
+                        $data2['type_id'] = $update_id;
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
+                }
             }
             else {
                 $datesheet_id = $this->_insert_datesheet($data);
@@ -179,34 +202,56 @@ Modules::run('site_security/is_login');
                 $start_time = $this->input->post('start_time');
                 $end_time = $this->input->post('end_time');
                 $this->adding_datesheet_subject($subject_name, $exam_date, $start_time, $end_time, $datesheet_id,$user_data['user_id']);
-                $data2['notif_title'] = 'Datesheet of '.$data['program_name'];
-                $data2['notif_description'] = 'Datesheet added for class '.$data['class_name'];
-                $data2['notif_type'] = 'datesheet';
-                $data2['type_id'] = $datesheet_id;
-                $data2['class_id'] = $data['class_id'];
-                $data2['program_id'] = $data['program_id'];
-                date_default_timezone_set("Asia/Karachi");
-                $data2['notif_date'] = date('Y-m-d H:i:s');
-                $data2['org_id'] = $data['org_id'];
-                $this->_notif_insert_data_teacher($data2);
-                $this->_notif_insert_data_parent($data2);
 
-                $where['class_id'] = $data2['class_id'];
-                $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                if (isset($teacher_id) && !empty($teacher_id)) {
-                    foreach ($teacher_id as $key => $value) {
-                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }  
+                $whereClass['class_id'] = $data['class_id'];
+                $parents = $this->_get_parent_id_for_notification($whereClass,$data['org_id'])->result_array();
+                if (isset($parents) && !empty($parents)) {
+                    foreach ($parents as $key => $value) {
+                        $data2['notif_for'] = 'Parent';
+                        $data2['user_id'] = $value['parent_id'];
+                        $data2['std_id'] = $value['id'];
+                        $data2['std_name'] = $value['name'];
+                        $data2['std_roll_no'] = $value['roll_no'];
+                        $data2['notif_title'] = 'Datesheet Class '.$data['class_name'];
+                        $data2['notif_description'] = 'Datesheet has been uploaded';
+                        $data2['notif_type'] = 'datesheet';
+                        $data2['notif_sub_type'] = 'datesheet';
+                        $data2['type_id'] = $datesheet_id;
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
                 }
 
-                $where1['class_id'] = $data2['class_id'];
-                $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                if (isset($parent_id) && !empty($parent_id)) {
-                    foreach ($parent_id as $key => $value) {
-                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                       Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }   
+                $teachers = $this->_get_teacher_id_for_notification($whereClass,$data['org_id'])->result_array();
+                if (isset($teachers) && !empty($teachers)) {
+                    foreach ($teachers as $key => $value) {
+                        $data2['notif_for'] = 'Teacher';
+                        $data2['user_id'] = $value['teacher_id'];
+                        $data2['subject_name'] = $value['name'];
+                        $data2['subject_id'] = $value['id'];
+                        $data2['std_id'] = '';
+                        $data2['std_name'] = '';
+                        $data2['std_roll_no'] = '';
+                        $data2['notif_title'] = 'Datesheet Class '.$data['class_name'];
+                        $data2['notif_description'] = 'Datesheet has been uploaded';
+                        $data2['notif_type'] = 'datesheet';
+                        $data2['notif_sub_type'] = 'datesheet';
+                        $data2['type_id'] = $datesheet_id;
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
                 }
             }
             $this->session->set_flashdata('message', 'datesheet'.' '.DATA_SAVED);
@@ -256,34 +301,55 @@ Modules::run('site_security/is_login');
         $check = $this->update_subject($subject_id,$datesheet_id,$data);
 
         $notif_data = $this->_get_data_from_db($datesheet_id);
-        $data2['notif_title'] = 'Datesheet of '.$notif_data['program_name'];
-        $data2['notif_description'] = 'Admin Edited The Subjects of this datesheet for class '.$notif_date['class_name'];
-        $data2['notif_type'] = 'datesheet';
-        $data2['type_id'] = $notif_data['id'];
-        $data2['class_id'] = $notif_data['class_id'];
-        $data2['program_id'] = $notif_data['program_id'];
-        date_default_timezone_set("Asia/Karachi");
-        $data2['notif_date'] = date('Y-m-d H:i:s');
-        $data2['org_id'] = $notif_data['org_id'];
-        $this->_notif_insert_data_teacher($data2);
-        $this->_notif_insert_data_parent($data2);
-
-        $where['class_id'] = $data2['class_id'];
-        $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-        if (isset($teacher_id) && !empty($teacher_id)) {
-            foreach ($teacher_id as $key => $value) {
-                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }  
-        }
-
-        $where1['class_id'] = $data2['class_id'];
-        $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-        if (isset($parent_id) && !empty($parent_id)) {
-            foreach ($parent_id as $key => $value) {
+        $whereClass['class_id'] = $notif_data['class_id'];
+        $parents = $this->_get_parent_id_for_notification($whereClass,$notif_data['org_id'])->result_array();
+        if (isset($parents) && !empty($parents)) {
+            foreach ($parents as $key => $value) {
+                $data2['notif_for'] = 'Parent';
+                $data2['user_id'] = $value['parent_id'];
+                $data2['std_id'] = $value['id'];
+                $data2['std_name'] = $value['name'];
+                $data2['std_roll_no'] = $value['roll_no'];
+                $data2['notif_title'] = 'Datesheet Class '.$notif_data['class_name'];
+                $data2['notif_description'] = 'Admin Updated Subject of This Datesheet';
+                $data2['notif_type'] = 'datesheet';
+                $data2['notif_sub_type'] = 'subject_update';
+                $data2['type_id'] = $datesheet_id;
+                $data2['class_id'] = $notif_data['class_id'];
+                $data2['program_id'] = $notif_data['program_id'];
+                date_default_timezone_set("Asia/Karachi");
+                $data2['notif_date'] = date('Y-m-d H:i:s');
+                $data2['org_id'] = $notif_data['org_id'];
+                $nid = $this->_notif_insert_data($data2);
                 $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-               Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }   
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
+        }
+        $whereSbj['id'] = $subject_id;
+        $teachers = $this->_get_teacher_id_for_notification($whereSbj,$notif_data['org_id'])->result_array();
+        if (isset($teachers) && !empty($teachers)) {
+            foreach ($teachers as $key => $value) {
+                $data2['notif_for'] = 'Teacher';
+                $data2['user_id'] = $value['teacher_id'];
+                $data2['subject_name'] = $value['name'];
+                $data2['subject_id'] = $value['id'];
+                $data2['std_id'] = '';
+                $data2['std_name'] = '';
+                $data2['std_roll_no'] = '';
+                $data2['notif_title'] = 'Datesheet Class '.$notif_data['class_name'];
+                $data2['notif_description'] = 'Admin Updated Subject of This Datesheet';
+                $data2['notif_type'] = 'datesheet';
+                $data2['notif_sub_type'] = 'subject_update';
+                $data2['type_id'] = $datesheet_id;
+                $data2['class_id'] = $notif_data['class_id'];
+                $data2['program_id'] = $notif_data['program_id'];
+                date_default_timezone_set("Asia/Karachi");
+                $data2['notif_date'] = date('Y-m-d H:i:s');
+                $data2['org_id'] = $notif_data['org_id'];
+                $nid = $this->_notif_insert_data($data2);
+                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
         }
 
         if($check == 1){
@@ -304,30 +370,35 @@ Modules::run('site_security/is_login');
             $stdData = explode(",",$class_id);
             $class_id = $stdData[0];
         }
-        $arr_subject = Modules::run('subjects/_get_subject_class',$class_id)->result_array();
-        // print_r($arr_subject);exit();
-        $html='';
-        $html.='<h3>Subjects</h3>';
-        foreach ($arr_subject as $key => $value) {
-            $html.='<div class="col-md-4">';
-            $html.='Subject Name';
-            $html.='<input class="form-control" readonly type="name" name="subject_name[]" value='.$value['id'].','.$value['name'].'>';
-            $html.='</div>';
-            $html.='<div class="col-md-3">';
-            $html.='Exam Date';
-            $html.='<input class="form-control" type="date" name="exam_date[]">';
-            $html.='</div>';
-            $html.='<div class="col-md-2">';
-            $html.='Start Time';
-            $html.='<input class="form-control" type="time" name="start_time[]">';
-            $html.='</div>';
-            $html.='<div class="col-md-2">';
-            $html.='End Time';
-            $html.='<input class="form-control" type="time" name="end_time[]">';
-            $html.='</div>';
-
+        $check = $this->_check_datesheet_exist($class_id);
+        if ($check == 0) {
+            $arr_subject = Modules::run('subjects/_get_subject_class',$class_id)->result_array();
+            $html='';
+            $html.='<h3>Subjects</h3>';
+            foreach ($arr_subject as $key => $value) {
+                $var = str_replace(' ', '-', $value['name']);
+                $html.='<div class="col-md-4">';
+                $html.='Subject Name';
+                $html.='<input class="form-control" readonly type="name" name="subject_name[]" value='.$value['id'].','.$var.'>';
+                $html.='</div>';
+                $html.='<div class="col-md-3">';
+                $html.='Exam Date';
+                $html.='<input class="form-control" type="date" name="exam_date[]">';
+                $html.='</div>';
+                $html.='<div class="col-md-2">';
+                $html.='Start Time';
+                $html.='<input class="form-control" type="time" name="start_time[]">';
+                $html.='</div>';
+                $html.='<div class="col-md-2">';
+                $html.='End Time';
+                $html.='<input class="form-control" type="time" name="end_time[]">';
+                $html.='</div>';
+            }
+            print_r($html);
         }
-        print_r($html);
+        else{
+            print_r(0);
+        }
     }
     
     function delete() {
@@ -353,8 +424,6 @@ Modules::run('site_security/is_login');
         redirect(ADMIN_BASE_URL . 'datesheet/manage/' . '');
     }
 
-   
-
     function change_status() {
         $id = $this->input->post('id');
         $status = $this->input->post('status');
@@ -368,9 +437,14 @@ Modules::run('site_security/is_login');
     }
 
     /////////////// for detail ////////////
+
+    function _check_datesheet_exist($class_id){
+        $this->load->model('mdl_datesheet');
+        return $this->mdl_datesheet->_check_datesheet_exist($class_id);
+    }
+
     function detail() {
         $update_id = $this->input->post('id');
-       // $lang_id = $this->input->post('lang_id');
         $data['user'] = $this->_get_data_from_db($update_id);
         $this->load->view('detail', $data);
     }
@@ -456,33 +530,29 @@ Modules::run('site_security/is_login');
         return $this->mdl_datesheet->_get_subject_data($datesheet_id,$subject_id);
     }
 
-    function _notif_insert_data_teacher($data2){
+    function _notif_insert_data($data2){
         $this->load->model('mdl_datesheet');
-        $this->mdl_datesheet->_notif_insert_data_teacher($data2);
+        return $this->mdl_datesheet->_notif_insert_data($data2);
     }
 
-    function _notif_insert_data_parent($data2){
+    function _get_parent_id_for_notification($where,$org_id){
         $this->load->model('mdl_datesheet');
-        $this->mdl_datesheet->_notif_insert_data_parent($data2);
+        return $this->mdl_datesheet->_get_parent_id_for_notification($where,$org_id);
     }
 
-    function _get_teacher_for_push_noti($where,$org_id){
-    $this->load->model('mdl_datesheet');
-    return $this->mdl_datesheet->_get_teacher_for_push_noti($where,$org_id);
-    }
-
-    function _get_parent_for_push_noti($where,$org_id){
-    $this->load->model('mdl_datesheet');
-    return $this->mdl_datesheet->_get_parent_for_push_noti($where,$org_id);
+    function _get_teacher_id_for_notification($where,$org_id){
+        $this->load->model('mdl_datesheet');
+        return $this->mdl_datesheet->_get_teacher_id_for_notification($where,$org_id);
     }
 
     function _get_teacher_token($teacher_id,$org_id){
-    $this->load->model('mdl_datesheet');
-    return $this->mdl_datesheet->_get_teacher_token($teacher_id,$org_id);
+        $this->load->model('mdl_datesheet');
+        return $this->mdl_datesheet->_get_teacher_token($teacher_id,$org_id);
     }
 
     function _get_parent_token($parent_id,$org_id){
-    $this->load->model('mdl_datesheet');
-    return $this->mdl_datesheet->_get_parent_token($parent_id,$org_id);
+        $this->load->model('mdl_datesheet');
+        return $this->mdl_datesheet->_get_parent_token($parent_id,$org_id);
     }
 }
+?>

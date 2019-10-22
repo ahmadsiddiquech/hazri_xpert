@@ -26,6 +26,7 @@ Modules::run('site_security/is_login');
         $org_id = $this->uri->segment(4);
         $query = $this->_get('users_sessions.id desc',$org_id)->result_array();
         if (isset($query) && !empty($query)) {
+
             foreach ($query as $key => $value) {
                 $data1['id'] = $value['id'];
                 $data1['username'] = $value['username'];

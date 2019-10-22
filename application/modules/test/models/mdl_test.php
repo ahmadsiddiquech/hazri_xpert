@@ -1,7 +1,6 @@
 <?php
 
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class Mdl_test extends CI_Model {
 
@@ -29,9 +28,6 @@ class Mdl_test extends CI_Model {
 
     function _get($order_by) {
         $submit_id = $this->uri->segment(4);
-        // if(isset($_GET['id'])){
-        //     $submit_id = $_GET['id'];
-        // }
         $user_data = $this->session->userdata('user_data');
         $role_id = $user_data['role_id'];
         $org_id = $user_data['user_id'];
@@ -45,14 +41,12 @@ class Mdl_test extends CI_Model {
             $this->db->where('org_id',$submit_id);
         }
         $this->db->order_by($order_by);
-        $query = $this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
     function _insert($data) {
         $table = $this->get_table();
         $this->db->insert($table, $data);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _update($arr_col, $org_id, $data) {
@@ -85,8 +79,7 @@ class Mdl_test extends CI_Model {
         $this->db->join("student", "student.section_id = test.section_id", "full");
         $this->db->where('test.id', $update_id);
         $this->db->where('test.org_id', $org_id);
-        $query=$this->db->get();
-        return $query;
+        return $this->db->get();
     }
 
     function _get_class_student_marks($std_id,$test_id){
@@ -94,21 +87,17 @@ class Mdl_test extends CI_Model {
         $this->db->select('test_marks.obtained_marks');
         $this->db->where('std_id', $std_id);
         $this->db->where('test_id', $test_id);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function update_marks($std_id,$roll_no,$test_id,$obtained_marks){
         $table = "test_marks";
-        // $where['obtained_marks']= $obtained_marks;
-        // print_r($test_id);exit();
         $this->db->where('std_id', $std_id);
         $this->db->where('std_roll_no', $roll_no);
         $this->db->where('test_id', $test_id);
         $this->db->set('obtained_marks',$obtained_marks);
         $this->db->update($table);
-        $affected_rows = $this->db->affected_rows();
-        return $affected_rows;
+        return $this->db->affected_rows();
     }
 
     function _delete($arr_col, $org_id) {       
@@ -141,14 +130,10 @@ class Mdl_test extends CI_Model {
         return $query->row();
     }
 
-    function _notif_insert_data_teacher($data){
-        $table = 'teacher_notification';
-        $this->db->insert($table,$data);   
-    }
-
-    function _notif_insert_data_parent($data){
-        $table = 'parent_notification';
-        $this->db->insert($table,$data);   
+    function _notif_insert_data($data){
+        $table = 'notification';
+        $this->db->insert($table,$data);
+        return $this->db->insert_id();
     }
 
     function _get_teacher_token($teacher_id,$org_id){
@@ -157,8 +142,7 @@ class Mdl_test extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$teacher_id);
         $this->db->where('designation','Teacher');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function _get_parent_token($parent_id,$org_id){
@@ -167,24 +151,20 @@ class Mdl_test extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$parent_id);
         $this->db->where('designation','Parent');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
-    function _get_parent_for_push_noti($where,$org_id){
+    function _get_parent_id_for_notification($where,$org_id){
         $table = 'student';
-        $this->db->select('parent_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
-    function _get_teacher_for_push_noti($where,$org_id){
+
+    function _get_teacher_id_for_notification($where,$org_id){
         $table = 'subject';
-        $this->db->select('teacher_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 }

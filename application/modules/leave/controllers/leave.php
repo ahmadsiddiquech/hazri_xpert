@@ -36,9 +36,7 @@ Modules::run('site_security/is_login');
                 $data2[] = $data1;
             }
         }
-        // print_r($data1);exit();
         $data['news'] = $data2;
-        // print_r($data['news']);exit();
         $data['view_file'] = 'news';
         $this->load->module('template');
         $this->template->admin($data);
@@ -47,7 +45,6 @@ Modules::run('site_security/is_login');
 
     function _get_data_from_db($update_id) {
         $where['leave.id'] = $update_id;
-        //$where['post.lang_id'] = $lang_id;
         $query = $this->_get_by_arr_id($where);
         foreach ($query->result() as
                 $row) {
@@ -57,6 +54,7 @@ Modules::run('site_security/is_login');
             $data['std_roll_no'] = $row->std_roll_no;
             $data['leave_type'] = $row->leave_type;
             $data['leave_duration'] = $row->leave_duration;
+            $data['teacher_id'] = $row->teacher_id;
             $data['parent_id'] = $row->parent_id;
             $data['section_id'] = $row->section_id;
             $data['parent_name'] = $row->parent_name;
@@ -82,16 +80,16 @@ Modules::run('site_security/is_login');
         $notif_data = $this->_get_data_from_db($leave_id);
         $data2['notif_title'] = $notif_data['leave_type'];
         if($status == '1'){
-            $data2['notif_description'] = 'Admin accepted leave for'.$std_name;
+            $data2['notif_description'] = 'Admin accepted leave for '.$std_name;
         }
         elseif ($status == '2') {
-            $data2['notif_description'] = 'Admin rejected leave for'.$std_name;
+            $data2['notif_description'] = 'Admin rejected leave for '.$std_name;
         }
         elseif ($status == '0') {
-            $data2['notif_description'] = 'Leave for'.$std_name . 'is Pending';
+            $data2['notif_description'] = 'Leave for '.$std_name . ' is Pending';
         }
-
         $data2['notif_type'] = 'leave';
+        $data2['notif_sub_type'] = 'leave_update';
         $data2['type_id'] = $leave_id;
         $data2['section_id'] = $notif_data['section_id'];
         date_default_timezone_set("Asia/Karachi");
@@ -99,29 +97,43 @@ Modules::run('site_security/is_login');
         $user_data = $this->session->userdata('user_data');
         $org_id = $user_data['user_id'];
         $data2['org_id'] = $org_id;
-        $this->_notif_insert_data_teacher($data2);
         $data2['std_id'] = $std_id;
         $data2['std_name'] = $std_name;
         $data2['std_roll_no'] = $roll_no;
-        $data2['notif_sub_type'] = 'update';
-        $this->_notif_insert_data_parent($data2);
 
-        $where['section_id'] = $data2['section_id'];
-        $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-        if (isset($teacher_id) && !empty($teacher_id)) {
-            foreach ($teacher_id as $key => $value) {
-                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }  
-        }
-        $where1['id'] = $data2['std_id'];
-        $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-        if (isset($parent_id) && !empty($parent_id)) {
-            foreach ($parent_id as $key => $value) {
+        $whereStd['id'] = $std_id;
+        $parents = $this->_get_parent_id_for_notification($whereStd,$data2['org_id'])->result_array();
+        if (isset($parents) && !empty($parents)) {
+            foreach ($parents as $key => $value) {
+                $data2['notif_for'] = 'Parent';
+                $data2['user_id'] = $value['parent_id'];
+                $nid = $this->_notif_insert_data($data2);
                 $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-               Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }   
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
         }
+
+        if ($notif_data['leave_duration'] == 'lecture') {
+            $data2['notif_for'] = 'Teacher';
+            $data2['user_id'] = $notif_data['teacher_id'];
+            $nid = $this->_notif_insert_data($data2);
+            $token = $this->_get_teacher_token($notif_data['teacher_id'],$data2['org_id'])->result_array();
+            Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+        }
+        else{
+            $whereId['section_id'] = $notif_data['section_id'];
+            $teachers = $this->_get_teacher_id_for_notification($whereId,$data2['org_id'])->result_array();
+            if (isset($teachers) && !empty($teachers)) {
+                foreach ($teachers as $key => $value) {
+                    $data2['notif_for'] = 'Teacher';
+                    $data2['user_id'] = $value['teacher_id'];
+                    $nid = $this->_notif_insert_data($data2);
+                    $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                    Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                }
+            }
+        }
+
         if($check == 1){
             echo "true";
         }
@@ -157,24 +169,19 @@ Modules::run('site_security/is_login');
         return $this->mdl_leave->_change_status($std_id,$roll_no,$leave_id,$status);
     }
 
-    function _notif_insert_data_teacher($data2){
+    function _get_parent_id_for_notification($where,$org_id){
         $this->load->model('mdl_leave');
-        $this->mdl_leave->_notif_insert_data_teacher($data2);
+        return $this->mdl_leave->_get_parent_id_for_notification($where,$org_id);
     }
 
-    function _notif_insert_data_parent($data2){
+    function _get_teacher_id_for_notification($where,$org_id){
         $this->load->model('mdl_leave');
-        $this->mdl_leave->_notif_insert_data_parent($data2);
+        return $this->mdl_leave->_get_teacher_id_for_notification($where,$org_id);
     }
 
-    function _get_teacher_for_push_noti($where,$org_id){
-    $this->load->model('mdl_leave');
-    return $this->mdl_leave->_get_teacher_for_push_noti($where,$org_id);
-    }
-
-    function _get_parent_for_push_noti($where,$org_id){
-    $this->load->model('mdl_leave');
-    return $this->mdl_leave->_get_parent_for_push_noti($where,$org_id);
+    function _notif_insert_data($data2){
+        $this->load->model('mdl_leave');
+        return $this->mdl_leave->_notif_insert_data($data2);
     }
 
     function _get_teacher_token($teacher_id,$org_id){

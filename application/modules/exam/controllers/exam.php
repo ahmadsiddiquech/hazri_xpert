@@ -74,7 +74,6 @@ Modules::run('site_security/is_login');
                 $finalData2[] = $finalData;
             }
         }
-        // print_r($obtained_marks);exit();
         $data['student_list'] = $finalData2;
         $data['view_file'] = 'marks';
         $this->load->module('template');
@@ -87,9 +86,6 @@ Modules::run('site_security/is_login');
         $org_id = $user_data['user_id'];
         
         $finalData2 = $this->_get_exam_subject($exam_id)->result_array();
-
-        // print_r($finalData2);exit();
-
         $data['update_id'] = $exam_id;
         $data['subject_list'] = $finalData2;
         $data['view_file'] = 'subjects';
@@ -120,7 +116,6 @@ Modules::run('site_security/is_login');
             $class_id = $stdData[0];
         }
         $arr_section = Modules::run('sections/_get_by_arr_id_class',$class_id)->result_array();
-        // print_r($arr_section);exit();
         $html='';
         $html.='<option value="">Select</option>';
         foreach ($arr_section as $key => $value) {
@@ -130,9 +125,7 @@ Modules::run('site_security/is_login');
     }
 
     function _get_data_from_db($update_id) {
-        //$where['post.lang_id'] = $lang_id;
         $query = $this->_get_by_arr_id($update_id);
-        // print_r($query);exit();
         foreach ($query->result() as
                 $row) {
             $data['exam_id'] = $row->exam_id;
@@ -202,34 +195,56 @@ Modules::run('site_security/is_login');
             $user_data = $this->session->userdata('user_data');
             if ($update_id != 0) {
                 $id = $this->_update($update_id,$user_data['user_id'], $data);
-                $data2['notif_title'] = $data['exam_title'];
-                $data2['notif_description'] = 'Admin updated this Exam';
-                $data2['notif_type'] = 'exam';
-                $data2['type_id'] = $update_id;
-                $data2['class_id'] = $data['class_id'];
-                $data2['program_id'] = $data['program_id'];
-                date_default_timezone_set("Asia/Karachi");
-                $data2['notif_date'] = date('Y-m-d H:i:s');
-                $data2['org_id'] = $data['org_id'];
-                $this->_notif_insert_data_teacher($data2);
-                $this->_notif_insert_data_parent($data2);
 
-                $where['class_id'] = $data2['class_id'];
-                $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                if (isset($teacher_id) && !empty($teacher_id)) {
-                    foreach ($teacher_id as $key => $value) {
-                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }  
+                $whereClass['class_id'] = $data['class_id'];
+                $parents = $this->_get_parent_id_for_notification($whereClass,$data['org_id'])->result_array();
+                if (isset($parents) && !empty($parents)) {
+                    foreach ($parents as $key => $value) {
+                        $data2['notif_for'] = 'Parent';
+                        $data2['user_id'] = $value['parent_id'];
+                        $data2['std_id'] = $value['id'];
+                        $data2['std_name'] = $value['name'];
+                        $data2['std_roll_no'] = $value['roll_no'];
+                        $data2['notif_title'] = $data['exam_title'];
+                        $data2['notif_description'] = 'Admin Updated This Exam';
+                        $data2['notif_type'] = 'exam';
+                        $data2['notif_sub_type'] = 'exam_update';
+                        $data2['type_id'] = $update_id;
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
                 }
 
-                $where1['class_id'] = $data2['class_id'];
-                $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                if (isset($parent_id) && !empty($parent_id)) {
-                    foreach ($parent_id as $key => $value) {
-                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                       Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }   
+                $teachers = $this->_get_teacher_id_for_notification($whereClass,$data['org_id'])->result_array();
+                if (isset($teachers) && !empty($teachers)) {
+                    foreach ($teachers as $key => $value) {
+                        $data2['notif_for'] = 'Teacher';
+                        $data2['user_id'] = $value['teacher_id'];
+                        $data2['subject_name'] = $value['name'];
+                        $data2['subject_id'] = $value['id'];
+                        $data2['std_id'] = '';
+                        $data2['std_name'] = '';
+                        $data2['std_roll_no'] = '';
+                        $data2['notif_title'] = $data['exam_title'];
+                        $data2['notif_description'] = 'Admin Updated This Exam';
+                        $data2['notif_type'] = 'exam';
+                        $data2['notif_sub_type'] = 'exam_update';
+                        $data2['type_id'] = $update_id;
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
                 }
             }
             else {
@@ -240,34 +255,55 @@ Modules::run('site_security/is_login');
                 $total_marks = $this->input->post('total_marks');
                 $this->adding_exam_subject($subject_name, $exam_date, $exam_time, $total_marks, $exam_id,$user_data['user_id']);
 
-                $data2['notif_title'] = $data['exam_title'];
-                $data2['notif_description'] = $data['exam_description'];
-                $data2['notif_type'] = 'exam';
-                $data2['type_id'] = $exam_id;
-                $data2['class_id'] = $data['class_id'];
-                $data2['program_id'] = $data['program_id'];
-                date_default_timezone_set("Asia/Karachi");
-                $data2['notif_date'] = date('Y-m-d H:i:s');
-                $data2['org_id'] = $data['org_id'];
-                $this->_notif_insert_data_teacher($data2);
-                $this->_notif_insert_data_parent($data2);
-
-                $where['class_id'] = $data2['class_id'];
-                $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                if (isset($teacher_id) && !empty($teacher_id)) {
-                    foreach ($teacher_id as $key => $value) {
-                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }  
+                $whereClass['class_id'] = $data['class_id'];
+                $parents = $this->_get_parent_id_for_notification($whereClass,$data['org_id'])->result_array();
+                if (isset($parents) && !empty($parents)) {
+                    foreach ($parents as $key => $value) {
+                        $data2['notif_for'] = 'Parent';
+                        $data2['user_id'] = $value['parent_id'];
+                        $data2['std_id'] = $value['id'];
+                        $data2['std_name'] = $value['name'];
+                        $data2['std_roll_no'] = $value['roll_no'];
+                        $data2['notif_title'] = $data['exam_title'];
+                        $data2['notif_description'] = $data['exam_description'];
+                        $data2['notif_type'] = 'exam';
+                        $data2['notif_sub_type'] = 'exam';
+                        $data2['type_id'] = $exam_id;
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
                 }
 
-                $where1['class_id'] = $data2['class_id'];
-                $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                if (isset($parent_id) && !empty($parent_id)) {
-                    foreach ($parent_id as $key => $value) {
-                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                       Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                    }   
+                $teachers = $this->_get_teacher_id_for_notification($whereClass,$data['org_id'])->result_array();
+                if (isset($teachers) && !empty($teachers)) {
+                    foreach ($teachers as $key => $value) {
+                        $data2['notif_for'] = 'Teacher';
+                        $data2['user_id'] = $value['teacher_id'];
+                        $data2['subject_name'] = $value['name'];
+                        $data2['subject_id'] = $value['id'];
+                        $data2['std_id'] = '';
+                        $data2['std_name'] = '';
+                        $data2['std_roll_no'] = '';
+                        $data2['notif_title'] = $data['exam_title'];
+                        $data2['notif_description'] = $data['exam_description'];
+                        $data2['notif_type'] = 'exam';
+                        $data2['notif_sub_type'] = 'exam';
+                        $data2['type_id'] = $exam_id;
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
                 }
             }
             $this->session->set_flashdata('message', 'exam'.' '.DATA_SAVED);
@@ -291,14 +327,12 @@ Modules::run('site_security/is_login');
             $data['org_id']=$org_id;
 
             $arr_teacher = Modules::run('subjects/_get_subject_teacher',$data['subject_id'],$org_id)->result_array();
-            // print_r($arr_teacher);exit();
             if (isset($arr_teacher) && !empty($arr_teacher)) {
                 $data['teacher_id'] = $arr_teacher[0]['teacher_id'];
                 $data['teacher_name'] =  $arr_teacher[0]['teacher_name'];
             }
 
             if(!empty($value)){
-                // $data['day']=$value;
                 $this->_insert_exam_subject($data);
             }
             $counter++; 
@@ -337,37 +371,57 @@ Modules::run('site_security/is_login');
         $obtained_marks = $this->input->post('obtained_marks');
         $this->adding_exam_subject_marks($roll_no, $std_id, $name, $obtained_marks,$exam_id,$subject_id,$user_data['user_id']);
 
-        $notif_data = $this->_get_data_from_db($exam_id);
-        $data2['notif_title'] = $notif_data['exam_title'];
-        $data2['notif_description'] = 'Marks of this Exam are submitted';
-        $data2['notif_type'] = 'exam';
-        $data2['type_id'] = $notif_data['exam_id'];
-        $data2['class_id'] = $notif_data['class_id'];
-        $data2['program_id'] = $notif_data['program_id'];
-        date_default_timezone_set("Asia/Karachi");
-        $data2['notif_date'] = date('Y-m-d H:i:s');
-        $data2['org_id'] = $notif_data['org_id'];
-        $this->_notif_insert_data_teacher($data2);
-        $this->_notif_insert_data_parent($data2);
-
-        $where['class_id'] = $data2['class_id'];
-        $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-        if (isset($teacher_id) && !empty($teacher_id)) {
-            foreach ($teacher_id as $key => $value) {
-                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }  
-        }
-
-        $where1['class_id'] = $data2['class_id'];
-        $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-        if (isset($parent_id) && !empty($parent_id)) {
-            foreach ($parent_id as $key => $value) {
+        $data = $this->_get_data_from_db($exam_id);
+        $whereClass['class_id'] = $data['class_id'];
+        $parents = $this->_get_parent_id_for_notification($whereClass,$data['org_id'])->result_array();
+        if (isset($parents) && !empty($parents)) {
+            foreach ($parents as $key => $value) {
+                $data2['notif_for'] = 'Parent';
+                $data2['user_id'] = $value['parent_id'];
+                $data2['std_id'] = $value['id'];
+                $data2['std_name'] = $value['name'];
+                $data2['std_roll_no'] = $value['roll_no'];
+                $data2['notif_title'] = $data['exam_title'];
+                $data2['notif_description'] = 'Admin Submitted Marks of this Exam';
+                $data2['notif_type'] = 'exam';
+                $data2['notif_sub_type'] = 'marks';
+                $data2['type_id'] = $exam_id;
+                $data2['class_id'] = $data['class_id'];
+                $data2['program_id'] = $data['program_id'];
+                date_default_timezone_set("Asia/Karachi");
+                $data2['notif_date'] = date('Y-m-d H:i:s');
+                $data2['org_id'] = $data['org_id'];
+                $nid = $this->_notif_insert_data($data2);
                 $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-               Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }   
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
         }
-        
+
+        $teachers = $this->_get_teacher_id_for_notification($whereClass,$data['org_id'])->result_array();
+        if (isset($teachers) && !empty($teachers)) {
+            foreach ($teachers as $key => $value) {
+                $data2['notif_for'] = 'Teacher';
+                $data2['user_id'] = $value['teacher_id'];
+                $data2['subject_name'] = $value['name'];
+                $data2['subject_id'] = $value['id'];
+                $data2['std_id'] = '';
+                $data2['std_name'] = '';
+                $data2['std_roll_no'] = '';
+                $data2['notif_title'] = $data['exam_title'];
+                $data2['notif_description'] = 'Admin Submitted Marks of this Exam';
+                $data2['notif_type'] = 'exam';
+                $data2['notif_sub_type'] = 'marks';
+                $data2['type_id'] = $exam_id;
+                $data2['class_id'] = $data['class_id'];
+                $data2['program_id'] = $data['program_id'];
+                date_default_timezone_set("Asia/Karachi");
+                $data2['notif_date'] = date('Y-m-d H:i:s');
+                $data2['org_id'] = $data['org_id'];
+                $nid = $this->_notif_insert_data($data2);
+                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
+        }
         
         $this->session->set_flashdata('message', 'exam'.' '.DATA_SAVED);
         $this->session->set_flashdata('status', 'success');
@@ -397,34 +451,54 @@ Modules::run('site_security/is_login');
         $check = $this->update_subject($subject_id,$exam_id,$data);
 
         $notif_data = $this->_get_data_from_db($exam_id);
-        $data2['notif_title'] = $notif_data['exam_title'];
-        $data2['notif_description'] = 'Admin Edited The Subjects of this Exam';
-        $data2['notif_type'] = 'exam';
-        $data2['type_id'] = $notif_data['exam_id'];
-        $data2['class_id'] = $notif_data['class_id'];
-        $data2['program_id'] = $notif_data['program_id'];
-        date_default_timezone_set("Asia/Karachi");
-        $data2['notif_date'] = date('Y-m-d H:i:s');
-        $data2['org_id'] = $notif_data['org_id'];
-        $this->_notif_insert_data_teacher($data2);
-        $this->_notif_insert_data_parent($data2);
-
-        $where['class_id'] = $data2['class_id'];
-        $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-        if (isset($teacher_id) && !empty($teacher_id)) {
-            foreach ($teacher_id as $key => $value) {
-                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }  
-        }
-
-        $where1['class_id'] = $data2['class_id'];
-        $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-        if (isset($parent_id) && !empty($parent_id)) {
-            foreach ($parent_id as $key => $value) {
+        $whereClass['class_id'] = $notif_data['class_id'];
+        $parents = $this->_get_parent_id_for_notification($whereClass,$notif_data['org_id'])->result_array();
+        if (isset($parents) && !empty($parents)) {
+            foreach ($parents as $key => $value) {
+                $data2['notif_for'] = 'Parent';
+                $data2['user_id'] = $value['parent_id'];
+                $data2['std_id'] = $value['id'];
+                $data2['std_name'] = $value['name'];
+                $data2['std_roll_no'] = $value['roll_no'];
+                $data2['notif_title'] = $notif_data['exam_title'];
+                $data2['notif_description'] = 'Admin Edited the subject of this Exam';
+                $data2['notif_type'] = 'exam';
+                $data2['notif_sub_type'] = 'subject_update';
+                $data2['type_id'] = $exam_id;
+                $data2['class_id'] = $notif_data['class_id'];
+                $data2['program_id'] = $notif_data['program_id'];
+                date_default_timezone_set("Asia/Karachi");
+                $data2['notif_date'] = date('Y-m-d H:i:s');
+                $data2['org_id'] = $notif_data['org_id'];
+                $nid = $this->_notif_insert_data($data2);
                 $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-               Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }   
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
+        }
+        $teachers = $this->_get_teacher_id_for_notification($whereClass,$notif_data['org_id'])->result_array();
+        if (isset($teachers) && !empty($teachers)) {
+            foreach ($teachers as $key => $value) {
+                $data2['notif_for'] = 'Teacher';
+                $data2['user_id'] = $value['teacher_id'];
+                $data2['subject_name'] = $value['name'];
+                $data2['subject_id'] = $value['id'];
+                $data2['std_id'] = '';
+                $data2['std_name'] = '';
+                $data2['std_roll_no'] = '';
+                $data2['notif_title'] = $notif_data['exam_title'];
+                $data2['notif_description'] = 'Admin Edited the subject of this Exam';
+                $data2['notif_type'] = 'exam';
+                $data2['notif_sub_type'] = 'subject_update';
+                $data2['type_id'] = $exam_id;
+                $data2['class_id'] = $notif_data['class_id'];
+                $data2['program_id'] = $notif_data['program_id'];
+                date_default_timezone_set("Asia/Karachi");
+                $data2['notif_date'] = date('Y-m-d H:i:s');
+                $data2['org_id'] = $notif_data['org_id'];
+                $nid = $this->_notif_insert_data($data2);
+                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
         }
 
         if($check == true){
@@ -445,29 +519,36 @@ Modules::run('site_security/is_login');
             $stdData = explode(",",$class_id);
             $class_id = $stdData[0];
         }
-        $arr_subject = Modules::run('subjects/_get_subject_class',$class_id)->result_array();
-        $html='';
-        $html.='<h3>Subjects</h3>';
-        foreach ($arr_subject as $key => $value) {
-            $html.='<div class="col-md-4">';
-            $html.='Subject Name';
-            $html.='<input class="form-control" readonly type="name" name="subject_name[]" value='.$value['id'].','.$value['name'].'>';
-            $html.='</div>';
-            $html.='<div class="col-md-3">';
-            $html.='Exam Date';
-            $html.='<input class="form-control" type="date" name="exam_date[]">';
-            $html.='</div>';
-            $html.='<div class="col-md-2">';
-            $html.='Exam Time';
-            $html.='<input class="form-control" type="time" name="exam_time[]">';
-            $html.='</div>';
-            $html.='<div class="col-md-2">';
-            $html.='Total Marks';
-            $html.='<input placeholder="Total Marks" class="form-control" type="number" name="total_marks[]">';
-            $html.='</div>';
+        $check = $this->_check_exam_exist($class_id);
+        if ($check == 0) {
+            $arr_subject = Modules::run('subjects/_get_subject_class',$class_id)->result_array();
+            $html='';
+            $html.='<h3>Subjects</h3>';
+            foreach ($arr_subject as $key => $value) {
+                $html.='<div class="col-md-4">';
+                $html.='Subject Name';
+                $html.='<input class="form-control" readonly type="name" name="subject_name[]" value='.$value['id'].','.$value['name'].'>';
+                $html.='</div>';
+                $html.='<div class="col-md-3">';
+                $html.='Exam Date';
+                $html.='<input class="form-control" type="date" name="exam_date[]">';
+                $html.='</div>';
+                $html.='<div class="col-md-2">';
+                $html.='Exam Time';
+                $html.='<input class="form-control" type="time" name="exam_time[]">';
+                $html.='</div>';
+                $html.='<div class="col-md-2">';
+                $html.='Total Marks';
+                $html.='<input placeholder="Total Marks" class="form-control" type="number" name="total_marks[]">';
+                $html.='</div>';
 
+            }
+            print_r($html);    
         }
-        print_r($html);
+        else{
+            print_r(0);
+        }
+        
     }
 
     function check_subject () {
@@ -493,38 +574,55 @@ Modules::run('site_security/is_login');
         $check = $this->mdl_exam->update_marks($sbj_id,$std_id,$roll_no,$exam_id,$obtained_marks);
 
         $notif_data = $this->_get_data_from_db($exam_id);
-        $data2['notif_title'] = $notif_data['exam_title'];
-        $data2['notif_description'] = 'Marks of '.$std_name.' for this exam are '.$obtained_marks.' (updated)';
-        $data2['notif_type'] = 'exam';
-        $data2['type_id'] = $notif_data['exam_id'];
-        $data2['class_id'] = $notif_data['class_id'];
-        $data2['program_id'] = $notif_data['program_id'];
-        date_default_timezone_set("Asia/Karachi");
-        $data2['notif_date'] = date('Y-m-d H:i:s');
-        $data2['org_id'] = $notif_data['org_id'];
-        $this->_notif_insert_data_teacher($data2);
-        $data2['std_id'] = $std_id;
-        $data2['std_name'] = $std_name;
-        $data2['std_roll_no'] = $roll_no;
-        $data2['notif_sub_type'] = 'update';
-        $this->_notif_insert_data_parent($data2);
-
-        $where['class_id'] = $data2['class_id'];
-        $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-        if (isset($teacher_id) && !empty($teacher_id)) {
-            foreach ($teacher_id as $key => $value) {
-                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }  
-        }
-
-        $where1['id'] = $data2['std_id'];
-        $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-        if (isset($parent_id) && !empty($parent_id)) {
-            foreach ($parent_id as $key => $value) {
+        $whereStd['id'] = $std_id;
+        $parents = $this->_get_parent_id_for_notification($whereStd,$notif_data['org_id'])->result_array();
+        if (isset($parents) && !empty($parents)) {
+            foreach ($parents as $key => $value) {
+                $data2['notif_for'] = 'Parent';
+                $data2['user_id'] = $value['parent_id'];
+                $data2['std_id'] = $value['id'];
+                $data2['std_name'] = $value['name'];
+                $data2['std_roll_no'] = $value['roll_no'];
+                $data2['notif_title'] = $notif_data['exam_title'];
+                $data2['notif_description'] = 'Marks of '.$std_name .' for this Exam are ' . $obtained_marks .'  (updated)';
+                $data2['notif_type'] = 'exam';
+                $data2['notif_sub_type'] = 'marks_update';
+                $data2['type_id'] = $exam_id;
+                $data2['class_id'] = $notif_data['class_id'];
+                $data2['program_id'] = $notif_data['program_id'];
+                date_default_timezone_set("Asia/Karachi");
+                $data2['notif_date'] = date('Y-m-d H:i:s');
+                $data2['org_id'] = $notif_data['org_id'];
+                $nid = $this->_notif_insert_data($data2);
                 $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-               Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-            }   
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
+        }
+        $whereSbj['id'] = $sbj_id;
+        $teachers = $this->_get_teacher_id_for_notification($whereSbj,$notif_data['org_id'])->result_array();
+        if (isset($teachers) && !empty($teachers)) {
+            foreach ($teachers as $key => $value) {
+                $data2['notif_for'] = 'Teacher';
+                $data2['user_id'] = $value['teacher_id'];
+                $data2['subject_name'] = $value['name'];
+                $data2['subject_id'] = $value['id'];
+                $data2['std_id'] = '';
+                $data2['std_name'] = '';
+                $data2['std_roll_no'] = '';
+                $data2['notif_title'] = $notif_data['exam_title'];
+                $data2['notif_description'] = 'Marks of '.$std_name .' for this Exam are ' . $obtained_marks .'  (updated)';
+                $data2['notif_type'] = 'exam';
+                $data2['notif_sub_type'] = 'marks_update';
+                $data2['type_id'] = $exam_id;
+                $data2['class_id'] = $notif_data['class_id'];
+                $data2['program_id'] = $notif_data['program_id'];
+                date_default_timezone_set("Asia/Karachi");
+                $data2['notif_date'] = date('Y-m-d H:i:s');
+                $data2['org_id'] = $notif_data['org_id'];
+                $nid = $this->_notif_insert_data($data2);
+                $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
+                Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+            }
         }
 
         if($check == true){
@@ -544,9 +642,7 @@ Modules::run('site_security/is_login');
 
     function set_publish() {
         $update_id = $this->uri->segment(4);
-        //$lang_id = $this->uri->segment(5);
         $where['id'] = $update_id;
-        //$where['lang_id'] = $lang_id;
         $this->_set_publish($where);
         $this->session->set_flashdata('message', 'Post published successfully.');
         redirect(ADMIN_BASE_URL . 'exam/manage/' . '');
@@ -554,9 +650,7 @@ Modules::run('site_security/is_login');
 
     function set_unpublish() {
         $update_id = $this->uri->segment(4);
-        //$lang_id = $this->uri->segment(5);
         $where['id'] = $update_id;
-        //$where['lang_id'] = $lang_id;
         $this->_set_unpublish($where);
         $this->session->set_flashdata('message', 'Post un-published successfully.');
         redirect(ADMIN_BASE_URL . 'exam/manage/' . '');
@@ -577,9 +671,14 @@ Modules::run('site_security/is_login');
     }
 
     /////////////// for detail ////////////
+
+    function _check_exam_exist($class_id){
+        $this->load->model('mdl_exam');
+        return $this->mdl_exam->_check_exam_exist($class_id);
+    }
+
     function detail() {
         $update_id = $this->input->post('id');
-       // $lang_id = $this->input->post('lang_id');
         $data['user'] = $this->_get_data_from_db($update_id);
         $this->load->view('detail', $data);
     }
@@ -695,33 +794,28 @@ Modules::run('site_security/is_login');
         return $this->mdl_exam->_get_subject_data($exam_id,$subject_id,$org_id);
     }
 
-    function _notif_insert_data_teacher($data2){
+    function _notif_insert_data($data2){
         $this->load->model('mdl_exam');
-        $this->mdl_exam->_notif_insert_data_teacher($data2);
+        return $this->mdl_exam->_notif_insert_data($data2);
     }
 
-    function _notif_insert_data_parent($data2){
+    function _get_parent_id_for_notification($where,$org_id){
         $this->load->model('mdl_exam');
-        $this->mdl_exam->_notif_insert_data_parent($data2);
+        return $this->mdl_exam->_get_parent_id_for_notification($where,$org_id);
     }
 
-    function _get_teacher_for_push_noti($where,$org_id){
-    $this->load->model('mdl_exam');
-    return $this->mdl_exam->_get_teacher_for_push_noti($where,$org_id);
-    }
-
-    function _get_parent_for_push_noti($where,$org_id){
-    $this->load->model('mdl_exam');
-    return $this->mdl_exam->_get_parent_for_push_noti($where,$org_id);
+    function _get_teacher_id_for_notification($where,$org_id){
+        $this->load->model('mdl_exam');
+        return $this->mdl_exam->_get_teacher_id_for_notification($where,$org_id);
     }
 
     function _get_teacher_token($teacher_id,$org_id){
-    $this->load->model('mdl_exam');
-    return $this->mdl_exam->_get_teacher_token($teacher_id,$org_id);
+        $this->load->model('mdl_exam');
+        return $this->mdl_exam->_get_teacher_token($teacher_id,$org_id);
     }
 
     function _get_parent_token($parent_id,$org_id){
-    $this->load->model('mdl_exam');
-    return $this->mdl_exam->_get_parent_token($parent_id,$org_id);
+        $this->load->model('mdl_exam');
+        return $this->mdl_exam->_get_parent_token($parent_id,$org_id);
     }
 }

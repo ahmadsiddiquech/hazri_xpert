@@ -25,8 +25,7 @@ class Mdl_exam extends CI_Model {
         if($role_id!=1){
             $this->db->where('exam.org_id',$org_id);
         }
-        $query=$this->db->get();
-        return $query;
+        return $this->db->get();
     }
 
     function _get($order_by) {
@@ -57,15 +56,13 @@ class Mdl_exam extends CI_Model {
     function _insert_exam_subject($data2) {
         $table = 'exam_subject';
         $this->db->insert($table, $data2);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _insert_exam_subject_marks($data) {
         $table = 'exam_marks';
         $this->db->insert($table, $data);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _get_exam_subject($exam_id) {
@@ -84,8 +81,7 @@ class Mdl_exam extends CI_Model {
     function _insert_exam($data_exam) {
         $table = 'exam';
         $this->db->insert($table, $data_exam);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _update($arr_col, $org_id, $data) {
@@ -118,8 +114,7 @@ class Mdl_exam extends CI_Model {
         $this->db->join("student", "student.section_id = exam.section_id", "full");
         $this->db->where('exam.id', $update_id);
         $this->db->where('exam.org_id', $org_id);
-        $query=$this->db->get();
-        return $query;
+        return $this->db->get();
     }
 
     function _get_subject_student_list($subject_id,$org_id){
@@ -128,8 +123,7 @@ class Mdl_exam extends CI_Model {
         $this->db->join("student", "student.class_id = subject.class_id", "full");
         $this->db->where('subject.id', $subject_id);
         $this->db->where('subject.org_id', $org_id);
-        $query=$this->db->get();
-        return $query;
+        return $this->db->get();
     }
 
     function _get_class_student_marks($std_id,$exam_id){
@@ -137,8 +131,7 @@ class Mdl_exam extends CI_Model {
         $this->db->select('obtained_marks');
         $this->db->where('std_id', $std_id);
         $this->db->where('exam_id', $exam_id);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function get_obtained_marks($std_id,$subject_id,$exam_id,$org_id){
@@ -147,22 +140,18 @@ class Mdl_exam extends CI_Model {
         $this->db->where('exam_subject_id', $subject_id);
         $this->db->where('exam_id', $exam_id);
         $this->db->where('std_id', $std_id);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function update_marks($sbj_id,$std_id,$roll_no,$exam_id,$obtained_marks){
         $table = "exam_marks";
-        // $where['obtained_marks']= $obtained_marks;
-        // print_r($exam_id);exit();
         $this->db->where('std_id', $std_id);
         $this->db->where('std_roll_no', $roll_no);
         $this->db->where('exam_id', $exam_id);
         $this->db->where('exam_subject_id', $sbj_id);
         $this->db->set('obtained_marks',$obtained_marks);
         $this->db->update($table);
-        $affected_rows = $this->db->affected_rows();
-        return $affected_rows;
+        return $this->db->affected_rows();
     }
 
     function update_subject($sbj_id,$exam_id,$data){
@@ -171,10 +160,8 @@ class Mdl_exam extends CI_Model {
         $this->db->where('subject_id', $sbj_id);
         $this->db->set($data);
         $this->db->update($table);
-        $affected_rows = $this->db->affected_rows();
-        return $affected_rows;
+        return $this->db->affected_rows();
     }
-
 
     function _delete($arr_col, $org_id) {       
         $table = $this->get_table();
@@ -206,14 +193,10 @@ class Mdl_exam extends CI_Model {
         return $query->row();
     }
 
-    function _notif_insert_data_teacher($data){
-        $table = 'teacher_notification';
-        $this->db->insert($table,$data);   
-    }
-
-    function _notif_insert_data_parent($data){
-        $table = 'parent_notification';
-        $this->db->insert($table,$data);   
+    function _notif_insert_data($data){
+        $table = 'notification';
+        $this->db->insert($table,$data);
+        return $this->db->insert_id();   
     }
 
     function _get_teacher_token($teacher_id,$org_id){
@@ -222,8 +205,7 @@ class Mdl_exam extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$teacher_id);
         $this->db->where('designation','Teacher');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
     function _get_parent_token($parent_id,$org_id){
@@ -232,24 +214,26 @@ class Mdl_exam extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$parent_id);
         $this->db->where('designation','Parent');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
-    function _get_parent_for_push_noti($where,$org_id){
+    function _get_parent_id_for_notification($where,$org_id){
         $table = 'student';
-        $this->db->select('parent_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
-    function _get_teacher_for_push_noti($where,$org_id){
+
+    function _get_teacher_id_for_notification($where,$org_id){
         $table = 'subject';
-        $this->db->select('teacher_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
+    }
+
+    function _check_exam_exist($class_id){
+        $table = 'exam';
+        $this->db->where('class_id',$class_id);
+        return $this->db->get($table)->num_rows();
     }
 }

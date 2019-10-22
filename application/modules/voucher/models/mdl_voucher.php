@@ -124,6 +124,8 @@ class Mdl_voucher extends CI_Model {
 
     function update_marks($std_id,$roll_no,$test_id,$obtained_marks){
         $table = "test_marks";
+        // $where['obtained_marks']= $obtained_marks;
+        // print_r($test_id);exit();
         $this->db->where('std_id', $std_id);
         $this->db->where('std_roll_no', $roll_no);
         $this->db->where('test_id', $test_id);

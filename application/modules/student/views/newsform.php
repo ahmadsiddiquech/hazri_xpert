@@ -321,7 +321,7 @@
                             );
                             $attribute = array('class' => 'control-label col-md-4');
                           ?>
-                          <?php echo form_label('Transport Fee', 'transport_fee', $attribute); ?>
+                          <?php echo form_label('Transort Fee', 'transport_fee', $attribute); ?>
                           <div class="col-md-8"> <?php echo form_input($data); ?> </div>
                         </div>
                       </div>

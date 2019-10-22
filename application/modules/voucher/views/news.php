@@ -39,7 +39,7 @@
                                         <td><?php echo $new->due_date ?></td>
 
                                         <td class="table_action">
-                                        <!-- <a class="btn yellow c-btn view_details" rel="<?=$new->id?>"><i class="fa fa-list"  title="See Detail"></i></a> -->
+                                        <a class="btn yellow c-btn view_details" rel="<?=$new->id?>"><i class="fa fa-list"  title="See Detail"></i></a>
                                         <?php
                                         echo anchor($std_voucher_url, '<i class="fa fa-mail-forward"></i>', array('class' => 'action_edit btn blue c-btn','title' => 'View Vouchers'));
 
@@ -67,24 +67,24 @@ $(document).ready(function(){
 
     /*//////////////////////// code for detail //////////////////////////*/
 
-            // $(document).on("click", ".view_details", function(event){
-            // event.preventDefault();
-            // var id = $(this).attr('rel');
-            // //alert(id); return false;
-            //   $.ajax({
-            //             type: 'POST',
-            //             url: "<?php ADMIN_BASE_URL?>voucher/detail",
-            //             data: {'id': id},
-            //             async: false,
-            //             success: function(test_body) {
-            //             var test_desc = test_body;
-            //             //var test_body = '<ul class="list-group"><li class="list-group-item"><b>Description:</b> Akabir Abbasi Test</li></ul>';
-            //             $('#myModal').modal('show')
-            //             //$("#myModal .modal-title").html(test_title);
-            //             $("#myModal .modal-body").html(test_desc);
-            //             }
-            //         });
-            // });
+            $(document).on("click", ".view_details", function(event){
+            event.preventDefault();
+            var id = $(this).attr('rel');
+            //alert(id); return false;
+              $.ajax({
+                        type: 'POST',
+                        url: "<?php ADMIN_BASE_URL?>voucher/detail",
+                        data: {'id': id},
+                        async: false,
+                        success: function(test_body) {
+                        var test_desc = test_body;
+                        //var test_body = '<ul class="list-group"><li class="list-group-item"><b>Description:</b> Akabir Abbasi Test</li></ul>';
+                        $('#myModal').modal('show')
+                        //$("#myModal .modal-title").html(test_title);
+                        $("#myModal .modal-body").html(test_desc);
+                        }
+                    });
+            });
 
     /*///////////////////////// end for code detail //////////////////////////////*/
 

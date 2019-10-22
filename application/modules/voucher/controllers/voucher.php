@@ -93,6 +93,7 @@ Modules::run('site_security/is_login');
             $class_id = $stdData[0];
         }
         $arr_section = Modules::run('sections/_get_by_arr_id_class',$class_id)->result_array();
+        // print_r($arr_section);exit();
         $html='';
         $html.='<option value="">Select</option>';
         foreach ($arr_section as $key => $value) {
@@ -428,8 +429,8 @@ Modules::run('site_security/is_login');
 
     function detail() {
         $update_id = $this->input->post('id');
-        $data['user'] = $this->get_data_from_db_std_voucher($update_id);
-        $this->load->view(ADMIN_BASE_URL.'voucher/', $data);
+        $data['user'] = $this->_get_data_from_db($update_id);
+        $this->load->view('detail', $data);
     }
 	
     function _getItemById($id) {

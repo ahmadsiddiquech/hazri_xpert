@@ -1,3 +1,5 @@
+<?php // print_r($post['title']); exit(); ?>
+
 <div class="row">
     <div class="col-md-6">
         <h4 ><b>ID:&nbsp;&nbsp;</b></h4><?php echo $user['id']; ?>

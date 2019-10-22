@@ -103,8 +103,6 @@
                       <div class="col-sm-5">
                                     <div class="form-group">
                                     <?php
-
-                                    // $options = array('' => 'Select')+$roll_title ;
                                     $attribute = array('class' => 'control-label col-md-4');
                                     echo form_label('Class <span style="color:red">*</span>', 'class_id', $attribute);?>
                                     <div class="col-md-8">
@@ -122,8 +120,6 @@
                       <div class="col-sm-5">
                                     <div class="form-group">
                                     <?php
-
-                                    // $options = array('' => 'Select')+$roll_title ;
                                     $attribute = array('class' => 'control-label col-md-4');
                                     echo form_label('Section <span style="color:red">*</span>', 'section_id', $attribute);?>
                                     <div class="col-md-8">
@@ -139,8 +135,6 @@
                       <div class="col-sm-5">
                                     <div class="form-group">
                                     <?php
-
-                                    // $options = array('' => 'Select')+$roll_title ;
                                     $attribute = array('class' => 'control-label col-md-4');
                                     echo form_label('Subject <span style="color:red">*</span>', 'subject_id', $attribute);?>
                                     <div class="col-md-8">
