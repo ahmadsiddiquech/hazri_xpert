@@ -21,6 +21,17 @@ Modules::run('site_security/is_login');
         $this->load->module('template');
         $this->template->admin($data);
     }
+
+    function std_list() {
+        $section_id = $this->uri->segment(4);
+        if (is_numeric($section_id) && $section_id != 0) {
+            $data['news'] = $this->_get_std_list($section_id);
+        }
+        $data['view_file'] = 'std_list';
+        $this->load->module('template');
+        $this->template->admin($data);
+    }
+
     function create() {
         $update_id = $this->uri->segment(4);
         $user_data = $this->session->userdata('user_data');
@@ -34,7 +45,6 @@ Modules::run('site_security/is_login');
        $data['update_id'] = $update_id;
        $arr_program = Modules::run('program/_get_by_arr_id_programs',$org_id)->result_array();
         $arr_teacher = Modules::run('user/_get_by_arr_id_teacher')->result_array();
-        // print_r($arr_roles);exit();
         $program = array();
         $teacher = array();
 
@@ -54,7 +64,6 @@ Modules::run('site_security/is_login');
     
     function _get_data_from_db($update_id) {
         $where['sections.id'] = $update_id;
-        //$where['post.lang_id'] = $lang_id;
         $query = $this->_get_by_arr_id($where);
         foreach ($query->result() as
                 $row) {
@@ -115,9 +124,7 @@ Modules::run('site_security/is_login');
 
     function set_publish() {
         $update_id = $this->uri->segment(4);
-        //$lang_id = $this->uri->segment(5);
         $where['id'] = $update_id;
-        //$where['lang_id'] = $lang_id;
         $this->_set_publish($where);
         $this->session->set_flashdata('message', 'Post published successfully.');
         redirect(ADMIN_BASE_URL . 'sections/manage/' . '');
@@ -125,9 +132,7 @@ Modules::run('site_security/is_login');
 
     function set_unpublish() {
         $update_id = $this->uri->segment(4);
-        //$lang_id = $this->uri->segment(5);
         $where['id'] = $update_id;
-        //$where['lang_id'] = $lang_id;
         $this->_set_unpublish($where);
         $this->session->set_flashdata('message', 'Post un-published successfully.');
         redirect(ADMIN_BASE_URL . 'sections/manage/' . '');
@@ -149,7 +154,6 @@ Modules::run('site_security/is_login');
     /////////////// for detail ////////////
     function detail() {
         $update_id = $this->input->post('id');
-       // $lang_id = $this->input->post('lang_id');
         $data['user'] = $this->_get_data_from_db($update_id);
         $this->load->view('detail', $data);
     }
@@ -172,8 +176,7 @@ Modules::run('site_security/is_login');
 
     function _get($order_by) {
         $this->load->model('mdl_sections');
-        $query = $this->mdl_sections->_get($order_by);
-        return $query;
+        return $this->mdl_sections->_get($order_by);
     }
 
     function _get_by_arr_id($arr_col) {
@@ -206,18 +209,18 @@ Modules::run('site_security/is_login');
         return $this->mdl_sections->_get_records($arr_col);
     }
 
-    // function _get_by_arr_id_sections() {
-    //     $this->load->model('mdl_sections');
-    //     return $this->mdl_sections->_get_by_arr_id_sections();
-    // }
     function _get_by_arr_id_roll($id) {
         $this->load->model('mdl_sections');
         return $this->mdl_sections->_get_by_arr_id_roll($id);
     }
 
     function _get_by_arr_id_class($class_id){
-        
         $this->load->model('mdl_sections');
         return $this->mdl_sections->_get_by_arr_id_class($class_id);
+    }
+
+    function _get_std_list($section_id) {
+        $this->load->model('mdl_sections');
+        return $this->mdl_sections->_get_std_list($section_id);
     }
 }

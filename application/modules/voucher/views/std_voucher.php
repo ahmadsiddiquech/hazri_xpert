@@ -20,6 +20,7 @@
                         <th>Parent Name</th>
                         <th>Total Fee</th>
                         <th>Paid Fee</th>
+                        <th>Remaining Fee</th>
                         <th class="" style="width:300px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Actions</th>
                         </tr>
                         </thead>
@@ -41,9 +42,9 @@
                                         <td><?php echo $new->parent_name  ?></td>
                                         <td><?php echo $new->total ?></td>
                                         <td><?php echo $new->paid ?></td>
+                                        <td><?php echo $new->remaining ?></td>
 
                                         <td class="table_action">
-                                        <a class="btn yellow c-btn view_details" rel="<?=$new->id?>"><i class="fa fa-list"  title="See Detail"></i></a>
                                         <?php
 
                                         $publish_class = ' table_action_publish';
@@ -83,25 +84,6 @@
 <script type="text/javascript">
 $(document).ready(function(){
 
-    /*//////////////////////// code for detail //////////////////////////*/
-
-            $(document).on("click", ".view_details", function(event){
-            event.preventDefault();
-            var id = $(this).attr('rel');
-            //alert(id); return false;
-              $.ajax({
-                        type: 'POST',
-                        url: "<?php ADMIN_BASE_URL?>voucher/detail",
-                        data: {'id': id},
-                        async: false,
-                        success: function(test_body) {
-                        var test_desc = test_body;
-                        $('#myModal').modal('show')
-                        $("#myModal .modal-body").html(test_desc);
-                        }
-                    });
-            });
-        
         $(document).off("click",".action_publish").on("click",".action_publish", function(event) {
             event.preventDefault();
             var id = $(this).attr('rel');
@@ -143,12 +125,4 @@ $(document).ready(function(){
 
 });
 
-$(document).ready(function() {
-        $("#news_file").change(function() {
-            var img = $(this).val();
-            var replaced_val = img.replace("C:\\fakepath\\", '');
-            $('#hdn_image').val(replaced_val);
-        });
-    });
 </script>
-

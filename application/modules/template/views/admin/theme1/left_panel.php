@@ -125,8 +125,14 @@
             <ul id="fee" class="nav sidebar-subnav collapse" style="padding-left: 30px">
                 <li class="<?php if($curr_url == 'voucher'){echo 'active';}    ?>">
                   <a href="<?php $controller='voucher';echo ADMIN_BASE_URL . $controller ?>">
-                    <em class="fa fa-print"></em>
-                    <span>Print Voucher</span>
+                    <em class="fa fa-bank"></em>
+                    <span>Monthly Fee</span>
+                  </a>
+                </li>
+                <li class="<?php if($curr_url == 'installment'){echo 'active';}    ?>">
+                  <a href="<?php $controller='installment';echo ADMIN_BASE_URL . $controller ?>">
+                    <em class="fa fa-random"></em>
+                    <span>Installments</span>
                   </a>
                 </li>
                 <li class="<?php if($curr_url == 'history'){echo 'active';}    ?>">

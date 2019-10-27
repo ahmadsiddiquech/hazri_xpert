@@ -48,6 +48,8 @@
 
                                         $i++;
 
+                                    $std_url = ADMIN_BASE_URL . 'sections/std_list/' . $new->id.'/'.$new->section;
+
                                         $set_publish_url = ADMIN_BASE_URL . 'sections/set_publish/' . $new->id;
 
                                         $set_unpublish_url = ADMIN_BASE_URL . 'sections/set_unpublish/' . $new->id ;
@@ -83,7 +85,7 @@
                                         $iconbgclass = ' btn default c-btn';
                                         }
 
-                                        
+                                        echo anchor($std_url, '<i class="fa fa-mail-forward"></i>', array('class' => 'action_edit btn blue c-btn','title' => 'View Students'));
 
                                         echo anchor("javascript:;",$icon, array('class' => 'action_publish' . $publish_class . $iconbgclass,
 

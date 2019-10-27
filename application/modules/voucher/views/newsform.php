@@ -91,9 +91,9 @@
                                     <div class="col-md-8">
                                       <select class="form-control" id="section_id" required="required" name="section_id" <?php
                                         if (isset($update_id) && !empty($update_id)) {
-                                          echo "disabled";
+                                          echo "readonly";
                                         }
-                                        ?>>
+                                        ?> >
                                         <option value="">Select</option>
                                         <?php if(isset($news['section_name']) && !empty($news['section_name'])) { ?>
                                         <option selected value="<?php echo $news['section_id'].','.$news['section_name']; ?>"><?php echo $news['section_name'];?></option>

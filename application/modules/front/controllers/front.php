@@ -1133,6 +1133,7 @@ function get_teacher_leave_history() {
             }
         }
         if(isset($finalData2) && !empty($finalData2)){
+            // $finalData3 = array_map("unserialize", array_unique(array_map("serialize", $finalData2)));
             $status = true;
             $data = $finalData2;
         }
@@ -2857,6 +2858,7 @@ function notification_list(){
                 $data['notifType'] = $value1['notif_type'];
                 $data['notifSubType'] = $value1['notif_sub_type'];
                 $data['typeId'] = $value1['type_id'];
+                $data['subTypeId'] = $value1['sub_type_id'];
                 $data['programId'] = $value1['program_id'];
                 $data['classId'] = $value1['class_id'];
                 $data['sectionId'] = $value1['section_id'];

@@ -31,18 +31,6 @@ class Mdl_sections extends CI_Model {
         return $this->db->get($table);
     }
 
-    // function _get_by_arr_id_sections() {
-    //     $table = $this->get_table();
-    //     $user_data = $this->session->userdata('user_data');
-    //     $org_id = $user_data['user_id'];
-    //     $role_id = $user_data['role_id'];
-    //     $this->db->select('*');
-    //     if($role_id!=1){
-    //         $this->db->where('org_id',$org_id);
-    //     }
-    //     return $this->db->get($table);
-    // }
-
     function _get_by_arr_id_roll($id) {
         $table = $this->get_table();
         $user_data = $this->session->userdata('user_data');
@@ -55,15 +43,14 @@ class Mdl_sections extends CI_Model {
         }
         return $this->db->get($table);
     }
+
     function _get_by_arr_id_class($class_id){
         $table = $this->get_table();
         $this->db->select('*');
         $this->db->where('class_id',$class_id);
-        
-        $query = $this->db->get($table);
-        // print_r($query);exit();
-        return $query;
+        return $this->db->get($table);
     }
+
     function _get($order_by) {
         $user_data = $this->session->userdata('user_data');
         $role_id = $user_data['role_id'];
@@ -76,16 +63,13 @@ class Mdl_sections extends CI_Model {
         $this->db->where('sections.org_id',$org_id);
         }
         $this->db->order_by('classes.name','DESC');
-        $query = $this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
-
 
     function _insert($data) {
         $table = $this->get_table();
         $this->db->insert($table, $data);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _update($arr_col, $org_id, $data) {
@@ -98,7 +82,8 @@ class Mdl_sections extends CI_Model {
         }
         $this->db->update($table, $data);
     }
-       function _update_id($id, $data) {
+
+    function _update_id($id, $data) {
         $table = $this->get_table();
         $this->db->where('id',$id);
         $this->db->update($table, $data);
@@ -129,12 +114,24 @@ class Mdl_sections extends CI_Model {
         $this->db->update($table, $set_un_publish);
     }
 
-
     function _getItemById($id) {
         $table = $this->get_table();
         $this->db->where("( id = '" . $id . "'  )");
         $query = $this->db->get($table);
         return $query->row();
+    }
+
+    function _get_std_list($section_id) {
+        $table = 'student';
+        $user_data = $this->session->userdata('user_data');
+        $org_id = $user_data['user_id'];
+        $this->db->select('classes.id class_id,classes.name class_name,sections.id section_id,sections.section section_name,student.id id,student.name name,student.parent_name parent_name');
+        $this->db->join("classes", "classes.id = student.class_id", "full");
+        $this->db->join("sections", "sections.id = student.section_id", "full");
+        $this->db->where('student.section_id',$section_id);
+        $this->db->order_by('student.id','DESC');
+        $this->db->where('student.org_id',$org_id);
+        return $this->db->get($table);
     }
 
 }

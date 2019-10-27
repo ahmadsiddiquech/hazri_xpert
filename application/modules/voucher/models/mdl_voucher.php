@@ -68,8 +68,7 @@ class Mdl_voucher extends CI_Model {
     function _insert_std_voucher($data1) {
         $table = 'voucher_data';
         $this->db->insert($table, $data1);
-        $insert_id = $this->db->insert_id();
-        return $insert_id;
+        return $this->db->insert_id();
     }
 
     function _update($arr_col, $org_id, $data) {
@@ -93,46 +92,6 @@ class Mdl_voucher extends CI_Model {
         $table = 'voucher_data';
         $this->db->where('id',$id);
         $this->db->update($table, $data);
-    }
-
-    function check_subject($subject_id){
-        $table = $this->get_table();
-        $user_data = $this->session->userdata('user_data');
-        $this->db->select('*');
-        $this->db->where('section_id',$section_id);
-        return $this->db->get($table);
-    }
-
-    function _get_class_student_list($update_id,$org_id){
-        $this->db->select('test.id test_id, test.test_title,test.class_name,test.total_marks, student.id std_id, student.name,student.roll_no');
-        $this->db->from('test');
-        $this->db->join("student", "student.section_id = test.section_id", "full");
-        $this->db->where('test.id', $update_id);
-        $this->db->where('test.org_id', $org_id);
-        $query=$this->db->get();
-        return $query;
-    }
-
-    function _get_class_student_marks($std_id,$test_id){
-        $table = ('test_marks');
-        $this->db->select('test_marks.obtained_marks');
-        $this->db->where('std_id', $std_id);
-        $this->db->where('test_id', $test_id);
-        $query=$this->db->get($table);
-        return $query;
-    }
-
-    function update_marks($std_id,$roll_no,$test_id,$obtained_marks){
-        $table = "test_marks";
-        // $where['obtained_marks']= $obtained_marks;
-        // print_r($test_id);exit();
-        $this->db->where('std_id', $std_id);
-        $this->db->where('std_roll_no', $roll_no);
-        $this->db->where('test_id', $test_id);
-        $this->db->set('obtained_marks',$obtained_marks);
-        $this->db->update($table);
-        $affected_rows = $this->db->affected_rows();
-        return $affected_rows;
     }
 
     function _delete($arr_col, $org_id) {       
@@ -165,24 +124,17 @@ class Mdl_voucher extends CI_Model {
         return $query->row();
     }
 
-    function _notif_insert_data_teacher($data){
-        $table = 'teacher_notification';
-        $this->db->insert($table,$data);   
-    }
-
-    function _notif_insert_data_parent($data){
-        $table = 'parent_notification';
-        $this->db->insert($table,$data);   
-    }
-
-    function _get_teacher_token($teacher_id,$org_id){
-        $table = 'users_add';
-        $this->db->select('fcm_token');
+    function _get_student_by_section_id($section_id,$org_id){
+        $table = 'student';
+        $this->db->where('section_id',$section_id);
         $this->db->where('org_id',$org_id);
-        $this->db->where('id',$teacher_id);
-        $this->db->where('designation','Teacher');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
+    }
+
+    function _notif_insert_data($data){
+        $table = 'notification';
+        $this->db->insert($table,$data);
+        return $this->db->insert_id();   
     }
 
     function _get_parent_token($parent_id,$org_id){
@@ -191,31 +143,13 @@ class Mdl_voucher extends CI_Model {
         $this->db->where('org_id',$org_id);
         $this->db->where('id',$parent_id);
         $this->db->where('designation','Parent');
-        $query=$this->db->get($table);
-        return $query;
+        return $this->db->get($table);
     }
 
-    function _get_parent_for_push_noti($where,$org_id){
+    function _get_parent_id_for_notification($where,$org_id){
         $table = 'student';
-        $this->db->select('parent_id');
         $this->db->where('org_id',$org_id);
         $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
-    }
-    function _get_teacher_for_push_noti($where,$org_id){
-        $table = 'subject';
-        $this->db->select('teacher_id');
-        $this->db->where('org_id',$org_id);
-        $this->db->where($where);
-        $query=$this->db->get($table);
-        return $query;
-    }
-
-    function _get_student_by_class_id($class_id,$org_id){
-        $table = 'student';
-        $this->db->where('class_id',$class_id);
-        $this->db->where('org_id',$org_id);
         return $this->db->get($table);
     }
 }

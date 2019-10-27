@@ -21,6 +21,13 @@ Modules::run('site_security/is_login');
         $this->load->module('template');
         $this->template->admin($data);
     }
+    function print_voucher(){
+        $std_voucher_id = $this->uri->segment(4);
+        if (is_numeric($std_voucher_id) && $std_voucher_id != 0) {
+            $data['news'] = $this->_get_data_from_db($std_voucher_id);
+        }
+        $this->load->view('print');
+    }
 
     function create() {
         $update_id = $this->uri->segment(4);
@@ -93,7 +100,6 @@ Modules::run('site_security/is_login');
             $class_id = $stdData[0];
         }
         $arr_section = Modules::run('sections/_get_by_arr_id_class',$class_id)->result_array();
-        // print_r($arr_section);exit();
         $html='';
         $html.='<option value="">Select</option>';
         foreach ($arr_section as $key => $value) {
@@ -199,46 +205,44 @@ Modules::run('site_security/is_login');
             $data = $this->_get_data_from_post();
             $user_data = $this->session->userdata('user_data');
             if ($update_id != 0) {
-                $data2['due_date'] = $data['due_date'];
-                $data2['issue_date'] = $data['issue_date'];
-                $id = $this->_update($update_id,$user_data['user_id'], $data2);
-                // $data2['notif_title'] = $data['test_title'];
-                // $data2['notif_description'] = 'Admin Edited this test';
-                // $data2['notif_type'] = 'test';
-                // $data2['type_id'] = $update_id;
-                // $data2['class_id'] = $data['class_id'];
-                // $data2['program_id'] = $data['program_id'];
-                // $data2['section_id'] = $data['section_id'];
-                // $data2['subject_id'] = $data['subject_id'];
-                // date_default_timezone_set("Asia/Karachi");
-                // $data2['notif_date'] = date('Y-m-d H:i:s');
-                // $data2['org_id'] = $data['org_id'];
-                // $this->_notif_insert_data_teacher($data2);
-                // $this->_notif_insert_data_parent($data2);
+                $data3['due_date'] = $data['due_date'];
+                $data3['issue_date'] = $data['issue_date'];
+                $id = $this->_update($update_id,$user_data['user_id'], $data3);
+                $v_data = $this->_get_std_vouchers($update_id)->result_array();
 
-                // $where['id'] = $data2['subject_id'];
-                // $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                // if (isset($teacher_id) && !empty($teacher_id)) {
-                //     foreach ($teacher_id as $key => $value) {
-                //         $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                //         Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                //     }  
-                // }
-
-                // $where1['section_id'] = $data2['section_id'];
-                // $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                // $parent_ids = array_map("unserialize", array_unique(array_map("serialize", $parent_id)));
-                // if (isset($parent_ids) && !empty($parent_ids)) {
-                //     foreach ($parent_ids as $key => $value) {
-                //         $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                //         Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']); 
-                //     }
-                // }
+                $whereSection['section_id'] = $data['section_id'];
+                $parents = $this->_get_parent_id_for_notification($whereSection,$data['org_id'])->result_array();
+                if (isset($parents) && !empty($parents)) {
+                    foreach ($parents as $key => $value) {
+                        $data2['notif_for'] = 'Parent';
+                        $data2['user_id'] = $value['parent_id'];
+                        $data2['std_id'] = $value['id'];
+                        $data2['std_name'] = $value['name'];
+                        $data2['std_roll_no'] = $value['roll_no'];
+                        $data2['notif_title'] = 'Fee Voucher Update';
+                        $data2['notif_description'] = 'Fee Voucehr of '.$value['name'].' has been updated';
+                        $data2['notif_type'] = 'fee';
+                        $data2['notif_sub_type'] = 'fee_update';
+                        foreach ($v_data as $key => $value2) {
+                            if ($value2['std_id'] == $value['id']) {
+                                $data2['sub_type_id'] = $value2['id'];
+                            }
+                        }
+                        $data2['type_id'] = $update_id;
+                        $data2['section_id']= $data['section_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
+                    }
+                }
             }
             else
             {   
                 $voucher_id = $this->_insert($data);
-                $student_list = $this->_get_student_by_class_id($data['class_id'],$data['org_id'])->result_array();
+                $student_list = $this->_get_student_by_section_id($data['section_id'],$data['org_id'])->result_array();
                 if(isset($student_list) && !empty($student_list)){
                     foreach ($student_list as $key => $value) {
                         $data1['voucher_id'] = $voucher_id;
@@ -253,39 +257,29 @@ Modules::run('site_security/is_login');
                         $data1['other_fee'] = $value['other_fee'];
                         $data1['total'] = $data1['tution_fee']+$data1['transport_fee']+$data1['lunch_fee']+$data1['stationary_fee']+$data1['other_fee'];
                         $id = $this->_insert_std_voucher($data1);
+
+                        $data2['notif_for'] = 'Parent';
+                        $data2['user_id'] = $value['parent_id'];
+                        $data2['std_id'] = $value['id'];
+                        $data2['std_name'] = $value['name'];
+                        $data2['std_roll_no'] = $value['roll_no'];
+                        $data2['notif_title'] = 'Fee Voucher';
+                        $data2['notif_description'] = 'Fee of '.$value['name'].' is pending';
+                        $data2['notif_type'] = 'fee';
+                        $data2['notif_sub_type'] = 'fee';
+                        $data2['type_id'] = $voucher_id;
+                        $data2['sub_type_id'] = $id;
+                        $data2['section_id'] = $data['section_id'];
+                        $data2['class_id'] = $data['class_id'];
+                        $data2['program_id'] = $data['program_id'];
+                        date_default_timezone_set("Asia/Karachi");
+                        $data2['notif_date'] = date('Y-m-d H:i:s');
+                        $data2['org_id'] = $data['org_id'];
+                        $nid = $this->_notif_insert_data($data2);
+                        $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
+                        Modules::run('front/send_notification',$token,$nid,$data2['notif_title'],$data2['notif_description']);
                     }
                 }
-                // $data2['notif_title'] = $data['test_title'];
-                // $data2['notif_description'] = $data['test_description'];
-                // $data2['notif_type'] = 'test';
-                // $data2['type_id'] = $id;
-                // $data2['class_id'] = $data['class_id'];
-                // $data2['program_id'] = $data['program_id'];
-                // $data2['section_id'] = $data['section_id'];
-                // $data2['subject_id'] = $data['subject_id'];
-                // date_default_timezone_set("Asia/Karachi");
-                // $data2['notif_date'] = date('Y-m-d H:i:s');
-                // $data2['org_id'] = $data['org_id'];
-                // $this->_notif_insert_data_teacher($data2);
-                // $this->_notif_insert_data_parent($data2);
-
-                // $where['id'] = $data2['subject_id'];
-                // $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                // if (isset($teacher_id) && !empty($teacher_id)) {
-                //     foreach ($teacher_id as $key => $value) {
-                //         $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                //         Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                //     }  
-                // }
-
-                // $where1['section_id'] = $data2['section_id'];
-                // $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                // if (isset($parent_id) && !empty($parent_id)) {
-                //     foreach ($parent_id as $key => $value) {
-                //         $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                //        Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                //     }   
-                // }
             }
                 $this->session->set_flashdata('message', 'voucher'.' '.DATA_SAVED);                                        
                 $this->session->set_flashdata('status', 'success');
@@ -300,76 +294,16 @@ Modules::run('site_security/is_login');
             $data = $this->_get_data_from_post_std_voucher();
             if ($update_id != 0) {
                 $id = $this->_update_std_voucher($update_id, $data);
-                // $data2['notif_title'] = $data['test_title'];
-                // $data2['notif_description'] = 'Admin Edited this test';
-                // $data2['notif_type'] = 'test';
-                // $data2['type_id'] = $update_id;
-                // $data2['class_id'] = $data['class_id'];
-                // $data2['program_id'] = $data['program_id'];
-                // $data2['section_id'] = $data['section_id'];
-                // $data2['subject_id'] = $data['subject_id'];
-                // date_default_timezone_set("Asia/Karachi");
-                // $data2['notif_date'] = date('Y-m-d H:i:s');
-                // $data2['org_id'] = $data['org_id'];
-                // $this->_notif_insert_data_teacher($data2);
-                // $this->_notif_insert_data_parent($data2);
-
-                // $where['id'] = $data2['subject_id'];
-                // $teacher_id = $this->_get_teacher_for_push_noti($where,$data2['org_id'])->result_array();
-                // if (isset($teacher_id) && !empty($teacher_id)) {
-                //     foreach ($teacher_id as $key => $value) {
-                //         $token = $this->_get_teacher_token($value['teacher_id'],$data2['org_id'])->result_array();
-                //         Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']);
-                //     }  
-                // }
-
-                // $where1['section_id'] = $data2['section_id'];
-                // $parent_id = $this->_get_parent_for_push_noti($where1,$data2['org_id'])->result_array();
-                // $parent_ids = array_map("unserialize", array_unique(array_map("serialize", $parent_id)));
-                // if (isset($parent_ids) && !empty($parent_ids)) {
-                //     foreach ($parent_ids as $key => $value) {
-                //         $token = $this->_get_parent_token($value['parent_id'],$data2['org_id'])->result_array();
-                //         Modules::run('front/send_notification',$token,$data2['notif_title'],$data2['notif_description']); 
-                //     }
-                // }
             }
             $this->session->set_flashdata('message', 'voucher'.' '.DATA_SAVED);
             $this->session->set_flashdata('status', 'success');
             redirect(ADMIN_BASE_URL . 'voucher/std_voucher/'.$voucher_id.'/'.$class);
     }
 
-    function get_subject(){
-        $section_id = $this->input->post('id');
-        if(isset($section_id) && !empty($section_id)){
-            $stdData = explode(",",$section_id);
-            $section_id = $stdData[0];
-        }
-        $arr_subject = Modules::run('subjects/_get_subject',$section_id)->result_array();
-        $html='';
-        $html.='<option value="">Select</option>';
-        foreach ($arr_subject as $key => $value) {
-            $html.='<option value='.$value['id'].','.$value['name'].'>'.$value['name'].'</option>';
-        }
-        echo $html;
-    }
 
-    function check_subject () {
-        $subject_id = $this->input->post('subject_id');
+    function _get_student_by_section_id($section_id,$org_id){
         $this->load->model('mdl_voucher');
-        $check = $this->mdl_voucher->check_subject($subject_id);
-        if($check->num_rows()!=0){
-            echo "true";
-        }
-        else{
-            echo "false";
-        }
-    }
-
-    
-
-    function _get_student_by_class_id($class_id,$org_id){
-        $this->load->model('mdl_voucher');
-        return $this->mdl_voucher->_get_student_by_class_id($class_id,$org_id);
+        return $this->mdl_voucher->_get_student_by_section_id($section_id,$org_id);
     }
 
     function delete() {
@@ -427,12 +361,6 @@ Modules::run('site_security/is_login');
         $this->mdl_voucher->_set_unpublish($arr_col);
     }
 
-    function detail() {
-        $update_id = $this->input->post('id');
-        $data['user'] = $this->_get_data_from_db($update_id);
-        $this->load->view('detail', $data);
-    }
-	
     function _getItemById($id) {
         $this->load->model('mdl_voucher');
         return $this->mdl_voucher->_getItemById($id);
@@ -507,38 +435,18 @@ Modules::run('site_security/is_login');
         return $this->mdl_voucher->_get_class_student_list($update_id,$org_id);
     }
 
-    function _get_class_student_marks($std_id,$test_id){
-        $this->load->model('mdl_voucher');
-        return $this->mdl_voucher->_get_class_student_marks($std_id,$test_id);
-    }
-
-    function _notif_insert_data_teacher($data2){
-        $this->load->model('mdl_voucher');
-        $this->mdl_voucher->_notif_insert_data_teacher($data2);
-    }
-
-    function _notif_insert_data_parent($data2){
-        $this->load->model('mdl_voucher');
-        $this->mdl_voucher->_notif_insert_data_parent($data2);
-    }
-
-    function _get_teacher_for_push_noti($where,$org_id){
-    $this->load->model('mdl_voucher');
-    return $this->mdl_voucher->_get_teacher_for_push_noti($where,$org_id);
-    }
-
-    function _get_parent_for_push_noti($where,$org_id){
-    $this->load->model('mdl_voucher');
-    return $this->mdl_voucher->_get_parent_for_push_noti($where,$org_id);
-    }
-
-    function _get_teacher_token($teacher_id,$org_id){
-    $this->load->model('mdl_voucher');
-    return $this->mdl_voucher->_get_teacher_token($teacher_id,$org_id);
-    }
-
     function _get_parent_token($parent_id,$org_id){
-    $this->load->model('mdl_voucher');
-    return $this->mdl_voucher->_get_parent_token($parent_id,$org_id);
+        $this->load->model('mdl_voucher');
+        return $this->mdl_voucher->_get_parent_token($parent_id,$org_id);
+    }
+
+    function _get_parent_id_for_notification($where,$org_id){
+        $this->load->model('mdl_voucher');
+        return $this->mdl_voucher->_get_parent_id_for_notification($where,$org_id);
+    }
+
+    function _notif_insert_data($data2){
+        $this->load->model('mdl_voucher');
+        return $this->mdl_voucher->_notif_insert_data($data2);
     }
 }
