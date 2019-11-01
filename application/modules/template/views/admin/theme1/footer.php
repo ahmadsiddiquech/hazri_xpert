@@ -27,8 +27,7 @@
     <!-- BOOTSTRAP-->
 
     <script src="<?php echo STATIC_ADMIN_JS?>bootstrap.js"></script>
-
-    
+    <script src="<?php echo STATIC_ADMIN_JS?>vanillaCalendar.js"></script>
 
     <!-- STORAGE API-->
 

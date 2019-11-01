@@ -1,164 +1,121 @@
-<style>
-#invoice-POS{
-  box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
-  padding:2mm;
-  margin: 0 auto;
-  width: 44mm;
-  background: #FFF;
-  
-  
-::selection {background: #f31544; color: #FFF;}
-::moz-selection {background: #f31544; color: #FFF;}
-h1{
-  font-size: 1.5em;
-  color: #222;
-}
-h2{font-size: .9em;}
-h3{
-  font-size: 1.2em;
-  font-weight: 300;
-  line-height: 2em;
-}
-p{
-  font-size: .7em;
-  color: #666;
-  line-height: 1.2em;
-}
- 
-#top, #mid,#bot{ /* Targets all id with 'col-' */
-  border-bottom: 1px solid #EEE;
-}
-
-#top{min-height: 100px;}
-#mid{min-height: 80px;} 
-#bot{ min-height: 50px;}
-
-#top .logo{
-  //float: left;
-	height: 60px;
-	width: 60px;
-	background: url(http://michaeltruong.ca/images/logo1.png) no-repeat;
-	background-size: 60px 60px;
-}
-.clientlogo{
-  float: left;
-	height: 60px;
-	width: 60px;
-	background: url(http://michaeltruong.ca/images/client.jpg) no-repeat;
-	background-size: 60px 60px;
-  border-radius: 50px;
-}
-.info{
-  display: block;
-  //float:left;
-  margin-left: 0;
-}
-.title{
-  float: right;
-}
-.title p{text-align: right;} 
-table{
-  width: 100%;
-  border-collapse: collapse;
-}
-td{
-  //padding: 5px 0 5px 15px;
-  //border: 1px solid #EEE
-}
-.tabletitle{
-  //padding: 5px;
-  font-size: .5em;
-  background: #EEE;
-}
-.service{border-bottom: 1px solid #EEE;}
-.item{width: 24mm;}
-.itemtext{font-size: .5em;}
-
-#legalcopy{
-  margin-top: 5mm;
-} 
-}
+<style type="text/css">
+  table {
+    border: 2px solid black;
+  }
+  .border_bottom {
+    border-bottom: 2px solid black;
+  }
+  .border_left {
+    border-left: 2px solid #919191;
+    padding-left: 5px;
+  }
 </style>
-  <div id="invoice-POS">
-    
-    <center id="top">
-      <div class="logo"></div>
-      <div class="info"> 
-        <h2>SBISTechs Inc</h2>
-      </div><!--End Info-->
-    </center><!--End InvoiceTop-->
-    
-    <div id="mid">
-      <div class="info">
-        <h2>Contact Info</h2>
-        <p> 
-            Address : street city, state 0000</br>
-            Email   : JohnDoe@gmail.com</br>
-            Phone   : 555-555-5555</br>
-        </p>
-      </div>
-    </div><!--End Invoice Mid-->
-    
-    <div id="bot">
 
-					<div id="table">
-						<table>
-							<tr class="tabletitle">
-								<td class="item"><h2>Item</h2></td>
-								<td class="Hours"><h2>Qty</h2></td>
-								<td class="Rate"><h2>Sub Total</h2></td>
-							</tr>
+<div>
+  <table style="text-align: left" >
+    <tbody>
+    	<tr>
+    		<th>Bank Copy</th>
+    	</tr>
+      <tr>
+        <td><img src="<?php echo STATIC_ADMIN_IMAGE.'logo.png'?>" height="60px;"></td>
+        <td> Khwaja Fareed Univerity<br> of Engonnering and <br> Information Technology <br> <b>F.T.N</b>1234455</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr>
+        <th>Account No : </th>
+        <td>012342</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr>
+        <th>Account Title : </th>
+        <td>School name here</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr>
+        <th>Challan No : </th>
+        <td>32133123</td>
+        <th>Due Date : </th>
+        <td>21/10/2019</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr>
+        <th colspan="2">Name</th>
+        <td class="border_left"> Ahmad Siddique</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr>
+        <th colspan="2">Registration No.</th>
+        <td class="border_left">CS172033</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr>
+        <th colspan="2">CNIC</th>
+        <td class="border_left">31302-3387651-1</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr>
+        <th>Fee Code : </th>
+        <td>001</td>
+        <th class="border_left">Fee Type : </th>
+        <td>Semester Fee</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr style="text-align: center;">
+      	<th colspan="3">Particular</th>
+      	<th colspan="1" class="border_left">Amount(Rs)</th>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr style="text-align: center;">
+      	<td colspan="3">Tution Fee</td>
+      	<td colspan="1" class="border_left">1000</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr style="text-align: center;">
+      	<td colspan="3">Transportation Fee</td>
+      	<td colspan="1" class="border_left">1000</td>
+      </tr>
+      <tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr style="text-align: center;">
+      	<td colspan="3">Lunch Fee</td>
+      	<td colspan="1" class="border_left">1000</td>
+      </tr><tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr style="text-align: center;">
+      	<th colspan="3">Total</th>
+      	<td colspan="1" class="border_left">3000</td>
+      </tr>
+      </tr><tr>
+        <th class="border_bottom" colspan="100%"></th>
+      </tr>
+      <tr style="text-align: center;">
+      	<th colspan="2" style="padding-top: 50px;">Officer</th>
+      	<th colspan="2" style="padding-top: 50px;" class="border_left">Cashier</th>
+      </tr>
+    </tbody>
+  </table>
 
-							<tr class="service">
-								<td class="tableitem"><p class="itemtext">Communication</p></td>
-								<td class="tableitem"><p class="itemtext">5</p></td>
-								<td class="tableitem"><p class="itemtext">$375.00</p></td>
-							</tr>
-
-							<tr class="service">
-								<td class="tableitem"><p class="itemtext">Asset Gathering</p></td>
-								<td class="tableitem"><p class="itemtext">3</p></td>
-								<td class="tableitem"><p class="itemtext">$225.00</p></td>
-							</tr>
-
-							<tr class="service">
-								<td class="tableitem"><p class="itemtext">Design Development</p></td>
-								<td class="tableitem"><p class="itemtext">5</p></td>
-								<td class="tableitem"><p class="itemtext">$375.00</p></td>
-							</tr>
-
-							<tr class="service">
-								<td class="tableitem"><p class="itemtext">Animation</p></td>
-								<td class="tableitem"><p class="itemtext">20</p></td>
-								<td class="tableitem"><p class="itemtext">$1500.00</p></td>
-							</tr>
-
-							<tr class="service">
-								<td class="tableitem"><p class="itemtext">Animation Revisions</p></td>
-								<td class="tableitem"><p class="itemtext">10</p></td>
-								<td class="tableitem"><p class="itemtext">$750.00</p></td>
-							</tr>
-
-
-							<tr class="tabletitle">
-								<td></td>
-								<td class="Rate"><h2>tax</h2></td>
-								<td class="payment"><h2>$419.25</h2></td>
-							</tr>
-
-							<tr class="tabletitle">
-								<td></td>
-								<td class="Rate"><h2>Total</h2></td>
-								<td class="payment"><h2>$3,644.25</h2></td>
-							</tr>
-
-						</table>
-					</div><!--End Table-->
-
-					<div id="legalcopy">
-						<p class="legal"><strong>Thank you for your business!</strong>  Payment is expected within 31 days; please process this invoice within that time. There will be a 5% interest charge per month on late invoices. 
-						</p>
-					</div>
-
-				</div><!--End InvoiceBot-->
-  </div><!--End Invoice-->
+</div>

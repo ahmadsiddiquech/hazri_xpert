@@ -23,10 +23,20 @@ Modules::run('site_security/is_login');
     }
     function print_voucher(){
         $std_voucher_id = $this->uri->segment(4);
+        $where['voucher_data.id'] = $std_voucher_id;
         if (is_numeric($std_voucher_id) && $std_voucher_id != 0) {
-            $data['news'] = $this->_get_data_from_db($std_voucher_id);
+            $data['news'] = $this->_get_data_from_db_print_voucher($where)->result_array();
         }
-        $this->load->view('print');
+        $this->load->view('print',$data);
+    }
+
+    function print_voucher_all(){
+        $voucher_id = $this->uri->segment(4);
+        $where['voucher_data.voucher_id'] = $voucher_id;
+        if (is_numeric($voucher_id) && $voucher_id != 0) {
+            $data['news'] = $this->_get_data_from_db_print_voucher($where)->result_array();
+        }
+        $this->load->view('print',$data);
     }
 
     function create() {
@@ -448,5 +458,10 @@ Modules::run('site_security/is_login');
     function _notif_insert_data($data2){
         $this->load->model('mdl_voucher');
         return $this->mdl_voucher->_notif_insert_data($data2);
+    }
+
+    function _get_data_from_db_print_voucher($where){
+        $this->load->model('mdl_voucher');
+        return $this->mdl_voucher->_get_data_from_db_print_voucher($where);
     }
 }

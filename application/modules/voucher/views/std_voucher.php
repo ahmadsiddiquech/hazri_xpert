@@ -3,6 +3,7 @@
     <h3>
         <?php 
     $urlPath = $this->uri->segment(5);
+    $voucher_id = $this->uri->segment(4);
     echo ucwords(str_replace('%20',' ',$urlPath));
     ?>
     <a href="<?php echo ADMIN_BASE_URL . 'voucher'; ?>"><button type="button" class="btn btn-primary pull-right"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;&nbsp;Back</button></a></h3>
@@ -12,6 +13,7 @@
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-body">
+                        <a target="_blank" href="<?php echo ADMIN_BASE_URL . 'voucher/print_voucher_all/'.$voucher_id; ?>"><button type="button" class="btn btn-primary"><i class="fa fa-print"></i>&nbsp;&nbsp;&nbsp;Print All</button></a>
                     <table id="datatable1" class="table table-striped table-hover table-body">
                         <thead class="bg-th">
                         <tr class="bg-col">
@@ -32,7 +34,7 @@
                                             $new) {
                                         $i++;
                                         $std_voucher_edit_url = ADMIN_BASE_URL . 'voucher/std_voucher_edit/' . $new->voucher_id.'/'.$urlPath.'/'.$new->id;
-                                        $print_url = ADMIN_BASE_URL . 'voucher/create/' . $new->id;
+                                        $print_url = ADMIN_BASE_URL . 'voucher/print_voucher/' . $new->id;
                                         $set_publish_url = ADMIN_BASE_URL . 'voucher/set_publish/' . $new->id;
                                         $set_unpublish_url = ADMIN_BASE_URL . 'voucher/set_unpublish/' . $new->id ;
                                         ?>
@@ -58,7 +60,7 @@
                                         $iconbgclass = ' btn default c-btn';
                                         }
 
-                                        echo anchor($print_url, '<i class="fa fa-print"></i>', array('class' => 'action_edit btn blue c-btn','title' => 'Print Voucher'));
+                                        echo anchor($print_url, '<i  class="fa fa-print"></i>', array('class' => 'action_edit btn blue c-btn','title' => 'Print Voucher' , 'target' => '_blank'));
 
                                         echo anchor($std_voucher_edit_url, '<i class="fa fa-edit"></i>', array('class' => 'action_edit btn blue c-btn','title' => 'Edit voucher'));
                                         

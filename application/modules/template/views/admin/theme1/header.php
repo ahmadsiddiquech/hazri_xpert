@@ -27,6 +27,7 @@
     <!-- =============== Custom CSS ===============-->
 
     <link rel="stylesheet" href="<?php echo STATIC_ADMIN_CSS?>custom.css">
+    <link rel="stylesheet" href="<?php echo STATIC_ADMIN_CSS?>vanillaCalendar.css">
 
     <!-- Image uplaod CSS -->
 
@@ -35,6 +36,7 @@
 <!-- Image uplaod Css end -->
 
   <!-- ============== Toastr ====================== -->
+  <!-- <link href="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"> -->
 
        <link rel="stylesheet" href="<?php echo STATIC_ADMIN_CSS?>toastr.css"> 
        <link rel="stylesheet" href="<?php echo STATIC_ADMIN_CSS?>print-datatable.css"> 
@@ -85,6 +87,7 @@
    <!-- =============== BOOTSTRAP STYLES ===============-->
 
    <link rel="stylesheet" href="<?php echo STATIC_ADMIN_CSS?>bootstrap.css" id="bscss">
+
 
 
 

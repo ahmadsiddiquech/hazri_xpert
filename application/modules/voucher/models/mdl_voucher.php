@@ -33,6 +33,16 @@ class Mdl_voucher extends CI_Model {
         return $this->db->get($table);
     }
 
+    function _get_data_from_db_print_voucher($where) {
+        $this->db->select('student.id student_id,student.*,voucher_data.id std_voucher_id,voucher_data.*,users.id org_id,users.*,voucher_record.*');
+        $this->db->from('student');
+        $this->db->join("voucher_data", "voucher_data.std_id = student.id", "full");
+        $this->db->join("users", "users.id = student.org_id", "full");
+        $this->db->join("voucher_record", "voucher_record.id = voucher_data.voucher_id", "full");
+        $this->db->where($where);
+        return $this->db->get();
+    }
+
     function _get($order_by) {
         $submit_id = $this->uri->segment(4);
         $user_data = $this->session->userdata('user_data');
