@@ -33,8 +33,6 @@ Modules::run('site_security/is_login');
         foreach($arr_program as $row){
             $program[$row['id']] = $row['name'];
         }
-
-        // print_r($program);exit();
         $data['program_title'] = $program;
         $data['view_file'] = 'newsform';
         $this->load->module('template');
@@ -79,13 +77,17 @@ Modules::run('site_security/is_login');
         $subject_id = $this->input->post('subject_id');
         if(isset($subject_id) && !empty($subject_id)){
             $stdData = explode(",",$subject_id);
-            $subject_id = $stdData[0];
+            $data['subject_id'] = $stdData[0];
         }
 
-        $section_id = $this->input->post('section_id');
-        $class_id = $this->input->post('class_id');
+        $data['section_id'] = $this->input->post('section_id');
+        $data['class_id'] = $this->input->post('class_id');
+        return $data;
+    }
 
-        $data['attendance'] = $this->_get_attendance_record($subject_id,$section_id,$class_id);
+    function show_attendance() {
+        $data1 = $this->submit();
+        $data['attendance'] = $this->_get_attendance_record($data1['subject_id'],$data1['section_id'],$data1['class_id']);
         $data['view_file'] = 'view';
         $this->load->module('template');
         $this->template->admin($data);

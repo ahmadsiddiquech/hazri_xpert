@@ -135,8 +135,8 @@
                     <span>Installments</span>
                   </a>
                 </li>
-                <li class="<?php if($curr_url == 'history'){echo 'active';}    ?>">
-                  <a href="<?php $controller='history'; echo ADMIN_BASE_URL . $controller ?>">
+                <li class="<?php if($curr_url == 'fee_history'){echo 'active';}    ?>">
+                  <a href="<?php $controller='fee_history'; echo ADMIN_BASE_URL . $controller ?>">
                     <em class="fa fa-history"></em>
                     <span>History</span>
                  </a>

@@ -166,12 +166,14 @@ class Mdl_student extends CI_Model {
         $this->db->where('program_id',$program_id);
         return $this->db->get($table);
     }
+    
     function _get_section($class_id,$program_id){
         $table = "sections";
         $this->db->where('class_id',$class_id);
         $this->db->where('program_id',$program_id);
         return $this->db->get($table);
     }
+
     function _get_roll($section_id,$class_id,$program_id){
         $table = "sections";
         $this->db->where('id',$section_id);

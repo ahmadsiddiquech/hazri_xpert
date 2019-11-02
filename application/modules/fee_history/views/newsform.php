@@ -2,7 +2,7 @@
   <div class="page-content"> 
     <div class="content-wrapper">
         
-      <h3>Attendance Record</h3>             
+      <h3>Fee History</h3>             
             
     </div>
     <div class="row">
@@ -15,7 +15,7 @@
               <div class="portlet box green ">
                 
                 <div class="portlet-body form " style="padding-top:15px;"> 
-                <form method="POST" action="attendance/show_attendance">
+                <form method="POST" action="fee_history/show_history">
                 <div class="form-body">
                     
                <div class="row" style="margin-top:15px;">
@@ -25,7 +25,7 @@
                     $options = array('' => 'Select')+$program_title ;
                     $attribute = array('class' => 'control-label col-md-4');
                     echo form_label('Select Program <span style="color:red">*</span>', 'program_id', $attribute);?>
-                    <div class="col-md-8"><?php echo form_dropdown('program_id', $options, $news['program_id'],  ' required="required"class="form-control select2me required" id="program_id" tabindex ="2"'); ?></div>                            
+                    <div class="col-md-8"><?php echo form_dropdown('program_id', $options, $news['program_id'],  ' required="required"class="form-control select2me required" id="program_id" tabindex ="1"'); ?></div>                            
                   </div>
                     </div>
                     <div class="col-sm-5">
@@ -36,9 +36,6 @@
                     <div class="col-md-8">
                       <select class="form-control" id="class_id" required="required" name="class_id" >
                         <option value="">Select</option>
-                        <option selected="" value="<?=$news['class_id'];?>">
-                        <?php if(isset($news['class_name']) && !empty($news['class_name'])){
-                        echo $news['class_name'];}?></option>
                       </select>
                       </div>
                     </div>
@@ -53,28 +50,52 @@
                       <div class="col-md-8">
                         <select class="form-control" id="section_id" required="required" name="section_id" >
                           <option value="">Select</option>
-                          <option selected="" value="<?=$news['section_id'];?>">
-                          <?php if(isset($news['section_name']) && !empty($news['section_name'])){
-                          echo $news['section_name'];}?></option></option>
                         </select>
                         </div>
                       </div>
                     </div>
-                    <div class="col-sm-5">
-                    <div class="form-group">
-                    <?php
-                    $attribute = array('class' => 'control-label col-md-4');
-                    echo form_label('Subject <span style="color:red">*</span>', 'subject_id', $attribute);?>
-                    <div class="col-md-8">
-                      <select class="form-control" id="subject_id" required="required" name="subject_id" >
-                        <option value="">Select</option>
-                        <?php if(isset($news['subject_name']) && !empty($news['subject_name'])) { ?>
-                          <option  selected value="<?php echo $news['subject_id'].','.$news['subject_name']; ?>"><?php echo $news['subject_name'];?></option>
-                        <?php } ?>
-                      </select>
+                    </div>
+                    <div class="row" style="padding-top: 20px">
+                      <div class="col-sm-5">
+                        <div class="form-group">
+                          <?php
+                            $data = array(
+                            'name' => 'date_from',
+                            'id' => 'date_from',
+                            'class' => 'form-control datetimepicker2',
+                            'type' => 'text',
+                            'tabindex' => '4',
+                            'placeholder' => 'Select date from',
+                            'required' => 'required',
+                            'data-parsley-maxlength'=>TEXT_BOX_RANGE,
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                            ?>
+                          <?php echo form_label('From<span style="color:red">*</span>', 'dob', $attribute); ?>
+
+                          <div class="col-md-8"> <?php echo form_input($data); ?> </div>
+                        </div>
                       </div>
-                    </div>
-                    </div>
+                      <div class="col-sm-5">
+                        <div class="form-group">
+                          <?php
+                            $data = array(
+                            'name' => 'date_to',
+                            'id' => 'date_to',
+                            'class' => 'form-control datetimepicker2',
+                            'type' => 'text',
+                            'tabindex' => '5',
+                            'placeholder' => 'Select date to',
+                            'required' => 'required',
+                            'data-parsley-maxlength'=>TEXT_BOX_RANGE,
+                            );
+                            $attribute = array('class' => 'control-label col-md-4');
+                            ?>
+                          <?php echo form_label('To<span style="color:red">*</span>', 'dob', $attribute); ?>
+
+                          <div class="col-md-8"> <?php echo form_input($data); ?> </div>
+                        </div>
+                      </div>
                     </div>
                     
                 </div>
@@ -131,26 +152,4 @@ $("#class_id").change(function () {
           }
         });
   });
-  $("#section_id").change(function () {
-        var section_id = this.value;
-       $.ajax({
-            type: 'POST',
-            url: "<?php echo ADMIN_BASE_URL?>test/get_subject",
-            data: {'id': section_id },
-            async: false,
-            success: function(result) {
-            $("#subject_id").html(result);
-          }
-        });
-  });
-    $(document).ready(function() {
-        $("#news_file").change(function() {
-            var img = $(this).val();
-            var replaced_val = img.replace("C:\\fakepath\\", '');
-            $('#hdn_image').val(replaced_val);
-        });
-    });
-
-
-
 </script>
