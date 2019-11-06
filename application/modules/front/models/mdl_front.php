@@ -752,11 +752,29 @@ class Mdl_front extends CI_Model {
         return $this->db->get();
     }
 
+    function _get_fee_voucher_list_installment($voucher_id,$std_voucher_id){
+        $table = 'installment';
+        $this->db->where('std_voucher_id',$std_voucher_id);
+        $this->db->where('voucher_id',$voucher_id);
+        return $this->db->get($table);
+    }
+
     function _get_std_fee_voucher($voucher_id,$std_voucher_id,$org_id){
         $this->db->select('*');
         $this->db->from('voucher_record');
         $this->db->join("voucher_data", "voucher_record.id = voucher_data.voucher_id", "full");
         $this->db->where('voucher_data.id',$std_voucher_id);
+        $this->db->where('voucher_record.id',$voucher_id);
+        $this->db->where('voucher_record.org_id',$org_id);
+        return $this->db->get();
+    }
+
+    function _get_std_fee_voucher_installment($voucher_id,$std_voucher_id,$org_id){
+        $this->db->select('*');
+        $this->db->from('voucher_record');
+        $this->db->join("voucher_data", "voucher_record.id = voucher_data.voucher_id", "full");
+        $this->db->join("installment", "installment.std_voucher_id = voucher_data.id", "full");
+        $this->db->where('installment.id',$std_voucher_id);
         $this->db->where('voucher_record.id',$voucher_id);
         $this->db->where('voucher_record.org_id',$org_id);
         return $this->db->get();

@@ -21,6 +21,7 @@ Modules::run('site_security/is_login');
         $this->load->module('template');
         $this->template->admin($data);
     }
+    
     function print_voucher(){
         $std_voucher_id = $this->uri->segment(4);
         $where['voucher_data.id'] = $std_voucher_id;
@@ -230,7 +231,7 @@ Modules::run('site_security/is_login');
                         $data2['std_name'] = $value['name'];
                         $data2['std_roll_no'] = $value['roll_no'];
                         $data2['notif_title'] = 'Fee Voucher Update';
-                        $data2['notif_description'] = 'Fee Voucehr of '.$value['name'].' has been updated';
+                        $data2['notif_description'] = 'Fee Voucher of '.$value['name'].' has been updated';
                         $data2['notif_type'] = 'fee';
                         $data2['notif_sub_type'] = 'fee_update';
                         foreach ($v_data as $key => $value2) {

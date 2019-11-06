@@ -116,7 +116,6 @@ Modules::run('site_security/is_login');
         $installment =$this->input->post('n_of_i');
         $due_date = $this->input->post('due_date');
         $fee = $total/$installment;
-
         $user_data = $this->session->userdata('user_data');
         $org_id = $user_data['user_id'];
 
@@ -130,6 +129,7 @@ Modules::run('site_security/is_login');
             $data2['voucher_id']=$voucher_id;
             $data2['std_voucher_id']=$std_voucher_id;
             $data2['fee']=$fee;
+            $data2['issue_date']=date('Y-m-d H:i:s');
             $data2['std_id']=$data['std_id'];
             $data2['std_name']=$data['std_name'];
             $data2['due_date']=$due_date[$counter];
@@ -137,6 +137,31 @@ Modules::run('site_security/is_login');
             
             $insert_id = $this->_insert_installment_std_voucher($data2);
             $counter++; 
+        }
+        $this->_installment_flag($voucher_id,$std_voucher_id);
+
+        $whereStd['id'] = $data['std_id'];
+        $parents = $this->_get_parent_id_for_notification($whereStd,$org_id)->result_array();
+        if (isset($parents) && !empty($parents)) {
+            foreach ($parents as $key => $value) {
+                $data3['notif_for'] = 'Parent';
+                $data3['user_id'] = $value['parent_id'];
+                $data3['std_id'] = $value['id'];
+                $data3['std_name'] = $value['name'];
+                $data3['std_roll_no'] = $value['roll_no'];
+                $data3['notif_title'] = 'Fee Voucher Installment';
+                $data3['notif_description'] = 'Installment of Voucher for '.$value['name'].' has been made';
+                $data3['notif_type'] = 'installment';
+                $data3['notif_sub_type'] = 'installment';
+                $data3['sub_type_id'] = $insert_id;
+                $data3['type_id'] = $voucher_id;
+                date_default_timezone_set("Asia/Karachi");
+                $data3['notif_date'] = date('Y-m-d H:i:s');
+                $data3['org_id'] = $org_id;
+                $nid = $this->_notif_insert_data($data3);
+                $token = $this->_get_parent_token($value['parent_id'],$org_id)->result_array();
+                Modules::run('front/send_notification',$token,$nid,$data3['notif_title'],$data3['notif_description']);
+            }
         }
         $this->session->set_flashdata('message', 'installment'.' '.DATA_SAVED);
         $this->session->set_flashdata('status', 'success');
@@ -263,5 +288,25 @@ Modules::run('site_security/is_login');
     function _delete($arr_col, $org_id) {       
         $this->load->model('mdl_installment');
         $this->mdl_installment->_delete($arr_col, $org_id);
+    }
+
+    function _installment_flag($voucher_id,$std_voucher_id){
+        $this->load->model('mdl_installment');
+        $this->mdl_installment->_installment_flag($voucher_id,$std_voucher_id);
+    }
+
+    function _get_parent_id_for_notification($where,$org_id){
+        $this->load->model('mdl_installment');
+        return $this->mdl_installment->_get_parent_id_for_notification($where,$org_id);
+    }
+
+    function _notif_insert_data($data2){
+        $this->load->model('mdl_installment');
+        return $this->mdl_installment->_notif_insert_data($data2);
+    }
+
+    function _get_parent_token($parent_id,$org_id){
+        $this->load->model('mdl_installment');
+        return $this->mdl_installment->_get_parent_token($parent_id,$org_id);
     }
 }

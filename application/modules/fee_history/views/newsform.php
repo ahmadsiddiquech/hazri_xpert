@@ -21,13 +21,13 @@
                <div class="row" style="margin-top:15px;">
                 <div class="col-sm-5">
                     <div class="form-group">
-                    <?php
-                    $options = array('' => 'Select')+$program_title ;
-                    $attribute = array('class' => 'control-label col-md-4');
-                    echo form_label('Select Program <span style="color:red">*</span>', 'program_id', $attribute);?>
-                    <div class="col-md-8"><?php echo form_dropdown('program_id', $options, $news['program_id'],  ' required="required"class="form-control select2me required" id="program_id" tabindex ="1"'); ?></div>                            
-                  </div>
+                      <?php
+                      $options = array('' => 'Select')+$program_title ;
+                      $attribute = array('class' => 'control-label col-md-4');
+                      echo form_label('Select Program <span style="color:red">*</span>', 'program_id', $attribute);?>
+                      <div class="col-md-8"><?php echo form_dropdown('program_id', $options,'1', 'required="required" class="checktoast form-control select2me required" id="program_id" tabindex ="3"'); ?></div>
                     </div>
+                  </div>
                     <div class="col-sm-5">
                     <div class="form-group">
                     <?php

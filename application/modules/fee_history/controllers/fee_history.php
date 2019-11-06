@@ -19,8 +19,6 @@ Modules::run('site_security/is_login');
     function create() {
         $user_data = $this->session->userdata('user_data');
         $org_id = $user_data['user_id'];
-        
-        $data['update_id'] = $update_id;
         $arr_program = Modules::run('program/_get_by_arr_id_programs',$org_id)->result_array();
         $program = array();
 
@@ -31,6 +29,14 @@ Modules::run('site_security/is_login');
         $data['view_file'] = 'newsform';
         $this->load->module('template');
         $this->template->admin($data);
+    }
+
+    function print_voucher(){
+        $std_voucher_id = $this->uri->segment(4);
+        if (is_numeric($std_voucher_id) && $std_voucher_id != 0) {
+            $data['news'] = $this->_get_data_from_db($std_voucher_id)->result_array();
+        }
+        $this->load->view('print',$data);
     }
 
     function _get_data_from_db($update_id) {

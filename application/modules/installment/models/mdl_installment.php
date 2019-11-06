@@ -58,6 +58,14 @@ class Mdl_installment extends CI_Model {
         return $this->db->get();
     }
 
+    function _installment_flag($voucher_id,$std_voucher_id) {
+        $table = 'voucher_data';
+        $this->db->where('voucher_id', $voucher_id);
+        $this->db->where('id', $std_voucher_id);
+        $this->db->set('installment' , 1);
+        $this->db->update($table);
+    }
+
     function _get_std_vouchers($voucher_id) {
         $table = 'voucher_data';
         $this->db->where('voucher_id',$voucher_id);
@@ -103,5 +111,27 @@ class Mdl_installment extends CI_Model {
         $set_un_publish['status'] = 'unpaid';
         $this->db->where($where);
         $this->db->update($table, $set_un_publish);
+    }
+
+    function _notif_insert_data($data){
+        $table = 'notification';
+        $this->db->insert($table,$data);
+        return $this->db->insert_id();   
+    }
+
+    function _get_parent_token($parent_id,$org_id){
+        $table = 'users_add';
+        $this->db->select('fcm_token');
+        $this->db->where('org_id',$org_id);
+        $this->db->where('id',$parent_id);
+        $this->db->where('designation','Parent');
+        return $this->db->get($table);
+    }
+
+    function _get_parent_id_for_notification($where,$org_id){
+        $table = 'student';
+        $this->db->where('org_id',$org_id);
+        $this->db->where($where);
+        return $this->db->get($table);
     }
 }

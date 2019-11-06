@@ -19,34 +19,34 @@ function index() {
 }
 
 function send_notification($token, $nid , $title, $description){
-    require_once STATIC_FRONT_NOTIFICATION.'google-api-php-client/vendor/autoload.php';
-    foreach ($token as $key => $value) {
-        $this->send_notification_fn($value['fcm_token'],$nid, $title,$description);
-    }
+    // require_once STATIC_FRONT_NOTIFICATION.'google-api-php-client/vendor/autoload.php';
+    // foreach ($token as $key => $value) {
+    //     $this->send_notification_fn($value['fcm_token'],$nid, $title,$description);
+    // }
 }
 
 function send_notification_fn($to,$nid,$title,$description) {
-    date_default_timezone_set("Asia/Karachi");
-    $file_name = STATIC_FRONT_NOTIFICATION.'hazrixpert-firebase-adminsdk-f4trx-dc85582008.json';
-    putenv('GOOGLE_APPLICATION_CREDENTIALS='.$file_name);
-    $client = new Google_Client();
-    $client->useApplicationDefaultCredentials();
-    $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
-    $httpClient = $client->authorize();
-    $project = "hazrixpert";
-    // Creates a notification for subscribers to the debug topic
-    $message = [
-        "message" => [
-            "token" => $to,
-            "data" => [
-                'nid' => '"'.$nid.'"',
-                'title' => $title,
-                'message' => $description,
-            ],
-        ]
-    ];
-    $response = $httpClient->post("https://fcm.googleapis.com/v1/projects/{$project}/messages:send", ['json' => $message]);
-    "<br><br>";
+    // date_default_timezone_set("Asia/Karachi");
+    // $file_name = STATIC_FRONT_NOTIFICATION.'hazrixpert-firebase-adminsdk-f4trx-dc85582008.json';
+    // putenv('GOOGLE_APPLICATION_CREDENTIALS='.$file_name);
+    // $client = new Google_Client();
+    // $client->useApplicationDefaultCredentials();
+    // $client->addScope('https://www.googleapis.com/auth/firebase.messaging');
+    // $httpClient = $client->authorize();
+    // $project = "hazrixpert";
+    // // Creates a notification for subscribers to the debug topic
+    // $message = [
+    //     "message" => [
+    //         "token" => $to,
+    //         "data" => [
+    //             'nid' => '"'.$nid.'"',
+    //             'title' => $title,
+    //             'message' => $description,
+    //         ],
+    //     ]
+    // ];
+    // $response = $httpClient->post("https://fcm.googleapis.com/v1/projects/{$project}/messages:send", ['json' => $message]);
+    // "<br><br>";
  // print_r($response);
 }
 
@@ -3022,18 +3022,41 @@ function get_fee_voucher_list(){
         $voucher = $this->_get_fee_voucher_list($class_id,$section_id,$std_id,$year,$org_id)->result_array();
         if (isset($voucher) && !empty($voucher)) {
             foreach ($voucher as $key => $value) {
-                $finalData['stdVoucherId'] = $value['id'];
-                $finalData['issueDate'] = $value['issue_date'];
-                $finalData['dueDate'] = $value['due_date'];
-                $finalData['voucherId'] = $value['voucher_id'];
-                $finalData['total'] = $value['total'];
-                $finalData['status'] = $value['status'];
-                $finalData2[] = $finalData;
-                $yearArray = explode("/",$finalData['issueDate']);
-                $Year[] = $yearArray[0];
+                if ($value['installment'] == 0) {
+                    $finalData['stdVoucherId'] = $value['id'];
+                    $finalData['issueDate'] = $value['issue_date'];
+                    $finalData['dueDate'] = $value['due_date'];
+                    $finalData['voucherId'] = $value['voucher_id'];
+                    $finalData['total'] = $value['total'];
+                    $finalData['status'] = $value['status'];
+                    $finalData['installment'] = $value['installment'];
+                    $finalData2[] = $finalData;
+                    $yearArray = explode("/",$finalData['issueDate']);
+                    $Year[] = $yearArray[0];
+                }
+                else{
+                    $installment = $this->_get_fee_voucher_list_installment($value['voucher_id'],$value['id'])->result_array();
+                    if (isset($installment) && !empty($installment)) {
+                        foreach ($installment as $key => $value) {
+                            $finalData['stdVoucherId'] = $value['id'];
+                            $finalData['issueDate'] = $value['issue_date'];
+                            $finalData['dueDate'] = $value['due_date'];
+                            $finalData['voucherId'] = $value['voucher_id'];
+                            $finalData['total'] = $value['fee'];
+                            $finalData['status'] = $value['status'];
+                            $finalData['installment'] = '1';
+                            $finalData2[] = $finalData;
+                        }
+                    }
+                }
             }
         }
-        $yearList = array_map("unserialize", array_unique(array_map("serialize", $Year)));
+        if (isset($Year) && !empty($Year)) {
+            $yearList = array_map("unserialize", array_unique(array_map("serialize", $Year)));
+        }
+        else{
+            $yearList = '';
+        }
         if(isset($finalData2) && !empty($finalData2)){
             $status = true;
             $data = $finalData2;
@@ -3041,7 +3064,6 @@ function get_fee_voucher_list(){
         else{
             $message = 'Record not found';
             $data = '';
-            $yearList = '';
         }
         header('Content-Type: application/json');
         echo json_encode(array('status'=>$status, 'data'=>$data,'years'=>$yearList,'message'=>$message));
@@ -3059,37 +3081,75 @@ function get_std_fee_voucher(){
         $message = '';
         $voucher_id = $this->input->post('voucherId');
         $std_voucher_id = $this->input->post('stdVoucherId');
+        $installment = $this->input->post('installment');
         $org_id = $this->input->post('orgId');
-        $voucher = $this->_get_std_fee_voucher($voucher_id,$std_voucher_id,$org_id)->result_array();
-        if (isset($voucher) && !empty($voucher)) {
-            foreach ($voucher as $key => $value) {
-                $finalData['stdVoucherId'] = $value['id'];
-                $finalData['programId'] = $value['program_id'];
-                $finalData['programName'] = $value['program_name'];
-                $finalData['classId'] = $value['class_id'];
-                $finalData['className'] = $value['class_name'];
-                $finalData['sectionId'] = $value['section_id'];
-                $finalData['sectionName'] = $value['section_name'];
-                $finalData['issueDate'] = $value['issue_date'];
-                $finalData['dueDate'] = $value['due_date'];
-                $finalData['voucherId'] = $value['voucher_id'];
-                $finalData['stdName'] = $value['std_name'];
-                $finalData['stdRollNo'] = $value['std_roll_no'];
-                $finalData['parentName'] = $value['parent_name'];
-                $finalData['tutionFee'] = $value['tution_fee'];
-                $finalData['transportFee'] = $value['transport_fee'];
-                $finalData['lunchFee'] = $value['lunch_fee'];
-                $finalData['stationaryFee'] = $value['stationary_fee'];
-                $finalData['otherFee'] = $value['other_fee'];
-                $finalData['total'] = $value['total'];
-                $finalData['paid'] = $value['paid'];
-                $finalData['remaining'] = $value['remaining'];
-                $finalData['status'] = $value['status'];
-                if ($finalData['status'] == 1) {
-                    $finalData['payDate'] = $value['pay_date'];
+        if ($installment == 0) {
+            $voucher = $this->_get_std_fee_voucher($voucher_id,$std_voucher_id,$org_id)->result_array();
+            if (isset($voucher) && !empty($voucher)) {
+                foreach ($voucher as $key => $value) {
+                    $finalData['stdVoucherId'] = $value['id'];
+                    $finalData['programId'] = $value['program_id'];
+                    $finalData['programName'] = $value['program_name'];
+                    $finalData['classId'] = $value['class_id'];
+                    $finalData['className'] = $value['class_name'];
+                    $finalData['sectionId'] = $value['section_id'];
+                    $finalData['sectionName'] = $value['section_name'];
+                    $finalData['issueDate'] = $value['issue_date'];
+                    $finalData['dueDate'] = $value['due_date'];
+                    $finalData['voucherId'] = $value['voucher_id'];
+                    $finalData['stdName'] = $value['std_name'];
+                    $finalData['stdRollNo'] = $value['std_roll_no'];
+                    $finalData['parentName'] = $value['parent_name'];
+                    $finalData['tutionFee'] = $value['tution_fee'];
+                    $finalData['transportFee'] = $value['transport_fee'];
+                    $finalData['lunchFee'] = $value['lunch_fee'];
+                    $finalData['stationaryFee'] = $value['stationary_fee'];
+                    $finalData['otherFee'] = $value['other_fee'];
+                    $finalData['total'] = $value['total'];
+                    $finalData['paid'] = $value['paid'];
+                    $finalData['remaining'] = $value['remaining'];
+                    $finalData['status'] = $value['status'];
+                    if ($finalData['status'] == 1) {
+                        $finalData['payDate'] = $value['pay_date'];
+                    }
+                    else{
+                        $finalData['payDate'] = '';
+                    }
                 }
-                else{
-                    $finalData['payDate'] = '';
+            }
+        }
+        else{
+            $installment = $this->_get_std_fee_voucher_installment($voucher_id,$std_voucher_id,$org_id)->result_array();
+            if (isset($installment) && !empty($installment)) {
+                foreach ($installment as $key => $value) {
+                    $finalData['stdVoucherId'] = $value['id'];
+                    $finalData['programId'] = $value['program_id'];
+                    $finalData['programName'] = $value['program_name'];
+                    $finalData['classId'] = $value['class_id'];
+                    $finalData['className'] = $value['class_name'];
+                    $finalData['sectionId'] = $value['section_id'];
+                    $finalData['sectionName'] = $value['section_name'];
+                    $finalData['issueDate'] = $value['issue_date'];
+                    $finalData['dueDate'] = $value['due_date'];
+                    $finalData['voucherId'] = $value['voucher_id'];
+                    $finalData['stdName'] = $value['std_name'];
+                    $finalData['stdRollNo'] = $value['std_roll_no'];
+                    $finalData['parentName'] = $value['parent_name'];
+                    $finalData['tutionFee'] = $value['tution_fee'];
+                    $finalData['transportFee'] = $value['transport_fee'];
+                    $finalData['lunchFee'] = $value['lunch_fee'];
+                    $finalData['stationaryFee'] = $value['stationary_fee'];
+                    $finalData['otherFee'] = $value['other_fee'];
+                    $finalData['total'] = $value['fee'];
+                    $finalData['paid'] = $value['paid'];
+                    $finalData['remaining'] = $value['remaining'];
+                    $finalData['status'] = $value['status'];
+                    if ($finalData['status'] == 1) {
+                        $finalData['payDate'] = $value['pay_date'];
+                    }
+                    else{
+                        $finalData['payDate'] = '';
+                    }
                 }
             }
         }
@@ -3150,9 +3210,19 @@ function _get_fee_voucher_list($class_id,$section_id,$std_id,$year,$org_id){
     return $this->mdl_front->_get_fee_voucher_list($class_id,$section_id,$std_id,$year,$org_id);
 }
 
+function _get_fee_voucher_list_installment($voucher_id,$std_voucher_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_fee_voucher_list_installment($voucher_id,$std_voucher_id);
+}
+
 function _get_std_fee_voucher($voucher_id,$std_voucher_id,$org_id){
     $this->load->model('mdl_front');
     return $this->mdl_front->_get_std_fee_voucher($voucher_id,$std_voucher_id,$org_id);
+}
+
+function _get_std_fee_voucher_installment($voucher_id,$std_voucher_id,$org_id){
+    $this->load->model('mdl_front');
+    return $this->mdl_front->_get_std_fee_voucher_installment($voucher_id,$std_voucher_id,$org_id);
 }
 
 // function _pay_std_fee_voucher($amount,$date,$std_voucher_id){

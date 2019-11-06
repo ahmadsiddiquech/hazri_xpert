@@ -28,6 +28,7 @@
                                 if (isset($fee_history)) {
                                     foreach ($fee_history->result() as
                                             $new) {
+                                        $print_url = ADMIN_BASE_URL . 'voucher/print_voucher/' . $new->id;
                                         $i++;
                                         ?>
                                     <tr id="Row_<?=$new->id?>" class="odd gradeX " >
@@ -40,6 +41,9 @@
                                         <td><?php echo $new->remaining  ?></td>
                                         <td class="table_action">
                                             <a class="btn yellow c-btn view_details" rel="<?=$new->id?>"><i class="fa fa-list"  title="See Detail"></i></a>
+                                            <?php
+                                            echo anchor($print_url, '<i  class="fa fa-print"></i>', array('class' => 'action_edit btn blue c-btn','title' => 'Print Voucher' , 'target' => '_blank'));
+                                            ?>
                                         </td>
                                     </tr>
                                     <?php } ?>    
