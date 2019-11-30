@@ -1,0 +1,5 @@
+@media print {
+    #datatable1_filter , #datatable1_length , #datatable1_info , #datatable1_paginate , #actions , .table_action {
+        display: none;
+    }
+}
