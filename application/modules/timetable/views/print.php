@@ -1,13 +1,19 @@
-<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <style type="text/css">
   @media print {
     * {
         -webkit-print-color-adjust: exact;
     }
+    @page {
+      size: landscape;
+    }
   }
   table,th,td {
     border: 2px solid black;
     text-align: center;
+    border-collapse: collapse;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: bolder;
   }
   .img-opacity {
     background-position: center;
@@ -17,10 +23,11 @@
   div.transbox {
     margin: 30px;
     background-color: #ffffff;
-    opacity: 0.9;
+    opacity: 0.8;
   }
   .border_top {
     border-top: 2px solid black;
+    width: 200px;
   }
   .l-span{
     border-bottom: 1px solid black;
@@ -42,23 +49,23 @@
   }
 </style>
 <?php $i = 0 ?>
-<div class="container mt-2 img-opacity">
+<div class="img-opacity">
   <div class="transbox">
-  <div class="row">
-    <div class="col-md-2">
+  <div>
+    <div style="float: left;">
       <img src="<?php echo STATIC_ADMIN_IMAGE.'logo.png'?>" height="120px;">
     </div>
-    <div class="col-md-8 ">
+    <div>
       <h1 style="text-align: center;">
       <?php echo $org[0]['org_name']; ?>
       </h1>
-      <h5 class="display-5 text-break" style="text-align: center;">
+      <h4 style="text-align: center;">
         <?php echo $org[0]['org_address']; ?><br>
         Ph: <?php echo $org[0]['org_phone']; ?>
-      </h5>
+      </h4>
     </div>
   </div>
-  <div class="col-md-12" style="text-align: center;"><h1>Timetable - <?php echo $timetable[0]['program_name'].' - '.$timetable[0]['class_name'].' - '.$timetable[0]['section_name'].' - '.$timetable[0]['day'];?></h1></div>
+  <div style="text-align: center;"><h1>Timetable - <?php echo $timetable[0]['program_name'].' - '.$timetable[0]['class_name'].' - '.$timetable[0]['section_name'].' - '.$timetable[0]['day'];?></h1></div>
   <table width="100%" class="mt-5">
     <thead>
       <th>Sr.No</th>
@@ -77,15 +84,13 @@
       <?php } ?>
     </tbody>
   </table>
-  <div class="row mt-5 pt-5">
-    <div class="col-md-4" style="text-align: center;">
+    <div style="text-align: center; padding-top: 10px;">
       <h5 class="border_top">Incharge's Signature</h5>
-    </div>
   </div>
  
   </div>
 </div>
-<p style="bottom: 0px;position: fixed;text-align: center;"><b> Powered by XpertSpot </b></p>
+<p style="bottom: 0px;position: fixed;"><b> Powered by XpertSpot </b></p>
 
 <script type="text/javascript">
 

@@ -44,17 +44,17 @@ Modules::run('site_security/is_login');
                     $data1['subject'] = $value['subject_name'];
                     $data1['total'] = $value['total_marks'];
                     $data1['obtained'] = $marks[0]['obtained_marks'];
-                    $data1['percent'] = ($marks[0]['obtained_marks']/$data1['total'])*100;
+                    $data1['percent'] = round(($marks[0]['obtained_marks']/$data1['total'])*100);
                     $data['marks'][] = $data1;
                     $total = $total + $data1['total'];
                     $obtained = $obtained + $marks[0]['obtained_marks'];
-                    $percent = ($obtained/$total)*100;
                 }
             }
         }
+        $percent = ($obtained/$total)*100;
         $data['total'] = $total;
         $data['obtained'] = $obtained;
-        $data['percent'] = $percent;
+        $data['percent'] = round($percent);
         if ($percent >= 60) {
             $data['remarks'] = 'Pass';
         }
@@ -85,17 +85,17 @@ Modules::run('site_security/is_login');
                 $data1['name'] = $value['std_name'];
                 $data1['total'] = $subject[0]['total_marks'];
                 $data1['obtained'] = $value['obtained_marks'];
-                $data1['percent'] = ($value['obtained_marks']/$data1['total'])*100;
+                $data1['percent'] = round(($value['obtained_marks']/$data1['total'])*100);
                 $data['marks'][] = $data1;
                 $total = $total + $data1['total'];
                 $obtained = $obtained + $value['obtained_marks'];
-                $percent = ($obtained/$total)*100;
             }
             
         }
+        $percent = ($obtained/$total)*100;
         $data['total'] = $total;
         $data['obtained'] = $obtained;
-        $data['percent'] = $percent;
+        $data['percent'] = round($percent);
         $this->load->view('subject_result',$data);
     }
 
@@ -122,19 +122,19 @@ Modules::run('site_security/is_login');
                             $data1['subject'] = $value['subject_name'];
                             $data1['total'] = $value['total_marks'];
                             $data1['obtained'] = $marks[0]['obtained_marks'];
-                            $data1['percent'] = ($marks[0]['obtained_marks']/$data1['total'])*100;
+                            $data1['percent'] = round(($marks[0]['obtained_marks']/$data1['total'])*100);
                             $data['marks'][] = $data1;
                             $total = $total + $data1['total'];
                             $obtained = $obtained + $marks[0]['obtained_marks'];
-                            $percent = ($obtained/$total)*100;
                         }
                     }
                 }
             }
         }
+        $percent = ($obtained/$total)*100;
         $data['total'] = $total;
         $data['obtained'] = $obtained;
-        $data['percent'] = $percent;
+        $data['percent'] = round($percent);
         if ($percent >= 60) {
             $data['remarks'] = 'Pass';
         }

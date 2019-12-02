@@ -1,6 +1,6 @@
 <!-- Page content-->
 <div class="content-wrapper">
-    <h3>User<a href="user/create"><button type="button" class="btn btn-primary btn-lg pull-right"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;<b>Add User</b></button></a></h3>
+    <h3>User<a href="user/create"><button type="button" class="btn btn-primary btn-lg pull-right"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;<b>Add New</b></button></a></h3>
     <div class="container-fluid">
         <!-- START DATATABLE 1 -->
         <div class="row">

@@ -2,7 +2,7 @@
 
 <div class="content-wrapper">
 
-    <h3>Expense<a href="expense/create"><button type="button" class="btn btn-primary pull-right"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;Add New</button></a></h3>
+    <h3>Expense<a href="expense/create"><button type="button" class="btn btn-lg btn-primary pull-right"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;<b>Add Expense</b></button></a></h3>
 
     <div class="container-fluid">
 
@@ -38,6 +38,7 @@
                                     foreach ($news->result() as
                                             $new) {
                                         $i++;
+                                    $amount = $amount + $new->amount;
                                         $edit_url = ADMIN_BASE_URL . 'expense/create/' . $new->id ;
                                         $delete_url = ADMIN_BASE_URL . 'expense/delete/' . $new->id;
                                         ?>
@@ -61,6 +62,9 @@
                                 <?php } ?>
                             </tbody>
                     </table>
+                    <div class="pull-right" style="padding-right: 60px">
+                        <h4>Total Expense: <?php echo $amount ?></h4>
+                    </div>
                     </div>
                 </div>
             </div>

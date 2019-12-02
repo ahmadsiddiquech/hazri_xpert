@@ -44,11 +44,18 @@
                 </a>
           </li>
          <?php } if($role_id != 1){ ?>
-          <li class="<?php if($curr_url == 'user'){echo 'active';}    ?>">
-                <a href="<?php $controller='user'; 
+          <li class="<?php if($curr_url == 'parents'){echo 'active';}    ?>">
+                <a href="<?php $controller='parents'; 
                    echo ADMIN_BASE_URL . $controller ?>">
                    <em class="fa fa-user"></em>
-                   <span>User</span>
+                   <span>Parent</span>
+                </a>
+          </li>
+          <li class="<?php if($curr_url == 'teacher'){echo 'active';}    ?>">
+                <a href="<?php $controller='teacher'; 
+                   echo ADMIN_BASE_URL . $controller ?>">
+                   <em class="fa fa-user"></em>
+                   <span>Teacher</span>
                 </a>
           </li>
           <li class="<?php if($curr_url == 'program'){echo 'active';}    ?>">
@@ -141,6 +148,12 @@
                     <span>Fee History</span>
                  </a>
                 </li>
+                <li class="<?php if($curr_url == 'fee_report'){echo 'active';}    ?>">
+                  <a href="<?php $controller='fee_report'; echo ADMIN_BASE_URL . $controller ?>">
+                    <em class="fa fa-line-chart"></em>
+                    <span>Fee Report</span>
+                 </a>
+                </li>
             </ul>
           </li>
           <li class="<?php if($curr_url == 'attendance'){echo 'active';} ?>">
@@ -169,6 +182,13 @@
                    echo ADMIN_BASE_URL . $controller ?>">
                    <em class="fa fa-usd"></em>
                    <span>Expense</span>
+                </a>
+          </li>
+          <li class="<?php if($curr_url == 'gallery'){echo 'active';}    ?>">
+                <a href="<?php $controller='gallery'; 
+                   echo ADMIN_BASE_URL . $controller ?>">
+                   <em class="fa fa-image"></em>
+                   <span>Gallery</span>
                 </a>
           </li>
           <li class="<?php if($curr_url == 'announcement'){echo 'active';}    ?>">

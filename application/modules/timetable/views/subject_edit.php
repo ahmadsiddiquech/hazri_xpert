@@ -10,7 +10,7 @@
                     $strTitle = 'Edit Timetable Subject';
                     echo $strTitle;
                     ?>
-                    <a href="<?php echo ADMIN_BASE_URL . 'timetable/subjects/'.$this->uri->segment('4');?>"><button type="button" class="btn btn-primary pull-right"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;&nbsp;Back</button></a>
+                    <a href="<?php echo ADMIN_BASE_URL . 'timetable/subjects/'.$this->uri->segment('4');?>"><button type="button" class="btn btn-primary btn-lg pull-right"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;&nbsp;<b>Back</b></button></a>
        </h3>             
             
     </div>

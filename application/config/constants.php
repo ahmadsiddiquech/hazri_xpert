@@ -98,6 +98,11 @@ define('LARGE_ANNOUNCEMENT_IMAGE_PATH', 'uploads/announcement/large_images/');
 define('MEDIUM_ANNOUNCEMENT_IMAGE_PATH', 'uploads/announcement/medium_images/');
 define('SMALL_ANNOUNCEMENT_IMAGE_PATH', 'uploads/announcement/small_images/');
 
+define('ACTUAL_GALLERY_IMAGE_PATH', 'uploads/gallery/actual_images/');
+define('LARGE_GALLERY_IMAGE_PATH', 'uploads/gallery/large_images/');
+define('MEDIUM_GALLERY_IMAGE_PATH', 'uploads/gallery/medium_images/');
+define('SMALL_GALLERY_IMAGE_PATH', 'uploads/gallery/small_images/');
+
 define('ACTUAL_BANNER_IMAGE_PATH', 'uploads/banner/actual_images/');
 define('LARGE_BANNER_IMAGE_PATH', 'uploads/banner/large_images/');
 define('MEDIUM_BANNER_IMAGE_PATH', 'uploads/banner/medium_images/');

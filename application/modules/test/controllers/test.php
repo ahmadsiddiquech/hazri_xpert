@@ -22,18 +22,6 @@ Modules::run('site_security/is_login');
         $this->template->admin($data);
     }
 
-    function print_test(){
-        $test_id = $this->uri->segment(4);
-        $user_data = $this->session->userdata('user_data');
-        $org_id = $user_data['user_id'];
-        $test = $this->_get_test_print_voucher($test_id,$org_id)->result_array();
-        $org = $this->_get_org_print_voucher($org_id)->result_array();
-        $data['org'] = $org;
-        $data['test'] = $test;
-       
-        $this->load->view('print',$data);
-    }
-
     function create() {
         $update_id = $this->uri->segment(4);
         $user_data = $this->session->userdata('user_data');
@@ -51,6 +39,18 @@ Modules::run('site_security/is_login');
         $data['view_file'] = 'newsform';
         $this->load->module('template');
         $this->template->admin($data);
+    }
+
+    function print_test(){
+        $test_id = $this->uri->segment(4);
+        $user_data = $this->session->userdata('user_data');
+        $org_id = $user_data['user_id'];
+        $test = $this->_get_test_print_voucher($test_id,$org_id)->result_array();
+        $org = $this->_get_org_print_voucher($org_id)->result_array();
+        $data['org'] = $org;
+        $data['test'] = $test;
+       
+        $this->load->view('print',$data);
     }
 
     function marks() {

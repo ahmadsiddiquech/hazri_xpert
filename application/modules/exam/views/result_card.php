@@ -17,7 +17,7 @@
   div.transbox {
     margin: 30px;
     background-color: #ffffff;
-    opacity: 0.9;
+    opacity: 0.8;
   }
   .border_top {
     border-top: 2px solid black;
@@ -36,7 +36,6 @@
   }
   .s-span  {
     border-bottom: 1px solid black;
-    width: 120px;
     display: inline-block;
     text-align: center;
   }
@@ -146,7 +145,7 @@
   </div>
   </div>
 </div>
-<p style="bottom: 0px;position: fixed"> Powered by XpertSpot</p>
+<p style="bottom: 0px;position: fixed"><b> Powered by XpertSpot </b></p>
 
 <script type="text/javascript">
 

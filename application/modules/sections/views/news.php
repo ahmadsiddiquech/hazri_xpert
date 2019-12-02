@@ -2,7 +2,7 @@
 
 <div class="content-wrapper">
 
-    <h3>Section<a href="sections/create"><button type="button" class="btn btn-primary pull-right"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;Add New</button></a></h3>
+    <h3>Section<a href="sections/create"><button type="button" class="btn btn-lg btn-primary pull-right"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;<b>Add Section</b></button></a></h3>
 
     <div class="container-fluid">
 

@@ -1,6 +1,6 @@
 <!-- Page content-->
 <div class="content-wrapper">
-    <h3>Exam<a href="exam/create"><button type="button" class="btn btn-primary pull-right"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;Add New</button></a></h3>
+    <h3>Exam<a href="exam/create"><button type="button" class="btn btn-primary btn-lg pull-right"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;<b>Add Exam</b></button></a></h3>
     <div class="container-fluid">
         <!-- START DATATABLE 1 -->
         <div class="row">
@@ -27,7 +27,7 @@
                                         $set_publish_url = ADMIN_BASE_URL . 'exam/set_publish/' . $new->id;
                                         $set_unpublish_url = ADMIN_BASE_URL . 'exam/set_unpublish/' . $new->id ;
                                         $edit_url = ADMIN_BASE_URL . 'exam/create/' . $new->id ;
-                                        $print_url = ADMIN_BASE_URL . 'exam/print_exam/' . $new->id;
+                                        $print_url = ADMIN_BASE_URL . 'exam/print_exam/' . $new->id ;
                                         $delete_url = ADMIN_BASE_URL . 'exam/delete/' . $new->id;
                                         ?>
                                     <tr id="Row_<?=$new->id?>" class="odd gradeX " >
